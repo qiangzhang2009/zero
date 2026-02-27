@@ -22,9 +22,5 @@
       "src": "/(.*)",
       "dest": "/frontend/index.html"
     }
-  ],
-  "env": {
-    "API_KEY": "@api_key",
-    "BASE_URL": "@base_url"
-  }
+  ]
 }
