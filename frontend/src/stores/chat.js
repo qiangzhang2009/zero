@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import axios from 'axios'
+import { useProfileStore } from './profile'
 
 const API_URL = import.meta.env.VITE_API_URL || '/api'
 
@@ -94,6 +95,10 @@ export const useChatStore = defineStore('chat', () => {
   async function sendMessage(content) {
     if (!content.trim()) return
     
+    // 获取当前档案信息
+    const profileStore = useProfileStore()
+    const profile = profileStore.currentProfile
+    
     // 添加用户消息
     messages.value.push({
       role: 'user',
@@ -112,7 +117,14 @@ export const useChatStore = defineStore('chat', () => {
     try {
       const response = await axios.post(`${API_URL}/chat/${currentModule.value}`, {
         message: content,
-        history: history.value.slice(0, -1)
+        history: history.value.slice(0, -1),
+        profile: profile ? {
+          name: profile.name,
+          birthday: profile.birthday,
+          gender: profile.gender,
+          hour: profile.hour,
+          bazi: profile.bazi
+        } : null
       })
       
       const aiMessage = response.data.data.message
@@ -135,6 +147,31 @@ export const useChatStore = defineStore('chat', () => {
       })
     } finally {
       isLoading.value = false
+      
+      // 保存聊天记录到服务器
+      saveChatToServer()
+    }
+  }
+
+  // 保存聊天记录到服务器
+  async function saveChatToServer() {
+    if (messages.value.length === 0) return
+    
+    const profileStore = useProfileStore()
+    const profile = profileStore.currentProfile
+    
+    try {
+      await axios.post(`${API_URL}/chat/save`, {
+        module: currentModule.value,
+        messages: messages.value,
+        profile: profile ? {
+          name: profile.name,
+          birthday: profile.birthday,
+          gender: profile.gender
+        } : null
+      })
+    } catch (error) {
+      console.warn('Failed to save chat to server:', error)
     }
   }
 
@@ -158,6 +195,10 @@ export const useChatStore = defineStore('chat', () => {
   async function sendMessageWithImage(content, imageBase64) {
     if (!content.trim()) return
     
+    // 获取当前档案信息
+    const profileStore = useProfileStore()
+    const profile = profileStore.currentProfile
+    
     // 更新历史记录
     history.value.push(
       { role: 'user', content: content, image: imageBase64 },
@@ -170,7 +211,14 @@ export const useChatStore = defineStore('chat', () => {
       const response = await axios.post(`${API_URL}/chat/${currentModule.value}`, {
         message: content,
         image: imageBase64,
-        history: history.value.slice(0, -1)
+        history: history.value.slice(0, -1),
+        profile: profile ? {
+          name: profile.name,
+          birthday: profile.birthday,
+          gender: profile.gender,
+          hour: profile.hour,
+          bazi: profile.bazi
+        } : null
       })
       
       const aiMessage = response.data.data.message
@@ -193,6 +241,9 @@ export const useChatStore = defineStore('chat', () => {
       })
     } finally {
       isLoading.value = false
+      
+      // 保存聊天记录到服务器
+      saveChatToServer()
     }
   }
 
