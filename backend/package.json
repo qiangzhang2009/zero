@@ -1,0 +1,17 @@
+{
+  "name": "tianjige-backend",
+  "version": "1.0.0",
+  "description": "天机阁后端服务 - AI命理咨询API",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "axios": "^1.6.2"
+  }
+}

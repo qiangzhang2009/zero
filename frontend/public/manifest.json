@@ -1,0 +1,18 @@
+{
+  "name": "知几 - AI命理咨询",
+  "short_name": "知几",
+  "description": "AI命理咨询平台 - 古老智慧，现代解读",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#fbbf24",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
