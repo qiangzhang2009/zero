@@ -75,7 +75,7 @@ npm install
 
 ```env
 API_KEY=your-api-key
-BASE_URL=https://api.deepseek.com
+BASE_URL=https://api.example.com
 PORT=3000
 NODE_ENV=development
 ```

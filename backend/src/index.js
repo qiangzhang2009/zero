@@ -13,6 +13,9 @@ const PORT = process.env.PORT || 3000;
 // 聊天记录存储文件路径
 const CHAT_HISTORY_FILE = path.join(process.cwd(), 'chat_history.json');
 
+// 简单的管理员密码配置
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'zhiJi_admin_2026';
+
 // 读取聊天历史记录
 function loadChatHistory() {
   try {
@@ -116,21 +119,30 @@ async function chatWithContextHandler(req, res) {
       ...history
     ];
     
+    let response;
+    
     // 如果有图片，构建多模态消息
     if (image) {
-      // AI智慧服务支持图片输入的格式
-      messages.push({
-        role: 'user',
-        content: [
-          { type: 'text', text: message },
-          { type: 'image_url', image_url: { url: image } }
-        ]
-      });
+      try {
+        // 尝试发送带图片的消息
+        messages.push({
+          role: 'user',
+          content: [
+            { type: 'text', text: message + '\n\n[用户上传了一张图片，请根据图片内容进行分析解读]' },
+            { type: 'image_url', image_url: { url: image } }
+          ]
+        });
+        response = await callAPI(messages);
+      } catch (imgError) {
+        // 如果图片发送失败，尝试只用文字
+        console.log('图片识别暂不可用，使用文字模式:', imgError.message);
+        messages.push({ role: 'user', content: message });
+        response = await callAPI(messages);
+      }
     } else {
       messages.push({ role: 'user', content: message });
+      response = await callAPI(messages);
     }
-    
-    const response = await callAPI(messages);
     
     res.json({
       success: true,
@@ -140,9 +152,10 @@ async function chatWithContextHandler(req, res) {
       }
     });
   } catch (error) {
+    console.error('API Error:', error.response?.data || error.message);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: '服务暂时不可用，请稍后再试'
     });
   }
 }
@@ -154,7 +167,7 @@ app.post('/api/chat/:module', chatWithContextHandler);
 // 保存聊天记录到服务器
 app.post('/api/chat/save', (req, res) => {
   try {
-    const { module, messages, profile } = req.body;
+    const { module, messages, profile, userId } = req.body;
     
     if (!module || !messages) {
       return res.status(400).json({
@@ -166,6 +179,7 @@ app.post('/api/chat/save', (req, res) => {
     // 创建聊天记录对象
     const chatRecord = {
       id: `chat_${Date.now()}`,
+      userId: userId || 'anonymous', // 关联用户ID
       module,
       profile: profile ? {
         name: profile.name,
@@ -206,12 +220,27 @@ app.post('/api/chat/save', (req, res) => {
 // 获取聊天记录列表
 app.get('/api/chat/history', (req, res) => {
   try {
-    const { limit = 50, offset = 0 } = req.query;
+    const { limit = 50, offset = 0, userId, adminKey } = req.query;
     
-    const history = chatHistoryStore
+    let filteredHistory = chatHistoryStore;
+    
+    // 管理员可以查看所有数据
+    if (adminKey === ADMIN_PASSWORD) {
+      // 管理员模式，返回所有记录
+      console.log('Admin access granted');
+    } else if (userId) {
+      // 普通用户只能查看自己的记录
+      filteredHistory = chatHistoryStore.filter(record => record.userId === userId);
+    } else {
+      // 没有提供userId，只返回最近的匿名记录
+      filteredHistory = chatHistoryStore.filter(record => !record.userId || record.userId === 'anonymous');
+    }
+    
+    const history = filteredHistory
       .slice(parseInt(offset), parseInt(offset) + parseInt(limit))
       .map(record => ({
         id: record.id,
+        userId: record.userId,
         module: record.module,
         profileName: record.profile?.name,
         messageCount: record.messages.length,
@@ -221,9 +250,43 @@ app.get('/api/chat/history', (req, res) => {
     res.json({
       success: true,
       data: {
-        total: chatHistoryStore.length,
+        total: filteredHistory.length,
         history
       }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// 管理员获取完整聊天记录详情
+app.get('/api/admin/chat/:id', (req, res) => {
+  try {
+    const { adminKey } = req.query;
+    const { id } = req.params;
+    
+    if (adminKey !== ADMIN_PASSWORD) {
+      return res.status(403).json({
+        success: false,
+        error: '无权限访问'
+      });
+    }
+    
+    const record = chatHistoryStore.find(r => r.id === id);
+    
+    if (!record) {
+      return res.status(404).json({
+        success: false,
+        error: '记录不存在'
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: record
     });
   } catch (error) {
     res.status(500).json({

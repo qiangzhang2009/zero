@@ -5,6 +5,17 @@ import { useProfileStore } from './profile'
 
 const API_URL = import.meta.env.VITE_API_URL || '/api'
 
+// 生成或获取用户ID
+function getUserId() {
+  let userId = localStorage.getItem('zhiJi_user_id')
+  if (!userId) {
+    // 生成唯一的用户ID
+    userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+    localStorage.setItem('zhiJi_user_id', userId)
+  }
+  return userId
+}
+
 // 从localStorage加载保存的数据
 function loadFromStorage(key, defaultValue) {
   try {
@@ -164,6 +175,7 @@ export const useChatStore = defineStore('chat', () => {
       await axios.post(`${API_URL}/chat/save`, {
         module: currentModule.value,
         messages: messages.value,
+        userId: getUserId(), // 添加用户ID
         profile: profile ? {
           name: profile.name,
           birthday: profile.birthday,

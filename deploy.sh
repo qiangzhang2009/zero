@@ -21,5 +21,5 @@ vercel --prod
 echo "✅ 部署完成！"
 echo ""
 echo "部署后需要在Vercel后台配置环境变量："
-echo "  API_KEY: 你的DeepSeek API Key"
-echo "  BASE_URL: https://api.deepseek.com"
+echo "  API_KEY: 你的AI服务API Key"
+echo "  BASE_URL: AI服务API地址"
