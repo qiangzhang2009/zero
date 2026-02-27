@@ -6,20 +6,6 @@
       "config": {
         "outputDirectory": "frontend/dist"
       }
-    },
-    {
-      "src": "backend/src/index.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/backend/src/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/index.html"
     }
   ]
 }
