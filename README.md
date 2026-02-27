@@ -10,7 +10,7 @@
 
 ## 简介
 
-知几是一个基于AI的命理咨询平台。通过DeepSeek API提供智能命理咨询服务，支持Web端和移动端PWA应用。
+知几是一个基于AI的命理咨询平台。通过智慧API提供智能命理咨询服务，支持Web端和移动端PWA应用。
 
 "知几"源自《易经》"知几者，动之微，吉之先见者也"，意为洞察事物细微的变化预知吉凶。
 
@@ -43,7 +43,7 @@
 
 - **前端**: Vue 3 + Vite + Pinia + TailwindCSS
 - **后端**: Node.js + Express
-- **AI**: DeepSeek API
+- **AI**: 智慧API
 - **部署**: 支持Vercel/Railway部署
 
 ## 快速开始
@@ -74,14 +74,14 @@ npm install
 1. 在 `backend/` 目录下创建 `.env` 文件：
 
 ```env
-DEEPSEEK_API_KEY=your-api-key
-DEEPSEEK_BASE_URL=https://api.deepseek.com
+API_KEY=your-api-key
+BASE_URL=https://api.deepseek.com
 PORT=3000
 NODE_ENV=development
 ```
 
-2. 获取 DeepSeek API Key:
-   - 访问 [DeepSeek官网](https://platform.deepseek.com/)
+2. 获取智慧API Key:
+   - 访问 AI API服务商
    - 注册账号并获取API Key
 
 ### 启动
@@ -145,7 +145,7 @@ GET /api/modules
 ## 注意事项
 
 1. **API Key安全**: 不要将API Key提交到公开仓库
-2. **使用限制**: DeepSeek API有调用频率限制，请留意使用
+2. **使用限制**: 智慧API有调用频率限制，请留意使用
 3. **命理仅供娱乐**: 所有预测仅供娱乐参考，不可迷信
 
 ## 许可证
