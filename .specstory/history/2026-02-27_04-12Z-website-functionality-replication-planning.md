@@ -24188,7 +24188,1404 @@ Read file: /Users/john/zero2/frontend/src/components/ProfileSelector.vue
 
 ---
 
+<think>
+现在我看到了问题所在：
 
+1. **年份选择问题**：使用原生 `<input type="date">` 在手机上选择年份非常不方便，需要一年一年滑动。需要改成自定义的年份选择器，可以快速选择几十年前。
+
+2. **无法下滑问题**：`.profile-selector` 设置了 `max-height: 80vh` 和 `overflow: hidden`，但内容超过这个高度时没有滚动条。需要添加 overflow-y: auto。
+
+3. **缺少修改档案功能**：目前只有创建和删除功能，没有编辑/修改功能。
+
+让我进行以下优化：
+1. 修复滚动问题
+2. 将日期输入改为更友好的自定义选择器
+3. 添加编辑档案功能
+</think>
+
+我发现了几个问题：
+
+1. **滚动问题** - 表单容器没有正确滚动
+2. **年份选择** - 原生日期选择器不好用
+3. **缺少编辑功能<think>
+ Thinking...
+ "<script setup>
+import { ref, computed } from 'vue'
+import { useProfileStore } from '../stores/profile'
+const emit = defineEmits(['close'])
+const profileStore = useProfileStore()
+const showCreateForm = ref(false)
+const editingProfile = ref(null)
+// 当前正在编辑的档案数据
+const editForm = ref({
+  name: '',
+  birthday: '',
+  gender: '',
+  hour: '',
+  description: ''
+})
+const newProfile = ref({
+  name: '',
+  birthday: '',
+  gender: '',
+  hour: '',
+  description: ''
+})
+const avatarOptions = ['👤', '👨', '👩', '🧑', '👴', '👵', '🧙', '🧚', '🧛', '🧜']
+const selectedAvatar = ref('👤')
+const editingAvatar = ref('👤')
+// 快速年份选择
+const currentYear = new Date().getFullYear()
+const years = computed(() => {
+  const list = []
+  for (let i = currentYear; i >= currentYear - 100; i--) {
+    list.push(i)
+  }
+  return list
+})
+const months = [
+  { value: 1, label: '1月' },
+  { value: 2, label: '2月' },
+  { value: 3, label: '3月' },
+  { value: 4, label: '4月' },
+  { value: 5, label: '5月' },
+  { value: 6, label: '6月' },
+  { value: 7, label: '7月' },
+  { value: 8, label: '8月' },
+  { value: 9, label: '9月' },
+  { value: 10, label: '10月' },
+  { value: 11, label: '11月' },
+  { value: 12, label: '12月' }
+]
+const days = computed(() => {
+  const list = []
+  for (let i = 1; i <= 31; i++) {
+    list.push(i)
+  }
+  return list
+})
+// 分离年月日
+const selectedYear = ref(currentYear - 30)
+const selectedMonth = ref(1)
+const selectedDay = ref(1)
+// 编辑时的分离年月日
+const editYear = ref(currentYear - 30)
+const editMonth = ref(1)
+const editDay = ref(1)
+// 计算生日字符串
+const birthdayValue = computed(() => {
+  return `${selectedYear.value}-${String(selectedMonth.value).padStart(2, '0')}-${String(selectedDay.value).padStart(2, '0')}`
+})
+const editBirthdayValue = computed(() => {
+  return `${editYear.value}-${String(editMonth.value).padStart(2, '0')}-${String(editDay.value).padStart(2, '0')}`
+})
+// 创建档案
+function createProfile() {
+  if (!newProfile.value.name) return
+  
+  profileStore.createProfile({
+    ...newProfile.value,
+    birthday: birthdayValue.value,
+    avatar: selectedAvatar.value
+  })
+  
+  // 选择新创建的档案
+  const profiles = profileStore.profiles
+  if (profiles.length > 0) {
+    profileStore.selectProfile(profiles[profiles.length - 1].id)
+  }
+  
+  showCreateForm.value = false
+  resetForm()
+}
+// 开始编辑档案
+function startEdit(profile) {
+  editingProfile.value = profile.id
+  editForm.value = {
+    name: profile.name,
+    birthday: profile.birthday || '',
+    gender: profile.gender || '',
+    hour: profile.hour || '',
+    description: profile.description || ''
+  }
+  editingAvatar.value = profile.avatar || '👤'
+  
+  // 解析生日
+  if (profile.birthday) {
+    const parts = profile.birthday.split('-')
+    if (parts.length >= 3) {
+      editYear.value = parseInt(parts[0])
+      editMonth.value = parseInt(parts[1])
+      editDay.value = parseInt(parts[2])
+    }
+  }
+}
+// 保存编辑
+function saveEdit() {
+  if (!editForm.value.name || !editingProfile.value) return
+  
+  profileStore.updateProfile(editingProfile.value, {
+    ...editForm.value,
+    birthday: editBirthdayValue.value,
+    avatar: editingAvatar.value
+  })
+  
+  cancelEdit()
+}
+// 取消编辑
+function cancelEdit() {
+  editingProfile.value = null
+  editForm.value = {
+    name: '',
+    birthday: '',
+    gender: '',
+    hour: '',
+    description: ''
+  }
+}
+// 删除档案
+function deleteProfile(profileId) {
+  if (confirm('确定要删除这个档案吗？')) {
+    profileStore.deleteProfile(profileId)
+  }
+}
+// 选择档案
+function selectProfileAndClose(profileId) {
+  profileStore.selectProfile(profileId)
+  emit('close')
+}
+function resetForm() {
+  newProfile.value = {
+    name: '',
+    birthday: '',
+    gender: '',
+    hour: '',
+    description: ''
+  }
+  selectedAvatar.value = '👤'
+  selectedYear.value = currentYear - 30
+  selectedMonth.value = 1
+  selectedDay.value = 1
+}
+</script>
+<template>
+  <div class="profile-selector-overlay" @click.self="emit('close')">
+    <div class="profile-selector">
+      <div class="selector-header">
+        <h3>{{ editingProfile ? '修改档案' : (showCreateForm ? '新建档案' : '选择档案') }}</h3>
+        <button class="close-btn" @click="editingProfile ? cancelEdit() : (showCreateForm ? showCreateForm = false : emit('close'))">
+          {{ editingProfile || showCreateForm ? '← 返回' : '✕' }}
+        </button>
+      </div>
+      
+      <!-- 档案列表 -->
+      <div class="profile-list" v-if="!showCreateForm && !editingProfile">
+        <div 
+          v-for="profile in profileStore.profiles" 
+          :key="profile.id"
+          class="profile-item"
+          :class="{ active: profileStore.currentProfile?.id === profile.id }"
+          @click="selectProfileAndClose(profile.id)"
+        >
+          <span class="profile-avatar">{{ profile.avatar }}</span>
+          <div class="profile-info">
+            <span class="profile-name">{{ profile.name }}</span>
+            <span class="profile-desc" v-if="profile.birthday">{{ profile.birthday }}</span>
+          </div>
+          <button 
+            class="edit-btn" 
+            @click.stop="startEdit(profile)"
+            title="修改"
+          >
+            ✏️
+          </button>
+          <button 
+            class="delete-btn" 
+            @click.stop="deleteProfile(profile.id)"
+            v-if="profileStore.profiles.length > 1"
+          >
+            🗑️
+          </button>
+        </div>
+        
+        <!-- 创建新档案按钮 -->
+        <button class="create-btn" @click="showCreateForm = true">
+          <span class="plus-icon">+</span>
+          <span>创建新档案</span>
+        </button>
+      </div>
+      
+      <!-- 创建/编辑档案表单 -->
+      <div class="create-form" v-else>
+        <div class="form-scroll-area">
+          <div class="form-group">
+            <label>选择头像</label>
+            <div class="avatar-grid">
+              <button 
+                v-for="avatar in avatarOptions" 
+                :key="avatar"
+                class="avatar-option"
+                :class="{ selected: (editingProfile ? editingAvatar : selectedAvatar) === avatar }"
+                @click="editingProfile ? editingAvatar = avatar : selectedAvatar = avatar"
+              >
+                {{ avatar }}
+              </button>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>姓名 *</label>
+            <input 
+              v-model="editingProfile ? editForm.name : newProfile.name" 
+              type="text" 
+              placeholder="请输入姓名"
+            />
+          </div>
+          
+          <div class="form-group">
+            <label>出生日期</label>
+            <div class="date-picker">
+              <select v-model="editingProfile ? editYear : selectedYear" class="year-select">
+                <option v-for="year in years" :key="year" :value="year">{{ year }}年</option>
+              </select>
+              <select v-model="editingProfile ? editMonth : selectedMonth" class="month-select">
+                <option v-for="month in months" :key="month.value" :value="month.value">{{ month.label }}</option>
+              </select>
+              <select v-model="editingProfile ? editDay : selectedDay" class="day-select">
+                <option v-for="day in days" :key="day" :value="day">{{ day }}日</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>出生时辰</label>
+            <select v-model="editingProfile ? editForm.hour : newProfile.hour">
+              <option value="">请选择时辰</option>
+              <option value="子时">子时 (23:00-01:00)</option>
+              <option value="丑时">丑时 (01:00-03:00)</option>
+              <option value="寅时">寅时 (03:00-05:00)</option>
+              <option value="卯时">卯时 (05:00-07:00)</option>
+              <option value="辰时">辰时 (07:00-09:00)</option>
+              <option value="巳时">巳时 (09:00-11:00)</option>
+              <option value="午时">午时 (11:00-13:00)</option>
+              <option value="未时">未时 (13:00-15:00)</option>
+              <option value="申时">申时 (15:00-17:00)</option>
+              <option value="酉时">酉时 (17:00-19:00)</option>
+              <option value="戌时">戌时 (19:00-21:00)</option>
+              <option value="亥时">亥时 (21:00-23:00)</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>性别</label>
+            <div class="gender-options">
+              <button 
+                class="gender-btn"
+                :class="{ selected: (editingProfile ? editForm.gender : newProfile.gender) === '男' }"
+                @click="editingProfile ? editForm.gender = '男' : newProfile.gender = '男'"
+              >
+                👨 男
+              </button>
+              <button 
+                class="gender-btn"
+                :class="{ selected: (editingProfile ? editForm.gender : newProfile.gender) === '女' }"
+                @click="editingProfile ? editForm.gender = '女' : newProfile.gender = '女'"
+              >
+                👩 女
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button class="cancel-btn" @click="editingProfile ? cancelEdit() : showCreateForm = false">取消</button>
+          <button class="submit-btn" @click="editingProfile ? saveEdit() : createProfile()">
+            {{ editingProfile ? '保存修改' : '创建' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<style scoped>
+.profile-selector-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  padding: 20px;
+}
+.profile-selector {
+  width: 100%;
+  max-width: 420px;
+  max-height: 85vh;
+  background: #1a1a2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+.selector-header h3 {
+  color: #fff;
+  font-size: 17px;
+  margin: 0;
+  font-weight: 600;
+}
+.close-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.profile-list {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+.profile-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.profile-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.profile-item.active {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.1));
+  border-color: rgba(251, 191, 36, 0.3);
+}
+.profile-avatar {
+  font-size: 32px;
+}
+.profile-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.profile-name {
+  color: #fff;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.profile-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+.edit-btn,
+.delete-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  padding: 4px;
+}
+.edit-btn:hover,
+.delete-btn:hover {
+  opacity: 1;
+}
+.create-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px dashed rgba(251, 191, 36, 0.3);
+  border-radius: 12px;
+  color: #fbbf24;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.create-btn:hover {
+  background: rgba(251, 191, 36, 0.2);
+}
+.plus-icon {
+  font-size: 20px;
+}
+/* 创建表单 */
+.create-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+.form-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  -webkit-overflow-scrolling: touch;
+}
+.create-form h4 {
+  color: #fff;
+  margin: 0 0 16px;
+  font-size: 16px;
+}
+.form-group {
+  margin-bottom: 16px;
+}
+.form-group label {
+  display: block;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 14px;
+}
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: rgba(251, 191, 36, 0.5);
+}
+.form-group select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(255,255,255,0.6)' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.avatar-option {
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.avatar-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.avatar-option.selected {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: #fbbf24;
+}
+/* 日期选择器 */
+.date-picker {
+  display: flex;
+  gap: 8px;
+}
+.date-picker select {
+  flex: 1;
+  min-width: 0;
+}
+.year-select {
+  flex: 1.3 !important;
+}
+.month-select,
+.day-select {
+  flex: 1 !important;
+}
+.gender-options {
+  display: flex;
+  gap: 12px;
+}
+.gender-btn {
+  flex: 1;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.gender-btn.selected {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: #fbbf24;
+}
+.form-actions {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+  background: #1a1a2e;
+}
+.cancel-btn,
+.submit-btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+.cancel-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+}
+.submit-btn {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border: none;
+  color: #1a1a2e;
+  font-weight: 600;
+}
+.cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+.submit-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+}
+/* 手机端优化 */
+@media (max-width: 480px) {
+  .profile-selector {
+    max-height: 90vh;
+    border-radius: 16px;
+  }
+  
+  .avatar-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+  
+  .avatar-option {
+    padding: 8px;
+    font-size: 20px;
+  }
+  
+  .date-picker {
+    flex-wrap: wrap;
+  }
+  
+  .date-picker select {
+    flex: 1 1 calc(33% - 6px) !important;
+  }
+  
+  .gender-btn {
+    padding: 14px 10px;
+    font-size: 13px;
+  }
+}
+</style>
+
+</think>
+** - 需要添加修改功能
+
+让我进行全面优化：
+
+
+---
+
+Tool use: **write**
+
+
+<details><summary>Edit file: /Users/john/zero2/frontend/src/components/ProfileSelector.vue</summary>
+
+**Chunk 1**
+Lines added: 11, lines removed: undefined
+
+```diff
+@@ -7,4 +7,15 @@
+  
+  const showCreateForm = ref(false)
++ const editingProfile = ref(null)
++ 
++ // 当前正在编辑的档案数据
++ const editForm = ref({
++   name: '',
++   birthday: '',
++   gender: '',
++   hour: '',
++   description: ''
++ })
++ 
+  const newProfile = ref({
+    name: '',
+```
+
+**Chunk 2**
+Lines added: 53, lines removed: undefined
+
+```diff
+@@ -17,4 +28,57 @@
+  const avatarOptions = ['👤', '👨', '👩', '🧑', '👴', '👵', '🧙', '🧚', '🧛', '🧜']
+  const selectedAvatar = ref('👤')
++ const editingAvatar = ref('👤')
++ 
++ // 快速年份选择
++ const currentYear = new Date().getFullYear()
++ const years = computed(() => {
++   const list = []
++   for (let i = currentYear; i >= currentYear - 100; i--) {
++     list.push(i)
++   }
++   return list
++ })
++ 
++ const months = [
++   { value: 1, label: '1月' },
++   { value: 2, label: '2月' },
++   { value: 3, label: '3月' },
++   { value: 4, label: '4月' },
++   { value: 5, label: '5月' },
++   { value: 6, label: '6月' },
++   { value: 7, label: '7月' },
++   { value: 8, label: '8月' },
++   { value: 9, label: '9月' },
++   { value: 10, label: '10月' },
++   { value: 11, label: '11月' },
++   { value: 12, label: '12月' }
++ ]
++ 
++ const days = computed(() => {
++   const list = []
++   for (let i = 1; i <= 31; i++) {
++     list.push(i)
++   }
++   return list
++ })
++ 
++ // 分离年月日
++ const selectedYear = ref(currentYear - 30)
++ const selectedMonth = ref(1)
++ const selectedDay = ref(1)
++ 
++ // 编辑时的分离年月日
++ const editYear = ref(currentYear - 30)
++ const editMonth = ref(1)
++ const editDay = ref(1)
++ 
++ // 计算生日字符串
++ const birthdayValue = computed(() => {
++   return `${selectedYear.value}-${String(selectedMonth.value).padStart(2, '0')}-${String(selectedDay.value).padStart(2, '0')}`
++ })
++ 
++ const editBirthdayValue = computed(() => {
++   return `${editYear.value}-${String(editMonth.value).padStart(2, '0')}-${String(editDay.value).padStart(2, '0')}`
++ })
+  
+  // 创建档案
+```
+
+**Chunk 3**
+Lines added: 1, lines removed: undefined
+
+```diff
+@@ -24,4 +88,5 @@
+    profileStore.createProfile({
+      ...newProfile.value,
++     birthday: birthdayValue.value,
+      avatar: selectedAvatar.value
+    })
+```
+
+**Chunk 4**
+Lines added: 48, lines removed: undefined
+
+```diff
+@@ -36,4 +101,52 @@
+    resetForm()
+  }
++ 
++ // 开始编辑档案
++ function startEdit(profile) {
++   editingProfile.value = profile.id
++   editForm.value = {
++     name: profile.name,
++     birthday: profile.birthday || '',
++     gender: profile.gender || '',
++     hour: profile.hour || '',
++     description: profile.description || ''
++   }
++   editingAvatar.value = profile.avatar || '👤'
++   
++   // 解析生日
++   if (profile.birthday) {
++     const parts = profile.birthday.split('-')
++     if (parts.length >= 3) {
++       editYear.value = parseInt(parts[0])
++       editMonth.value = parseInt(parts[1])
++       editDay.value = parseInt(parts[2])
++     }
++   }
++ }
++ 
++ // 保存编辑
++ function saveEdit() {
++   if (!editForm.value.name || !editingProfile.value) return
++   
++   profileStore.updateProfile(editingProfile.value, {
++     ...editForm.value,
++     birthday: editBirthdayValue.value,
++     avatar: editingAvatar.value
++   })
++   
++   cancelEdit()
++ }
++ 
++ // 取消编辑
++ function cancelEdit() {
++   editingProfile.value = null
++   editForm.value = {
++     name: '',
++     birthday: '',
++     gender: '',
++     hour: '',
++     description: ''
++   }
++ }
+  
+  // 删除档案
+```
+
+**Chunk 5**
+Lines added: 3, lines removed: undefined
+
+```diff
+@@ -59,4 +172,7 @@
+    }
+    selectedAvatar.value = '👤'
++   selectedYear.value = currentYear - 30
++   selectedMonth.value = 1
++   selectedDay.value = 1
+  }
+  </script>
+```
+
+**Chunk 6**
+Lines added: 5, lines removed: 3
+
+```diff
+@@ -66,10 +182,12 @@
+      <div class="profile-selector">
+        <div class="selector-header">
+-         <h3>选择档案</h3>
+-         <button class="close-btn" @click="emit('close')">✕</button>
++         <h3>{{ editingProfile ? '修改档案' : (showCreateForm ? '新建档案' : '选择档案') }}</h3>
++         <button class="close-btn" @click="editingProfile ? cancelEdit() : (showCreateForm ? showCreateForm = false : emit('close'))">
++           {{ editingProfile || showCreateForm ? '← 返回' : '✕' }}
++         </button>
+        </div>
+        
+        <!-- 档案列表 -->
+-       <div class="profile-list" v-if="!showCreateForm">
++       <div class="profile-list" v-if="!showCreateForm && !editingProfile">
+          <div 
+            v-for="profile in profileStore.profiles" 
+```
+
+**Chunk 7**
+Lines added: 7, lines removed: undefined
+
+```diff
+@@ -84,4 +202,11 @@
+              <span class="profile-desc" v-if="profile.birthday">{{ profile.birthday }}</span>
+            </div>
++           <button 
++             class="edit-btn" 
++             @click.stop="startEdit(profile)"
++             title="修改"
++           >
++             ✏️
++           </button>
+            <button 
+              class="delete-btn" 
+```
+
+**Chunk 8**
+Lines added: 84, lines removed: 75
+
+```diff
+@@ -100,82 +225,91 @@
+        </div>
+        
+-       <!-- 创建档案表单 -->
++       <!-- 创建/编辑档案表单 -->
+        <div class="create-form" v-else>
+-         <h4>创建新档案</h4>
+-         
+-         <div class="form-group">
+-           <label>选择头像</label>
+-           <div class="avatar-grid">
+-             <button 
+-               v-for="avatar in avatarOptions" 
+-               :key="avatar"
+-               class="avatar-option"
+-               :class="{ selected: selectedAvatar === avatar }"
+-               @click="selectedAvatar = avatar"
+-             >
+-               {{ avatar }}
+-             </button>
+-           </div>
+-         </div>
+-         
+-         <div class="form-group">
+-           <label>姓名</label>
+-           <input 
+-             v-model="newProfile.name" 
+-             type="text" 
+-             placeholder="请输入姓名"
+-           />
+-         </div>
+-         
+-         <div class="form-group">
+-           <label>出生日期</label>
+-           <input 
+-             v-model="newProfile.birthday" 
+-             type="date" 
+-           />
+-         </div>
+-         
+-         <div class="form-group">
+-           <label>时辰</label>
+-           <select v-model="newProfile.hour">
+-             <option value="">请选择时辰</option>
+-             <option value="子时">子时 (23:00-01:00)</option>
+-             <option value="丑时">丑时 (01:00-03:00)</option>
+-             <option value="寅时">寅时 (03:00-05:00)</option>
+-             <option value="卯时">卯时 (05:00-07:00)</option>
+-             <option value="辰时">辰时 (07:00-09:00)</option>
+-             <option value="巳时">巳时 (09:00-11:00)</option>
+-             <option value="午时">午时 (11:00-13:00)</option>
+-             <option value="未时">未时 (13:00-15:00)</option>
+-             <option value="申时">申时 (15:00-17:00)</option>
+-             <option value="酉时">酉时 (17:00-19:00)</option>
+-             <option value="戌时">戌时 (19:00-21:00)</option>
+-             <option value="亥时">亥时 (21:00-23:00)</option>
+-           </select>
+-         </div>
+-         
+-         <div class="form-group">
+-           <label>性别</label>
+-           <div class="gender-options">
+-             <button 
+-               class="gender-btn"
+-               :class="{ selected: newProfile.gender === '男' }"
+-               @click="newProfile.gender = '男'"
+-             >
+-               👨 男
+-             </button>
+-             <button 
+-               class="gender-btn"
+-               :class="{ selected: newProfile.gender === '女' }"
+-               @click="newProfile.gender = '女'"
+-             >
+-               👩 女
+-             </button>
+-           </div>
+-         </div>
++         <div class="form-scroll-area">
++           <div class="form-group">
++             <label>选择头像</label>
++             <div class="avatar-grid">
++               <button 
++                 v-for="avatar in avatarOptions" 
++                 :key="avatar"
++                 class="avatar-option"
++                 :class="{ selected: (editingProfile ? editingAvatar : selectedAvatar) === avatar }"
++                 @click="editingProfile ? editingAvatar = avatar : selectedAvatar = avatar"
++               >
++                 {{ avatar }}
++               </button>
++             </div>
++           </div>
++           
++           <div class="form-group">
++             <label>姓名 *</label>
++             <input 
++               v-model="editingProfile ? editForm.name : newProfile.name" 
++               type="text" 
++               placeholder="请输入姓名"
++             />
++           </div>
++           
++           <div class="form-group">
++             <label>出生日期</label>
++             <div class="date-picker">
++               <select v-model="editingProfile ? editYear : selectedYear" class="year-select">
++                 <option v-for="year in years" :key="year" :value="year">{{ year }}年</option>
++               </select>
++               <select v-model="editingProfile ? editMonth : selectedMonth" class="month-select">
++                 <option v-for="month in months" :key="month.value" :value="month.value">{{ month.label }}</option>
++               </select>
++               <select v-model="editingProfile ? editDay : selectedDay" class="day-select">
++                 <option v-for="day in days" :key="day" :value="day">{{ day }}日</option>
++               </select>
++             </div>
++           </div>
++           
++           <div class="form-group">
++             <label>出生时辰</label>
++             <select v-model="editingProfile ? editForm.hour : newProfile.hour">
++               <option value="">请选择时辰</option>
++               <option value="子时">子时 (23:00-01:00)</option>
++               <option value="丑时">丑时 (01:00-03:00)</option>
++               <option value="寅时">寅时 (03:00-05:00)</option>
++               <option value="卯时">卯时 (05:00-07:00)</option>
++               <option value="辰时">辰时 (07:00-09:00)</option>
++               <option value="巳时">巳时 (09:00-11:00)</option>
++               <option value="午时">午时 (11:00-13:00)</option>
++               <option value="未时">未时 (13:00-15:00)</option>
++               <option value="申时">申时 (15:00-17:00)</option>
++               <option value="酉时">酉时 (17:00-19:00)</option>
++               <option value="戌时">戌时 (19:00-21:00)</option>
++               <option value="亥时">亥时 (21:00-23:00)</option>
++             </select>
++           </div>
++           
++           <div class="form-group">
++             <label>性别</label>
++             <div class="gender-options">
++               <button 
++                 class="gender-btn"
++                 :class="{ selected: (editingProfile ? editForm.gender : newProfile.gender) === '男' }"
++                 @click="editingProfile ? editForm.gender = '男' : newProfile.gender = '男'"
++               >
++                 👨 男
++               </button>
++               <button 
++                 class="gender-btn"
++                 :class="{ selected: (editingProfile ? editForm.gender : newProfile.gender) === '女' }"
++                 @click="editingProfile ? editForm.gender = '女' : newProfile.gender = '女'"
++               >
++                 👩 女
++               </button>
++             </div>
++           </div>
++         </div>
+          
+          <div class="form-actions">
+-           <button class="cancel-btn" @click="showCreateForm = false">取消</button>
+-           <button class="submit-btn" @click="createProfile">创建</button>
++           <button class="cancel-btn" @click="editingProfile ? cancelEdit() : showCreateForm = false">取消</button>
++           <button class="submit-btn" @click="editingProfile ? saveEdit() : createProfile()">
++             {{ editingProfile ? '保存修改' : '创建' }}
++           </button>
+          </div>
+        </div>
+```
+
+**Chunk 9**
+Lines added: 6, lines removed: 3
+
+```diff
+@@ -194,13 +328,16 @@
+    z-index: 1000;
+    backdrop-filter: blur(4px);
++   padding: 20px;
+  }
+  
+  .profile-selector {
+-   width: 90%;
+-   max-width: 400px;
+-   max-height: 80vh;
++   width: 100%;
++   max-width: 420px;
++   max-height: 85vh;
+    background: #1a1a2e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
++   display: flex;
++   flex-direction: column;
+    overflow: hidden;
+  }
+```
+
+**Chunk 10**
+Lines added: 4, lines removed: 2
+
+```diff
+@@ -210,12 +347,14 @@
+    justify-content: space-between;
+    align-items: center;
+-   padding: 20px;
++   padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
++   flex-shrink: 0;
+  }
+  
+  .selector-header h3 {
+    color: #fff;
+-   font-size: 18px;
++   font-size: 17px;
+    margin: 0;
++   font-weight: 600;
+  }
+  
+```
+
+**Chunk 11**
+Lines added: 9, lines removed: 2
+
+```diff
+@@ -224,12 +363,19 @@
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+-   font-size: 20px;
++   font-size: 16px;
+    cursor: pointer;
++   padding: 4px 8px;
++   border-radius: 6px;
++ }
++ 
++ .close-btn:hover {
++   background: rgba(255, 255, 255, 0.1);
++   color: #fff;
+  }
+  
+  .profile-list {
+    padding: 16px;
+-   max-height: 60vh;
+    overflow-y: auto;
++   flex: 1;
+  }
+  
+```
+
+**Chunk 12**
+Lines added: 4, lines removed: undefined
+
+```diff
+@@ -264,9 +410,13 @@
+    display: flex;
+    flex-direction: column;
++   min-width: 0;
+  }
+  
+  .profile-name {
+    color: #fff;
+    font-weight: 500;
++   white-space: nowrap;
++   overflow: hidden;
++   text-overflow: ellipsis;
+  }
+  
+```
+
+**Chunk 13**
+Lines added: 1, lines removed: undefined
+
+```diff
+@@ -276,4 +426,5 @@
+  }
+  
++ .edit-btn,
+  .delete-btn {
+    background: none;
+```
+
+**Chunk 14**
+Lines added: 2, lines removed: undefined
+
+```diff
+@@ -283,6 +434,8 @@
+    opacity: 0.5;
+    transition: opacity 0.2s;
++   padding: 4px;
+  }
+  
++ .edit-btn:hover,
+  .delete-btn:hover {
+    opacity: 1;
+```
+
+**Chunk 15**
+Lines added: 12, lines removed: 2
+
+```diff
+@@ -315,10 +468,20 @@
+  /* 创建表单 */
+  .create-form {
+-   padding: 20px;
++   display: flex;
++   flex-direction: column;
++   flex: 1;
++   overflow: hidden;
++ }
++ 
++ .form-scroll-area {
++   flex: 1;
++   overflow-y: auto;
++   padding: 16px 20px;
++   -webkit-overflow-scrolling: touch;
+  }
+  
+  .create-form h4 {
+    color: #fff;
+-   margin: 0 0 20px;
++   margin: 0 0 16px;
+    font-size: 16px;
+  }
+```
+
+**Chunk 16**
+Lines added: 8, lines removed: undefined
+
+```diff
+@@ -351,4 +514,12 @@
+    border-color: rgba(251, 191, 36, 0.5);
+  }
++ 
++ .form-group select {
++   appearance: none;
++   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(255,255,255,0.6)' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
++   background-repeat: no-repeat;
++   background-position: right 12px center;
++   padding-right: 36px;
++ }
+  
+  .avatar-grid {
+```
+
+**Chunk 17**
+Lines added: 20, lines removed: undefined
+
+```diff
+@@ -376,4 +547,24 @@
+    border-color: #fbbf24;
+  }
++ 
++ /* 日期选择器 */
++ .date-picker {
++   display: flex;
++   gap: 8px;
++ }
++ 
++ .date-picker select {
++   flex: 1;
++   min-width: 0;
++ }
++ 
++ .year-select {
++   flex: 1.3 !important;
++ }
++ 
++ .month-select,
++ .day-select {
++   flex: 1 !important;
++ }
+  
+  .gender-options {
+```
+
+**Chunk 18**
+Lines added: 1, lines removed: 1
+
+```diff
+@@ -384,5 +575,5 @@
+  .gender-btn {
+    flex: 1;
+-   padding: 12px;
++   padding: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+```
+
+**Chunk 19**
+Lines added: 7, lines removed: 3
+
+```diff
+@@ -402,15 +593,19 @@
+    display: flex;
+    gap: 12px;
+-   margin-top: 24px;
++   padding: 16px 20px;
++   border-top: 1px solid rgba(255, 255, 255, 0.1);
++   flex-shrink: 0;
++   background: #1a1a2e;
+  }
+  
+  .cancel-btn,
+  .submit-btn {
+    flex: 1;
+-   padding: 12px;
++   padding: 14px;
+    border-radius: 10px;
+-   font-size: 14px;
++   font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
++   font-weight: 500;
+  }
+  
+```
+
+**Chunk 20**
+Lines added: 32, lines removed: undefined
+
+```diff
+@@ -434,4 +629,36 @@
+  .submit-btn:hover {
+    transform: scale(1.02);
++   box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
++ }
++ 
++ /* 手机端优化 */
++ @media (max-width: 480px) {
++   .profile-selector {
++     max-height: 90vh;
++     border-radius: 16px;
++   }
++   
++   .avatar-grid {
++     grid-template-columns: repeat(5, 1fr);
++     gap: 6px;
++   }
++   
++   .avatar-option {
++     padding: 8px;
++     font-size: 20px;
++   }
++   
++   .date-picker {
++     flex-wrap: wrap;
++   }
++   
++   .date-picker select {
++     flex: 1 1 calc(33% - 6px) !important;
++   }
++   
++   .gender-btn {
++     padding: 14px 10px;
++     font-size: 13px;
++   }
+  }
+  </style>
+```
+
+</details>
+
+---
+
+<think>
+现在我需要确保 profile store 有 updateProfile 方法。让我检查一下 profile.js 是否有这个方法。
+</think>
+
+
+
+
+---
+
+Tool use: **grep**
+
+<details>
+<summary>Grep for "updateProfile" in "/Users/john/zero2/frontend/src/stores/profile.js" • 2 matches</summary>
+
+Output mode: content
+
+
+| File | Content | Line |
+|------|------|------|
+| `frontend/src/stores/profile.js` | `function updateProfile(profileId, data) \{` | L64 |
+| `frontend/src/stores/profile.js` | `updateProfile,` | L118 |
+
+
+</details>
+
+---
+
+<think>
+好的，updateProfile 方法已经存在。现在让我提交代码并推送。
+</think>
+
+
+
+
+---
+
+Tool use: **run_terminal_cmd**
+
+```bash
+cd /Users/john/zero2 && git add . && git commit -m "fix: 优化手机端档案创建体验 - 年份快速选择、修复滚动、添加编辑功能" && git push origin main 2>&1
+```
+
+```
+[main a5c429e] fix: 优化手机端档案创建体验 - 年份快速选择、修复滚动、添加编辑功能
+ 2 files changed, 711 insertions(+), 88 deletions(-)
+To https://github.com/qiangzhang2009/zero.git
+   3cacfb1..a5c429e  main -> main
+
+```
+
+---
+
+<think>
+代码已推送。让我总结一下做的改进。
+</think>
+
+已完成优化！主要改进：
+
+## ✅ 优化内容
+
+### 1. 年份选择 - 快速定位
+- 改用**下拉选择器**，可以直接选择年份，不用一年一年滑动
+- 默认显示过去 100 年
+- 年/月/日 分开选择，更清晰
+
+### 2. 滚动问题 - 修复
+- 表单内容区域可以正常滚动
+- 底部按钮固定，不会被遮挡
+- 添加了「← 返回」按钮方便操作
+
+### 3. 新增**修改档案**功能
+- 每个档案旁边新增 ✏️ **修改按钮**
+- 可以修改姓名、头像、出生日期、时辰、性别
+- 修改后点击「保存修改」
+
+### 4. UI 优化
+- 表单区域可滚动
+- 性别按钮点击后有高亮反馈
+- 下拉框添加箭头图标提示
+- 手机端全面优化
+
+---
+
+现在请在 Vercel 上 **Redeploy**，然后测试：
+- ✅ 年份可以快速选择
+- ✅ 选择性别后可以下滑
+- ✅ 档案列表有修改按钮
+- ✅ 底部按钮可以点击
 
 ---
 

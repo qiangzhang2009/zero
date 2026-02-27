@@ -8,26 +8,17 @@ const profileStore = useProfileStore()
 const showCreateForm = ref(false)
 const editingProfile = ref(null)
 
-// 当前正在编辑的档案数据
-const editForm = ref({
+// 统一的表单数据
+const formData = ref({
   name: '',
   birthday: '',
   gender: '',
   hour: '',
   description: ''
 })
-
-const newProfile = ref({
-  name: '',
-  birthday: '',
-  gender: '',
-  hour: '',
-  description: ''
-})
+const formAvatar = ref('👤')
 
 const avatarOptions = ['👤', '👨', '👩', '🧑', '👴', '👵', '🧙', '🧚', '🧛', '🧜']
-const selectedAvatar = ref('👤')
-const editingAvatar = ref('👤')
 
 // 快速年份选择
 const currentYear = new Date().getFullYear()
@@ -67,28 +58,19 @@ const selectedYear = ref(currentYear - 30)
 const selectedMonth = ref(1)
 const selectedDay = ref(1)
 
-// 编辑时的分离年月日
-const editYear = ref(currentYear - 30)
-const editMonth = ref(1)
-const editDay = ref(1)
-
 // 计算生日字符串
 const birthdayValue = computed(() => {
   return `${selectedYear.value}-${String(selectedMonth.value).padStart(2, '0')}-${String(selectedDay.value).padStart(2, '0')}`
 })
 
-const editBirthdayValue = computed(() => {
-  return `${editYear.value}-${String(editMonth.value).padStart(2, '0')}-${String(editDay.value).padStart(2, '0')}`
-})
-
 // 创建档案
 function createProfile() {
-  if (!newProfile.value.name) return
+  if (!formData.value.name) return
   
   profileStore.createProfile({
-    ...newProfile.value,
+    ...formData.value,
     birthday: birthdayValue.value,
-    avatar: selectedAvatar.value
+    avatar: formAvatar.value
   })
   
   // 选择新创建的档案
@@ -104,34 +86,38 @@ function createProfile() {
 // 开始编辑档案
 function startEdit(profile) {
   editingProfile.value = profile.id
-  editForm.value = {
+  formData.value = {
     name: profile.name,
     birthday: profile.birthday || '',
     gender: profile.gender || '',
     hour: profile.hour || '',
     description: profile.description || ''
   }
-  editingAvatar.value = profile.avatar || '👤'
+  formAvatar.value = profile.avatar || '👤'
   
   // 解析生日
   if (profile.birthday) {
     const parts = profile.birthday.split('-')
     if (parts.length >= 3) {
-      editYear.value = parseInt(parts[0])
-      editMonth.value = parseInt(parts[1])
-      editDay.value = parseInt(parts[2])
+      selectedYear.value = parseInt(parts[0])
+      selectedMonth.value = parseInt(parts[1])
+      selectedDay.value = parseInt(parts[2])
     }
+  } else {
+    selectedYear.value = currentYear - 30
+    selectedMonth.value = 1
+    selectedDay.value = 1
   }
 }
 
 // 保存编辑
 function saveEdit() {
-  if (!editForm.value.name || !editingProfile.value) return
+  if (!formData.value.name || !editingProfile.value) return
   
   profileStore.updateProfile(editingProfile.value, {
-    ...editForm.value,
-    birthday: editBirthdayValue.value,
-    avatar: editingAvatar.value
+    ...formData.value,
+    birthday: birthdayValue.value,
+    avatar: formAvatar.value
   })
   
   cancelEdit()
@@ -140,13 +126,17 @@ function saveEdit() {
 // 取消编辑
 function cancelEdit() {
   editingProfile.value = null
-  editForm.value = {
+  formData.value = {
     name: '',
     birthday: '',
     gender: '',
     hour: '',
     description: ''
   }
+  formAvatar.value = '👤'
+  selectedYear.value = currentYear - 30
+  selectedMonth.value = 1
+  selectedDay.value = 1
 }
 
 // 删除档案
@@ -163,17 +153,25 @@ function selectProfileAndClose(profileId) {
 }
 
 function resetForm() {
-  newProfile.value = {
+  formData.value = {
     name: '',
     birthday: '',
     gender: '',
     hour: '',
     description: ''
   }
-  selectedAvatar.value = '👤'
+  formAvatar.value = '👤'
   selectedYear.value = currentYear - 30
   selectedMonth.value = 1
   selectedDay.value = 1
+}
+
+function goBack() {
+  if (editingProfile.value) {
+    cancelEdit()
+  } else if (showCreateForm.value) {
+    showCreateForm.value = false
+  }
 }
 </script>
 
@@ -182,7 +180,7 @@ function resetForm() {
     <div class="profile-selector">
       <div class="selector-header">
         <h3>{{ editingProfile ? '修改档案' : (showCreateForm ? '新建档案' : '选择档案') }}</h3>
-        <button class="close-btn" @click="editingProfile ? cancelEdit() : (showCreateForm ? showCreateForm = false : emit('close'))">
+        <button class="close-btn" @click="goBack">
           {{ editingProfile || showCreateForm ? '← 返回' : '✕' }}
         </button>
       </div>
@@ -234,8 +232,8 @@ function resetForm() {
                 v-for="avatar in avatarOptions" 
                 :key="avatar"
                 class="avatar-option"
-                :class="{ selected: (editingProfile ? editingAvatar : selectedAvatar) === avatar }"
-                @click="editingProfile ? editingAvatar = avatar : selectedAvatar = avatar"
+                :class="{ selected: formAvatar === avatar }"
+                @click="formAvatar = avatar"
               >
                 {{ avatar }}
               </button>
@@ -245,7 +243,7 @@ function resetForm() {
           <div class="form-group">
             <label>姓名 *</label>
             <input 
-              v-model="editingProfile ? editForm.name : newProfile.name" 
+              v-model="formData.name" 
               type="text" 
               placeholder="请输入姓名"
             />
@@ -254,13 +252,13 @@ function resetForm() {
           <div class="form-group">
             <label>出生日期</label>
             <div class="date-picker">
-              <select v-model="editingProfile ? editYear : selectedYear" class="year-select">
+              <select v-model="selectedYear" class="year-select">
                 <option v-for="year in years" :key="year" :value="year">{{ year }}年</option>
               </select>
-              <select v-model="editingProfile ? editMonth : selectedMonth" class="month-select">
+              <select v-model="selectedMonth" class="month-select">
                 <option v-for="month in months" :key="month.value" :value="month.value">{{ month.label }}</option>
               </select>
-              <select v-model="editingProfile ? editDay : selectedDay" class="day-select">
+              <select v-model="selectedDay" class="day-select">
                 <option v-for="day in days" :key="day" :value="day">{{ day }}日</option>
               </select>
             </div>
@@ -268,7 +266,7 @@ function resetForm() {
           
           <div class="form-group">
             <label>出生时辰</label>
-            <select v-model="editingProfile ? editForm.hour : newProfile.hour">
+            <select v-model="formData.hour">
               <option value="">请选择时辰</option>
               <option value="子时">子时 (23:00-01:00)</option>
               <option value="丑时">丑时 (01:00-03:00)</option>
@@ -290,15 +288,15 @@ function resetForm() {
             <div class="gender-options">
               <button 
                 class="gender-btn"
-                :class="{ selected: (editingProfile ? editForm.gender : newProfile.gender) === '男' }"
-                @click="editingProfile ? editForm.gender = '男' : newProfile.gender = '男'"
+                :class="{ selected: formData.gender === '男' }"
+                @click="formData.gender = '男'"
               >
                 👨 男
               </button>
               <button 
                 class="gender-btn"
-                :class="{ selected: (editingProfile ? editForm.gender : newProfile.gender) === '女' }"
-                @click="editingProfile ? editForm.gender = '女' : newProfile.gender = '女'"
+                :class="{ selected: formData.gender === '女' }"
+                @click="formData.gender = '女'"
               >
                 👩 女
               </button>
@@ -307,7 +305,7 @@ function resetForm() {
         </div>
         
         <div class="form-actions">
-          <button class="cancel-btn" @click="editingProfile ? cancelEdit() : showCreateForm = false">取消</button>
+          <button class="cancel-btn" @click="goBack">取消</button>
           <button class="submit-btn" @click="editingProfile ? saveEdit() : createProfile()">
             {{ editingProfile ? '保存修改' : '创建' }}
           </button>
