@@ -153,9 +153,18 @@ async function chatWithContextHandler(req, res) {
     });
   } catch (error) {
     console.error('API Error:', error.response?.data || error.message);
+    
+    // 检查是否是图片相关错误
+    let errorMessage = '抱歉，服务暂时不可用，请稍后再试。'
+    if (error.message && error.message.includes('图片识别')) {
+      errorMessage = error.message
+    } else if (error.response?.data?.error?.message) {
+      errorMessage = error.response.data.error.message
+    }
+    
     res.status(500).json({
       success: false,
-      error: '服务暂时不可用，请稍后再试'
+      error: errorMessage
     });
   }
 }

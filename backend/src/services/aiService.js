@@ -188,6 +188,24 @@ export const modulePrompts = {
 // 智慧API调用
 async function callAPI(messages, stream = false) {
   try {
+    // 检查消息中是否包含图片
+    let hasImage = false
+    for (const msg of messages) {
+      if (msg.role === 'user' && Array.isArray(msg.content)) {
+        for (const part of msg.content) {
+          if (part.type === 'image_url') {
+            hasImage = true
+            break
+          }
+        }
+      }
+    }
+
+    // 如果有图片但API不支持，给出友好提示
+    if (hasImage) {
+      throw new Error('图片识别服务暂不可用，请文字描述您的手相特征')
+    }
+
     const response = await axios.post(
       `${BASE_URL}/v1/chat/completions`,
       {

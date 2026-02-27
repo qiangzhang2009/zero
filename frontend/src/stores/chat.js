@@ -151,9 +151,14 @@ export const useChatStore = defineStore('chat', () => {
       history.value[history.value.length - 1] = { role: 'assistant', content: aiMessage }
       
     } catch (error) {
+      let errorMsg = '抱歉，发生了错误，请稍后再试。'
+      if (error.response?.data?.error) {
+        errorMsg = error.response.data.error
+      }
+      
       messages.value.push({
         role: 'assistant',
-        content: '抱歉，发生了错误，请稍后再试。',
+        content: errorMsg,
         timestamp: Date.now()
       })
     } finally {
@@ -246,9 +251,14 @@ export const useChatStore = defineStore('chat', () => {
       history.value[history.value.length - 1] = { role: 'assistant', content: aiMessage }
       
     } catch (error) {
+      let errorMsg = '抱歉，发生了错误，请稍后再试。'
+      if (error.response?.data?.error) {
+        errorMsg = error.response.data.error
+      }
+      
       messages.value.push({
         role: 'assistant',
-        content: '抱歉，发生了错误，请稍后再试。',
+        content: errorMsg,
         timestamp: Date.now()
       })
     } finally {
