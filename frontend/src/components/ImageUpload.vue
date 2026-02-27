@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useChatStore } from '../stores/chat'
 import { soundManager } from '../utils/sound'
 
@@ -23,6 +23,11 @@ const imageUploadModules = ['palm', 'tarot', 'dream', 'fengshui', 'zodiac']
 
 const currentModuleSupportsImage = computed(() => {
   return imageUploadModules.includes(chatStore.currentModule)
+})
+
+// 监听visible prop变化
+watch(() => props.visible, (newVal) => {
+  console.log('ImageUpload visible:', newVal)
 })
 
 // 处理拖拽

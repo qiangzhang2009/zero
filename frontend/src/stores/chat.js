@@ -1,14 +1,48 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import axios from 'axios'
 
 const API_URL = import.meta.env.VITE_API_URL || '/api'
 
+// 从localStorage加载保存的数据
+function loadFromStorage(key, defaultValue) {
+  try {
+    const stored = localStorage.getItem(key)
+    return stored ? JSON.parse(stored) : defaultValue
+  } catch {
+    return defaultValue
+  }
+}
+
+// 保存到localStorage
+function saveToStorage(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value))
+  } catch (e) {
+    console.warn('Failed to save to localStorage:', e)
+  }
+}
+
 export const useChatStore = defineStore('chat', () => {
-  const messages = ref([])
-  const currentModule = ref('bazi')
+  const messages = ref(loadFromStorage('chat_messages', []))
+  const currentModule = ref(loadFromStorage('chat_current_module', 'bazi'))
   const isLoading = ref(false)
-  const history = ref([])
+  const history = ref(loadFromStorage('chat_history', []))
+
+  // 监听消息变化，自动保存到localStorage
+  watch(messages, (newMessages) => {
+    saveToStorage('chat_messages', newMessages)
+  }, { deep: true })
+
+  // 监听当前模块变化
+  watch(currentModule, (newModule) => {
+    saveToStorage('chat_current_module', newModule)
+  })
+
+  // 监听历史记录变化
+  watch(history, (newHistory) => {
+    saveToStorage('chat_history', newHistory)
+  }, { deep: true })
 
   // 功能模块列表
   const modules = ref([
@@ -115,6 +149,9 @@ export const useChatStore = defineStore('chat', () => {
   function clearChat() {
     messages.value = []
     history.value = []
+    // 清除localStorage
+    localStorage.removeItem('chat_messages')
+    localStorage.removeItem('chat_history')
   }
 
   // 发送带图片的消息

@@ -495,7 +495,7 @@ function openImageUpload() {
     
     <!-- 图片上传弹窗 -->
     <ImageUpload 
-      v-if="showImageUpload" 
+      :visible="showImageUpload" 
       @close="showImageUpload = false" 
     />
   </div>
