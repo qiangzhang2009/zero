@@ -82,11 +82,13 @@ function selectModule(moduleId) {
   background: rgba(0, 0, 0, 0.5);
   z-index: 100;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.3s;
 }
 
 .mobile-menu-overlay.open {
   opacity: 1;
+  pointer-events: auto;
 }
 
 @media (max-width: 768px) {

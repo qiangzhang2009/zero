@@ -8,11 +8,11 @@ const chatStore = useChatStore()
 </script>
 
 <template>
-  <div class="app-container h-full flex flex-col">
+  <div class="app-container">
     <AppHeader />
-    <div class="flex-1 flex overflow-hidden">
+    <div class="main-wrapper">
       <Sidebar />
-      <main class="flex-1 flex flex-col overflow-hidden">
+      <main class="content-area">
         <router-view v-slot="{ Component }">
           <transition name="fade" mode="out-in">
             <component :is="Component" />
@@ -28,6 +28,33 @@ const chatStore = useChatStore()
 .app-container {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+  .main-wrapper {
+    flex-direction: column;
+  }
+  
+  .content-area {
+    padding-bottom: 80px;
+  }
 }
 
 /* 页面切换动画 */
