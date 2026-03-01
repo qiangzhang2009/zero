@@ -60,7 +60,7 @@ function getUserDateTime(userTime) {
   const timezoneMinutes = Math.abs(timezoneOffset) % 60;
   const timezoneStr = `${timezoneOffset >= 0 ? '+' : '-'}${timezoneHours.toString().padStart(2, '0')}:${timezoneMinutes.toString().padStart(2, '0')}`;
   
-  const result = `[${VERSION}] 当前日期：${year}年${month}月${day}日，时间：${timeString}（用户本地时间，时区UTC${timezoneStr}）。请注意，现在是${year}年，不是其他年份。在回答与时间相关的问题时（如运势、命运、吉日选择等），请务必以这个日期为基础进行计算和回答。`;
+  const result = `当前日期：${year}年${month}月${day}日，时间：${timeString}（用户本地时间，时区UTC${timezoneStr}）。请注意，现在是${year}年（2026年），不是2024年或其他年份。在回答与时间相关的问题时（如运势、命运、吉日选择等），请务必以这个日期为基础进行计算和回答，绝对不要使用2024年或更早的年份。`;
   
   console.log(`[${VERSION}] Final result:`, result);
   
