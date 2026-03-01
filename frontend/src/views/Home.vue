@@ -1,16 +1,344 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { useChatStore } from '../stores/chat'
+import { useLanguageStore } from '../i18n'
+import { computed } from 'vue'
 
 const router = useRouter()
 const chatStore = useChatStore()
+const languageStore = useLanguageStore()
+
+// 直接使用 languageStore.currentLanguage 来获取当前语言
+const currentLang = computed(() => languageStore.currentLanguage)
+
+// 翻译辅助函数
+const t = (key) => {
+  const translations = {
+    'zh-CN': {
+      appName: '知几',
+      'home.heroTitle': '古老智慧的低语<br/>指引你的未来',
+      'home.heroSubtitle': '"知几者，动之微，吉之先见者也"<br/>寻求清晰，开启命途，发现真我',
+      'home.startBtn': '开始探索',
+      'home.feature1': '随时随地',
+      'home.feature2': '19+测算',
+      'home.feature3': '精准解读',
+      'home.exploreServices': '探索服务',
+      'home.questionTitle': '有问题？随时问我',
+      'home.questionSubtitle': '知几会结合古老智慧与现代AI为你解答',
+      'home.askPlaceholder': '现在是换工作的好时机吗？',
+      'home.askBtn': '询问',
+      'home.footer': '© 2026 知几 · 古老智慧，现代解读',
+      'modules.bazi': '生辰八字',
+      'modules.baziDesc': '揭开人生的密码图谱',
+      'modules.fengshui': '风水布局',
+      'modules.fengshuiDesc': '调和空间，激发潜能',
+      'modules.tarot': '塔罗牌',
+      'modules.tarotDesc': '神秘而智慧的占卜',
+      'modules.palm': '手相揭秘',
+      'modules.palmDesc': '掌纹中的命运轨迹',
+      'modules.dream': '周公解梦',
+      'modules.dreamDesc': '让梦境化作生命启示'
+    },
+    'en': {
+      appName: 'ZhiJi',
+      'home.heroTitle': 'Whispers of ancient wisdom<br/>Guiding your future',
+      'home.heroSubtitle': '"Those who know the signs, notice the subtle movements,<br/>are the first to see fortune"<br/>Seek clarity, discover your path, find your true self',
+      'home.startBtn': 'Start Exploring',
+      'home.feature1': 'Anytime Anywhere',
+      'home.feature2': '19+ Readings',
+      'home.feature3': 'Accurate Insights',
+      'home.exploreServices': 'Explore Services',
+      'home.questionTitle': 'Have questions? Ask me anytime',
+      'home.questionSubtitle': 'ZhiJi combines ancient wisdom with modern AI to answer you',
+      'home.askPlaceholder': 'Is now a good time to change jobs?',
+      'home.askBtn': 'Ask',
+      'home.footer': '© 2026 ZhiJi · Ancient Wisdom, Modern Interpretation',
+      'modules.bazi': 'Birth Chart',
+      'modules.baziDesc': 'Unlock the code of life',
+      'modules.fengshui': 'Feng Shui',
+      'modules.fengshuiDesc': 'Harmonize space, unleash potential',
+      'modules.tarot': 'Tarot',
+      'modules.tarotDesc': 'Mysterious and wise divination',
+      'modules.palm': 'Palmistry',
+      'modules.palmDesc': 'Destiny in palm lines',
+      'modules.dream': 'Dream Interpretation',
+      'modules.dreamDesc': 'Turn dreams into life insights'
+    },
+    'ja': {
+      appName: '知幾',
+      'home.heroTitle': '古からの知恵の囁き<br/>あなたの未来を導く',
+      'home.heroSubtitle': '"幾者は動くこと微なり、吉の先見者也"<br/>明確さを求め、運命を発見し、真の自分を見つける',
+      'home.startBtn': '探索を始める',
+      'home.feature1': 'いつでもどこでも',
+      'home.feature2': '19+占術',
+      'home.feature3': '正確な解釈',
+      'home.exploreServices': 'サービスを探索',
+      'home.questionTitle': '質問がありますか？いつでも聞いてください',
+      'home.questionSubtitle': '知幾は古代の知恵と現代AIを組み合わせてあなたにお答えします',
+      'home.askPlaceholder': '今、仕事を変えるべきですか？',
+      'home.askBtn': '聞く',
+      'home.footer': '© 2026 知幾 · 古代の知恵、現代の解釈',
+      'modules.bazi': '八字',
+      'modules.baziDesc': '人生のマスターコードを明らかにする',
+      'modules.fengshui': '風水',
+      'modules.fengshuiDesc': '空間を調和させ、潜在能力を引き出す',
+      'modules.tarot': 'タロット',
+      'modules.tarotDesc': '神秘で知恵的な占術',
+      'modules.palm': '手相',
+      'modules.palmDesc': '掌紋の運命',
+      'modules.dream': '夢解釈',
+      'modules.dreamDesc': '夢を人生の洞察に変える'
+    },
+    'ko': {
+      appName: '지기',
+      'home.heroTitle': '고대 지혜의 속삭임<br/>당신의 미래를 이끈다',
+      'home.heroSubtitle': '"몇자는 움직임이 미세하고, 길otis先見者也"<br/>명확성을 추구하고, 운명을 발견하고, 진정한 나를 찾으세요',
+      'home.startBtn': '탐험 시작',
+      'home.feature1': '언제 어디서나',
+      'home.feature2': '19+ 占術',
+      'home.feature3': '정확한 해설',
+      'home.exploreServices': '서비스 탐색',
+      'home.questionTitle': '질문이 있으신가요? 언제든 물어보세요',
+      'home.questionSubtitle': '지기는 고대 지혜와 현대 AI를 결합하여 당신에게 답변합니다',
+      'home.askPlaceholder': '지금 직장을 바꾸는 것이 좋은가요?',
+      'home.askBtn': '묻기',
+      'home.footer': '© 2026지기 · 고대 지혜, 현대적 해석',
+      'modules.bazi': '팔자',
+      'modules.baziDesc': '인생의 비밀 코드를 밝히다',
+      'modules.fengshui': '풍수',
+      'modules.fengshuiDesc': '공간을 조화시키고 잠재력을 끌어낸다',
+      'modules.tarot': '타로',
+      'modules.tarotDesc': '신비롭고 현명한 점술',
+      'modules.palm': '수상',
+      'modules.palmDesc': '손금의 운명',
+      'modules.dream': '꿈해석',
+      'modules.dreamDesc': ' dreams을 삶의 통찰력으로'
+    },
+    'es': {
+      appName: 'ZhiJi',
+      'home.heroTitle': 'Susurros de sabiduría antigua<br/>Guiando tu futuro',
+      'home.heroSubtitle': '"Aquellos que conocen las señales, notan los movimientos sutiles,<br/>son los primeros en ver la fortuna"<br/>Busca claridad, descubre tu camino, encuentra tu verdadero yo',
+      'home.startBtn': 'Comenzar Exploración',
+      'home.feature1': 'En cualquier momento y lugar',
+      'home.feature2': '19+ Lecturas',
+      'home.feature3': 'Interpretaciones precisas',
+      'home.exploreServices': 'Explorar Servicios',
+      'home.questionTitle': '¿Tienes preguntas? Pregúntame cuando quieras',
+      'home.questionSubtitle': 'ZhiJi combina sabiduría antigua con IA moderna para responderte',
+      'home.askPlaceholder': '¿Es buen momento para cambiar de trabajo?',
+      'home.askBtn': 'Preguntar',
+      'home.footer': '© 2026 ZhiJi · Sabiduría Antigua, Interpretación Moderna',
+      'modules.bazi': 'Carta Astral',
+      'modules.baziDesc': 'Desbloquea el código de la vida',
+      'modules.fengshui': 'Feng Shui',
+      'modules.fengshuiDesc': 'Armoniza el espacio, libera el potencial',
+      'modules.tarot': 'Tarot',
+      'modules.tarotDesc': 'Adivinación misteriosa y sabia',
+      'modules.palm': 'Quiromancia',
+      'modules.palmDesc': 'Destino en las líneas de la mano',
+      'modules.dream': 'Interpretación de Sueños',
+      'modules.dreamDesc': 'Transforma los sueños en conocimientos vitales'
+    },
+    'it': {
+      appName: 'ZhiJi',
+      'home.heroTitle': 'Sussurri di saggezza antica<br/>Guidano il tuo futuro',
+      'home.heroSubtitle': '"Coloro che conoscono i segni, notano i movimenti sottili,<br/>sono i primi a vedere la fortuna"<br/>Cerca chiarezza, scopri il tuo cammino, trova il tuo vero io',
+      'home.startBtn': 'Inizia Esplorazione',
+      'home.feature1': 'In qualsiasi momento e luogo',
+      'home.feature2': '19+ Letture',
+      'home.feature3': 'Interpretazioni precise',
+      'home.exploreServices': 'Esplora Servizi',
+      'home.questionTitle': 'Hai domande? Chiedimi quando vuoi',
+      'home.questionSubtitle': 'ZhiJi combina saggezza antica con IA moderna per risponderti',
+      'home.askPlaceholder': 'È un buon momento per cambiare lavoro?',
+      'home.askBtn': 'Chiedi',
+      'home.footer': '© 2026 ZhiJi · Saggezza Antica, Interpretazione Moderna',
+      'modules.bazi': 'Carta Natale',
+      'modules.baziDesc': 'Sblocca il codice della vita',
+      'modules.fengshui': 'Feng Shui',
+      'modules.fengshuiDesc': 'Armonizza lo spazio, libera il potenziale',
+      'modules.tarot': 'Tarocchi',
+      'modules.tarotDesc': 'Divinazione misteriosa e saggia',
+      'modules.palm': 'Chiromanzia',
+      'modules.palmDesc': 'Destino nelle linee della mano',
+      'modules.dream': 'Interpretazione dei Sogni',
+      'modules.dreamDesc': 'Trasforma i sogni in conoscenza della vita'
+    },
+    'fr': {
+      appName: 'ZhiJi',
+      'home.heroTitle': 'Murmures de sagesse ancienne<br/>Guidant votre avenir',
+      'home.heroSubtitle': '"Ceux qui connaissent les signes, remarquent les mouvements subtils,<br/>sont les premiers à voir la fortune"<br/>Cherchez la clarté, découvrez votre chemin, trouvez votre vrai moi',
+      'home.startBtn': 'Commencer Exploration',
+      'home.feature1': 'N\'importe quand et n\'importe où',
+      'home.feature2': '19+ Lectures',
+      'home.feature3': 'Interprétations précises',
+      'home.exploreServices': 'Explorer Services',
+      'home.questionTitle': 'Avez-vous des questions? Demandez-moi quand vous voulez',
+      'home.questionSubtitle': 'ZhiJi combine sagesse ancienne et IA moderne pour vous répondre',
+      'home.askPlaceholder': 'Est-ce un bon moment pour changer de travail?',
+      'home.askBtn': 'Demander',
+      'home.footer': '© 2026 ZhiJi · Sagesse Ancienne, Interprétation Moderne',
+      'modules.bazi': 'Thème Astral',
+      'modules.baziDesc': 'Déverrouillez le code de la vie',
+      'modules.fengshui': 'Feng Shui',
+      'modules.fengshuiDesc': 'Harmonisez l\'espace, libérez le potentiel',
+      'modules.tarot': 'Tarot',
+      'modules.tarotDesc': 'Divination mystérieuse et sage',
+      'modules.palm': 'Chiromancie',
+      'modules.palmDesc': 'Destin dans les lignes de la main',
+      'modules.dream': 'Interprétation des Rêves',
+      'modules.dreamDesc': 'Transformez les rêves en connaissances vital'
+    },
+    'de': {
+      appName: 'ZhiJi',
+      'home.heroTitle': 'Flüstern der alten Weisheit<br/>Lenkt Ihre Zukunft',
+      'home.heroSubtitle': '"Diejenigen, die die Zeichen kennen, bemerken die feinen Bewegungen,<br/>sind die ersten, die das Glück sehen"<br/>Suchen Sie Klarheit, entdecken Sie Ihren Weg, finden Sie Ihr wahres Ich',
+      'home.startBtn': 'Erkundung Starten',
+      'home.feature1': 'Jederzeit und überall',
+      'home.feature2': '19+ Lesungen',
+      'home.feature3': 'Genaue Einsichten',
+      'home.exploreServices': 'Dienste Erkunden',
+      'home.questionTitle': 'Haben Sie Fragen? Fragen Sie mich jederzeit',
+      'home.questionSubtitle': 'ZhiJi kombiniert alte Weisheit mit moderner KI, um Ihnen zu antworten',
+      'home.askPlaceholder': 'Ist jetzt ein guter Zeitpunkt, den Job zu wechseln?',
+      'home.askBtn': 'Fragen',
+      'home.footer': '© 2026 ZhiJi · Alte Weisheit, Moderne Interpretation',
+      'modules.bazi': 'Geburtshoroskop',
+      'modules.baziDesc': 'Entsperren Sie den Code des Lebens',
+      'modules.fengshui': 'Feng Shui',
+      'modules.fengshuiDesc': 'Harmonisieren Sie den Raum, entfalten Sie das Potenzial',
+      'modules.tarot': 'Tarot',
+      'modules.tarotDesc': 'Mystische und kluge Wahrsagerei',
+      'modules.palm': 'Handlesen',
+      'modules.palmDesc': 'Schicksal in den Handlinien',
+      'modules.dream': 'Traumdeutung',
+      'modules.dreamDesc': 'Verwandeln Sie Träume in Lebenserkenntnisse'
+    },
+    'pt': {
+      appName: 'ZhiJi',
+      'home.heroTitle': 'Sussurros de sabedoria antiga<br/>Guiando seu futuro',
+      'home.heroSubtitle': '"Aqueles que conhecem os sinais, notam os movimentos sutis,<br/>são os primeiros a ver a fortune"<br/>Busque clareza, descubra seu caminho, encontre seu verdadeiro eu',
+      'home.startBtn': 'Começar Exploração',
+      'home.feature1': 'A qualquer hora e lugar',
+      'home.feature2': '19+ Leituras',
+      'home.feature3': 'Insights Precisos',
+      'home.exploreServices': 'Explorar Serviços',
+      'home.questionTitle': 'Tem perguntas? Me pergunte a qualquer hora',
+      'home.questionSubtitle': 'ZhiJi combina sabedoria antiga com IA moderna para responder você',
+      'home.askPlaceholder': 'É um bom momento para mudar de emprego?',
+      'home.askBtn': 'Perguntar',
+      'home.footer': '© 2026 ZhiJi · Sabedoria Antiga, Interpretação Moderna',
+      'modules.bazi': 'Mapa Astral',
+      'modules.baziDesc': 'Desbloqueie o código da vida',
+      'modules.fengshui': 'Feng Shui',
+      'modules.fengshuiDesc': 'Harmonize o espaço, libere o potencial',
+      'modules.tarot': 'Tarô',
+      'modules.tarotDesc': 'Adivinhação misteriosa e sábia',
+      'modules.palm': 'Quiromancia',
+      'modules.palmDesc': 'Destino nas linhas da mão',
+      'modules.dream': 'Interpretação de Sonhos',
+      'modules.dreamDesc': 'Transforme sonhos em conhecimentos vitais'
+    },
+    'ar': {
+      appName: 'زيجي',
+      'home.heroTitle': 'همسات الحكمة القديمة<br/>ترشدك إلى مستقبلك',
+      'home.heroSubtitle': '"الذين يعرفون العلامات، يلاحظون الحركات الدقيقة،<br/>هم أول من يرى الحظ"<br/>ابحث عن الوضوح، اكتشف طريقك، اعثر على ذاتك الحقيقية',
+      'home.startBtn': 'ابدأ الاستكشاف',
+      'home.feature1': 'في أي وقت وأي مكان',
+      'home.feature2': '19+ قراءات',
+      'home.feature3': 'رؤى دقيقة',
+      'home.exploreServices': 'استكشف الخدمات',
+      'home.questionTitle': 'هل لديك أسئلة؟ اسألني في أي وقت',
+      'home.questionSubtitle': 'زيجي يجمع بين الحكمة القديمة والذكاء الاصطناعي الحديث للإجابة عليك',
+      'home.askPlaceholder': 'هل الوقت مناسب لتغيير الوظيفة؟',
+      'home.askBtn': 'اسأل',
+      'home.footer': '© 2026 زيجي · حكمة قديمة، تفسير حديث',
+      'modules.bazi': 'مخطط الولادة',
+      'modules.baziDesc': 'افتح رمز الحياة',
+      'modules.fengshui': 'فنغ شوي',
+      'modules.fengshuiDesc': 'حلل المساحة، اطلق العنان للإمكانات',
+      'modules.tarot': 'التارو',
+      'modules.tarotDesc': 'تنبؤ غامض وحكيم',
+      'modules.palm': 'قراءة الكف',
+      'modules.palmDesc': 'الم судьбы в линиях',
+      'modules.dream': 'تفسير الأحلام',
+      'modules.dreamDesc': 'حوّل الاحلام إلى رؤى حياتية'
+    },
+    'id': {
+      appName: 'ZhiJi',
+      'home.heroTitle': 'Bisikan kebijaksanaan kuno<br/>Membimbing masa depan Anda',
+      'home.heroSubtitle': '"Mereka yang mengetahui tanda-tanda, memperhatikan gerakan halus,<br/>adalah yang pertama melihat keberuntungan"<br/>Cari kejelasan, temukan jalan Anda, temukan diri sejati Anda',
+      'home.startBtn': 'Mulai Eksplorasi',
+      'home.feature1': 'Kapan pun dan di mana pun',
+      'home.feature2': '19+ Pembacaan',
+      'home.feature3': 'Wawasan Akurat',
+      'home.exploreServices': 'Jelajahi Layanan',
+      'home.questionTitle': 'Punya pertanyaan? Tanyakan kapan saja',
+      'home.questionSubtitle': 'ZhiJi menggabungkan kebijaksanaan kuno dengan AI modern untuk menjawab Anda',
+      'home.askPlaceholder': 'Apakah sekarang saat yang tepat untuk换工作?',
+      'home.askBtn': 'Tanya',
+      'home.footer': '© 2026 ZhiJi · Kebijaksanaan Kuno, Interpretasi Modern',
+      'modules.bazi': 'Bagan Kelahiran',
+      'modules.baziDesc': 'Buka kode kehidupan',
+      'modules.fengshui': 'Feng Shui',
+      'modules.fengshuiDesc': 'Harmonisikan Ruang, Lepaskan Potensi',
+      'modules.tarot': 'Tarot',
+      'modules.tarotDesc': 'Peramalan misterius dan bijaksana',
+      'modules.palm': 'Ilmu Telapak',
+      'modules.palmDesc': 'Nasib di Garis Tangan',
+      'modules.dream': 'Interpretasi Mimpi',
+      'modules.dreamDesc': 'Ubah Mimpi menjadi Wawasan Hidup'
+    },
+    'ms': {
+      appName: 'ZhiJi',
+      'home.heroTitle': 'Bisikan kebijaksanaan kuno<br/>Membimbing masa depan anda',
+      'home.heroSubtitle': '"Mereka yang mengetahui tanda-tanda, perhatikan gerakan halus,<br/>adalah yang pertama melihat nasib baik"<br/>Cari kejelasan, temui jalan anda, temui diri anda yang sebenar',
+      'home.startBtn': 'Mula Eksplorasi',
+      'home.feature1': 'Bilabila dan di manapun',
+      'home.feature2': '19+ Pembacaan',
+      'home.feature3': 'Panduan Tepat',
+      'home.exploreServices': 'Terokai Perkhidmatan',
+      'home.questionTitle': 'Ada soalan? Tanya bila-bila masa',
+      'home.questionSubtitle': 'ZhiJi menggabungkan kebijaksanaan kuno dengan AI moden untuk menjawab anda',
+      'home.askPlaceholder': 'Adakah masa yang sesuai untuk menukar kerja?',
+      'home.askBtn': 'Tanya',
+      'home.footer': '© 2026 ZhiJi · Kebijaksanaan Kuno, Tafsiran Moden',
+      'modules.bazi': 'Carta Kelahiran',
+      'modules.baziDesc': 'Buka kod kehidupan',
+      'modules.fengshui': 'Feng Shui',
+      'modules.fengshuiDesc': 'Harmoni Ruang, Lepaskan Potensi',
+      'modules.tarot': 'Tarot',
+      'modules.tarotDesc': 'Ramalan misteri dan bijaksana',
+      'modules.palm': 'Ilmu Tapak',
+      'modules.palmDesc': 'Nasib dalam Garisan Tangan',
+      'modules.dream': 'Tafsiran Mimpi',
+      'modules.dreamDesc': 'Tukar Mimpi kepada Panduan Hidup'
+    }
+  }
+  const lang = currentLang.value
+  return translations[lang]?.[key] || translations['en'][key] || key
+}
+
+// 使用计算属性
+const heroTitle = computed(() => t('home.heroTitle'))
+const heroSubtitle = computed(() => t('home.heroSubtitle'))
+const startBtn = computed(() => t('home.startBtn'))
+const feature1 = computed(() => t('home.feature1'))
+const feature2 = computed(() => t('home.feature2'))
+const feature3 = computed(() => t('home.feature3'))
+const exploreServices = computed(() => t('home.exploreServices'))
+const questionTitle = computed(() => t('home.questionTitle'))
+const questionSubtitle = computed(() => t('home.questionSubtitle'))
+const askPlaceholder = computed(() => t('home.askPlaceholder'))
+const askBtn = computed(() => t('home.askBtn'))
+const footer = computed(() => t('home.footer'))
 
 const features = [
-  { icon: '📊', title: '生辰八字', desc: '揭开人生的密码图谱', color: 'from-blue-500 to-cyan-400' },
-  { icon: '🏠', title: '风水布局', desc: '调和空间，激发潜能', color: 'from-green-500 to-emerald-400' },
-  { icon: '🃏', title: '塔罗牌', desc: '神秘而智慧的占卜', color: 'from-purple-500 to-violet-400' },
-  { icon: '✋', title: '手相揭秘', desc: '掌纹中的命运轨迹', color: 'from-orange-500 to-amber-400' },
-  { icon: '🌙', title: '周公解梦', desc: '让梦境化作生命启示', color: 'from-indigo-500 to-blue-400' }
+  { icon: '📊', titleKey: 'modules.bazi', descKey: 'modules.baziDesc', color: 'from-blue-500 to-cyan-400' },
+  { icon: '🏠', titleKey: 'modules.fengshui', descKey: 'modules.fengshuiDesc', color: 'from-green-500 to-emerald-400' },
+  { icon: '🃏', titleKey: 'modules.tarot', descKey: 'modules.tarotDesc', color: 'from-purple-500 to-violet-400' },
+  { icon: '✋', titleKey: 'modules.palm', descKey: 'modules.palmDesc', color: 'from-orange-500 to-amber-400' },
+  { icon: '🌙', titleKey: 'modules.dream', descKey: 'modules.dreamDesc', color: 'from-indigo-500 to-blue-400' }
 ]
 
 function startChat(moduleId) {
@@ -37,12 +365,12 @@ function getModuleId(index) {
       
       <div class="hero-content">
         <div class="hero-logo">
-          <img src="/logo.png" alt="知几" class="logo-img" />
+          <img src="/logo.png" :alt="t('appName')" class="logo-img" />
         </div>
-        <h1 class="hero-title">古老智慧的低语<br/>指引你的未来</h1>
-        <p class="hero-subtitle">"知几者，动之微，吉之先见者也"<br/>寻求清晰，开启命途，发现真我</p>
+        <h1 class="hero-title" v-html="heroTitle"></h1>
+        <p class="hero-subtitle" v-html="heroSubtitle"></p>
         <button class="start-btn" @click="startChat('bazi')">
-          <span class="btn-text">开始探索</span>
+          <span class="btn-text">{{ startBtn }}</span>
           <span class="btn-icon">→</span>
         </button>
       </div>
@@ -50,17 +378,17 @@ function getModuleId(index) {
       <div class="hero-features">
         <div class="feature-item">
           <span class="feature-icon">⏰</span>
-          <span>随时随地</span>
+          <span>{{ feature1 }}</span>
         </div>
         <div class="feature-divider"></div>
         <div class="feature-item">
           <span class="feature-icon">📚</span>
-          <span>19+测算</span>
+          <span>{{ feature2 }}</span>
         </div>
         <div class="feature-divider"></div>
         <div class="feature-item">
           <span class="feature-icon">🎯</span>
-          <span>精准解读</span>
+          <span>{{ feature3 }}</span>
         </div>
       </div>
     </section>
@@ -69,7 +397,7 @@ function getModuleId(index) {
     <section class="features-section">
       <h2 class="section-title">
         <span class="title-icon">✦</span>
-        探索服务
+        {{ exploreServices }}
         <span class="title-icon">✦</span>
       </h2>
       <div class="features-grid">
@@ -83,8 +411,8 @@ function getModuleId(index) {
           <div class="card-glow"></div>
           <div class="card-content">
             <span class="card-icon">{{ feature.icon }}</span>
-            <h3 class="card-title">{{ feature.title }}</h3>
-            <p class="card-desc">{{ feature.desc }}</p>
+            <h3 class="card-title">{{ t(feature.titleKey) }}</h3>
+            <p class="card-desc">{{ t(feature.descKey) }}</p>
             <div class="card-arrow">→</div>
           </div>
         </div>
@@ -95,17 +423,17 @@ function getModuleId(index) {
     <section class="quick-question">
       <div class="question-box">
         <div class="question-decor question-decor-left">☯</div>
-        <h2 class="question-title">有问题？随时问我</h2>
-        <p class="question-subtitle">知几会结合古老智慧与现代AI为你解答</p>
+        <h2 class="question-title">{{ questionTitle }}</h2>
+        <p class="question-subtitle">{{ questionSubtitle }}</p>
         <div class="question-input-wrap">
           <input 
             type="text" 
-            placeholder="现在是换工作的好时机吗？"
+            :placeholder="askPlaceholder"
             class="question-input"
             @keyup.enter="startChat('bazi')"
           />
           <button class="ask-btn" @click="startChat('bazi')">
-            <span>询问</span>
+            <span>{{ askBtn }}</span>
             <span class="ask-icon">➤</span>
           </button>
         </div>
@@ -114,7 +442,7 @@ function getModuleId(index) {
     
     <!-- Footer -->
     <footer class="footer">
-      <p>© 2026 知几 · 古老智慧，现代解读</p>
+      <p>{{ footer }}</p>
     </footer>
   </div>
 </template>

@@ -1,7 +1,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useLanguageStore } from '../i18n'
+import LanguageSelector from './LanguageSelector.vue'
+
 const router = useRouter()
+const languageStore = useLanguageStore()
 const isMenuOpen = ref(false)
 </script>
 
@@ -10,9 +14,12 @@ const isMenuOpen = ref(false)
     <div class="header">
       <div class="left" @click="router.push('/')">
         <img src="/logo.png" alt="知几" class="logo" />
-        <span class="logo-text">知几</span>
+        <span class="logo-text">{{ languageStore.t('appName') }}</span>
       </div>
       <div class="right">
+        <!-- 语言选择器 -->
+        <LanguageSelector />
+        
         <div class="func-icon" @click="isMenuOpen = !isMenuOpen">
           <span class="menu-btn">☰</span>
         </div>
@@ -64,7 +71,7 @@ const isMenuOpen = ref(false)
 .right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .func-icon {
@@ -81,5 +88,32 @@ const isMenuOpen = ref(false)
 .menu-btn {
   font-size: 20px;
   color: #fff;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 10px 12px;
+  }
+  
+  .logo {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .logo-text {
+    font-size: 18px;
+  }
+  
+  .right {
+    gap: 8px;
+  }
+  
+  .func-icon {
+    padding: 6px;
+  }
+  
+  .menu-btn {
+    font-size: 18px;
+  }
 }
 </style>

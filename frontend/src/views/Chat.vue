@@ -3,14 +3,17 @@ import { ref, computed, onMounted, nextTick, watch, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useChatStore } from '../stores/chat'
 import { useProfileStore } from '../stores/profile'
+import { useLanguageStore } from '../i18n'
 import { soundManager } from '../utils/sound'
 import { voiceInput } from '../utils/voice'
 import ProfileSelector from '../components/ProfileSelector.vue'
 import ImageUpload from '../components/ImageUpload.vue'
+import { questionTranslations, greetingTranslations, namePrefixTranslations, suggestionsTranslations } from '../i18n/translations'
 
 const route = useRoute()
 const chatStore = useChatStore()
 const profileStore = useProfileStore()
+const languageStore = useLanguageStore()
 
 const inputMessage = ref('')
 const messagesContainer = ref(null)
@@ -39,180 +42,20 @@ function playReceiveSound() {
   soundManager.playReceive()
 }
 
-// 猜你想问 - 预制问题
+// 猜你想问 - 预制问题（多语言版本）
 const guessYouWantQuestions = computed(() => {
   const module = chatStore.currentModule
-  const questions = {
-    bazi: [
-      '我的命有多好？',
-      '我的五行喜用神是什么？',
-      '今年事业发展如何？',
-      '我的婚姻何时到来？',
-      '财运亨通还是堪忧？'
-    ],
-    fengshui: [
-      '我的房子缺角吗？',
-      '财位在哪里？',
-      '卧室应该怎么布置？',
-      '大门朝向好吗？',
-      '办公室风水注意什么？'
-    ],
-    tarot: [
-      '我的爱情运如何？',
-      '事业发展的建议？',
-      '当前处境该如何选择？',
-      '我和他有未来吗？',
-      '下个月运势怎么样？'
-    ],
-    palm: [
-      '我的事业线好吗？',
-      '我的婚姻线如何？',
-      '我的财运怎么样？',
-      '生命线长吗？',
-      '手掌透露什么秘密？'
-    ],
-    dream: [
-      '我梦到蛇意味着什么？',
-      '梦到去世的亲人',
-      '飞翔的梦代表什么？',
-      '梦见考试好不好？',
-      '噩梦是凶兆吗？'
-    ],
-    zodiac: [
-      '我的性格特点？',
-      '我和什么星座最配？',
-      '本月运势如何？',
-      '适合什么职业？',
-      '如何提升财运？'
-    ],
-    mbti: [
-      '我的人格类型？',
-      'INFP的特质？',
-      'ENTJ适合的工作？',
-      '如何与INTJ相处？',
-      'MBTI能改变吗？'
-    ],
-    draw: [
-      '求一支事业签',
-      '求一支财运签',
-      '求一支姻缘签',
-      '求一支健康签',
-      '今日运势如何？'
-    ],
-    huangdi: [
-      '黄帝内经讲什么？',
-      '如何春季养生？',
-      '气血不足怎么办？',
-      '脾胃虚弱如何调理？',
-      '阴阳平衡是什么？'
-    ],
-    lifenumber: [
-      '我的生命灵数是多少？',
-      '我的性格特点？',
-      '我的天赋才华？',
-      '我的爱情运如何？',
-      '我的事业方向？'
-    ],
-    ziwei: [
-      '我的紫微命盘如何？',
-      '我的主星是什么？',
-      '财帛宫代表什么？',
-      '事业宫运势如何？',
-      '婚姻状况如何？'
-    ],
-    zhouyi: [
-      '易经64卦是什么？',
-      '乾卦代表什么？',
-      '坤卦有什么含义？',
-      '如何起卦问事？',
-      '卦象如何解读？'
-    ],
-    naming: [
-      '我的名字好吗？',
-      '如何取个好名字？',
-      '名字会影响命运吗？',
-      '五行缺什么？',
-      '姓名评分多少？'
-    ],
-    marriage: [
-      '我和TA合适吗？',
-      '我们的婚姻运如何？',
-      '最佳结婚年龄？',
-      '配对指数是多少？',
-      '如何提升感情运？'
-    ],
-    company: [
-      '公司取什么名字好？',
-      '名字五行属性？',
-      '如何起商标名？',
-      '品牌命名建议？',
-      '公司名称评分？'
-    ],
-    luckyday: [
-      '今天适合搬家吗？',
-      '哪天开业最好？',
-      '婚期怎么选？',
-      '动土吉日？',
-      '出行吉时？'
-    ],
-    digital: [
-      '我的幸运数字是？',
-      '数字能量分析',
-      '车牌号好不好？',
-      '手机号寓意？',
-      '数字与命运？'
-    ],
-    daodejing: [
-      '道德经讲什么？',
-      '道法自然含义？',
-      '无为而治是什么？',
-      '上善若水解读？',
-      '如何修心养性？'
-    ],
-    question: [
-      '卦象解读',
-      '事业方向',
-      '财运如何？',
-      '婚姻状况',
-      '健康提示'
-    ],
-    default: [
-      '我的运势怎么样？',
-      '需要注意什么？',
-      '适合做什么？',
-      '何时有好运？',
-      '如何提升运气？'
-    ]
-  }
-  return questions[module] || questions.default
+  const lang = languageStore.currentLanguage
+  const translations = questionTranslations[lang] || questionTranslations['en'] || questionTranslations['zh-CN']
+  return translations[module] || translations.default
 })
 
-// 快捷输入建议
+// 快捷输入建议（多语言版本）
 const inputSuggestions = computed(() => {
   const module = chatStore.currentModule
-  const suggestions = {
-    bazi: ['我的八字五行属什么？', '我的喜用神是什么？', '今年运势如何？'],
-    fengshui: ['我的房子缺角吗？', '财位在哪里？', '卧室放什么植物好？'],
-    tarot: ['我的爱情运如何？', '最近工作顺利吗？', '我应该选择A还是B？'],
-    palm: ['我的事业线好吗？', '我的婚姻线如何？', '我的财运怎么样？'],
-    dream: ['我梦到蛇意味着什么？', '梦到去世的亲人', '飞翔的梦代表什么？'],
-    zodiac: ['我是狮子座，我的性格特点？', '我和白羊座配吗？', '本月运势如何？'],
-    mbti: ['我可能是INFP吗？', 'ENTJ适合什么工作？', '如何和INTJ相处？'],
-    draw: ['求一支事业签', '求一支财运签', '求一支姻缘签'],
-    huangdi: ['如何春季养生？', '气血不足怎么办？', '脾胃虚弱如何调理？'],
-    lifenumber: ['我的生命灵数是多少？', '我的天赋才华？', '我的爱情运如何？'],
-    ziwei: ['我的紫微命盘如何？', '我的主星是什么？', '财帛宫代表什么？'],
-    zhouyi: ['易经64卦是什么？', '乾卦代表什么？', '如何起卦问事？'],
-    naming: ['我的名字好吗？', '如何取个好名字？', '五行缺什么？'],
-    marriage: ['我和TA合适吗？', '我们的婚姻运如何？', '最佳结婚年龄？'],
-    company: ['公司取什么名字好？', '名字五行属性？', '如何起商标名？'],
-    luckyday: ['今天适合搬家吗？', '哪天开业最好？', '婚期怎么选？'],
-    digital: ['我的幸运数字是？', '数字能量分析', '车牌号好不好？'],
-    daodejing: ['道德经讲什么？', '道法自然含义？', '如何修心养性？'],
-    question: ['卦象解读', '事业方向', '财运如何？'],
-    default: ['最近运气如何？', '本月运势怎么样？', '需要注意什么？']
-  }
-  return suggestions[module] || suggestions.default
+  const lang = languageStore.currentLanguage
+  const translations = suggestionsTranslations[lang] || suggestionsTranslations['en'] || suggestionsTranslations['zh-CN']
+  return translations[module] || translations.default
 })
 
 const currentModule = computed(() => {
@@ -221,11 +64,15 @@ const currentModule = computed(() => {
 
 const introMessage = computed(() => {
   const profile = profileStore.currentProfile
-  let intro = chatStore.moduleIntros[chatStore.currentModule] || '您好，我是知几的AI助手，请问有什么可以帮您？'
+  const lang = languageStore.currentLanguage
+  
+  // 使用翻译的开场白
+  let intro = chatStore.moduleIntros[chatStore.currentModule] || (greetingTranslations[lang] || greetingTranslations['zh-CN'])
   
   // 如果有档案信息，加入到开场白
   if (profile && profile.name) {
-    intro = `${profile.name}，${intro}`
+    const prefix = namePrefixTranslations[lang] || namePrefixTranslations['zh-CN']
+    intro = `${profile.name}${prefix}${intro}`
   }
   
   return intro

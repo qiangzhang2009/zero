@@ -2,17 +2,20 @@
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useChatStore } from '../stores/chat'
+import { useLanguageStore } from '../i18n'
 
 const router = useRouter()
 const route = useRoute()
 const chatStore = useChatStore()
+const languageStore = useLanguageStore()
 const searchQuery = ref('')
 const hoveredModule = ref(null)
 
 const filteredModules = computed(() => {
   if (!searchQuery.value) return chatStore.modules
   return chatStore.modules.filter(m => 
-    m.name.includes(searchQuery.value) || m.description.includes(searchQuery.value)
+    languageStore.t('modules.' + m.id).includes(searchQuery.value) || 
+    languageStore.t('modules.' + m.id + 'Desc').includes(searchQuery.value)
   )
 })
 
@@ -27,7 +30,7 @@ function selectModule(moduleId) {
     <div class="sidebar-header">
       <h2 class="sidebar-title">
         <span class="title-icon">✦</span>
-        功能
+        {{ languageStore.t('features') }}
       </h2>
       <input 
         v-model="searchQuery" 
@@ -48,8 +51,8 @@ function selectModule(moduleId) {
       >
         <span class="module-icon">{{ module.icon }}</span>
         <div class="module-info">
-          <span class="module-name">{{ module.name }}</span>
-          <span class="module-desc">{{ module.description }}</span>
+          <span class="module-name">{{ languageStore.t('modules.' + module.id) }}</span>
+          <span class="module-desc">{{ languageStore.t('modules.' + module.id + 'Desc') }}</span>
         </div>
         <transition name="slide">
           <span v-if="chatStore.currentModule === module.id" class="active-indicator">→</span>
@@ -58,8 +61,8 @@ function selectModule(moduleId) {
     </nav>
     <div class="sidebar-footer">
       <div class="brand-mini">
-        <img src="/logo.png" alt="知几" class="footer-logo" />
-        <span>知几 © 2026</span>
+        <img src="/logo.png" :alt="languageStore.t('appName')" class="footer-logo" />
+        <span>{{ languageStore.t('appName') }} © 2026</span>
       </div>
     </div>
   </aside>

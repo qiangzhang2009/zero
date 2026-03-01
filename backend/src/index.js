@@ -10,6 +10,63 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// 获取当前日期和时间（用于AI上下文）
+const now = new Date();
+const currentYear = now.getFullYear();
+const currentMonth = now.getMonth() + 1;
+const currentDay = now.getDate();
+const currentHour = now.getHours();
+const currentMinute = now.getMinutes();
+const currentDateString = now.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+const currentTimeString = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
+
+// 当前的完整时间信息，用于system prompt
+const currentDateTimeInfo = `当前日期：${currentYear}年${currentMonth}月${currentDay}日，时间：${currentTimeString}。请注意，现在是${currentYear}年，不是其他年份。在回答与时间相关的问题时（如运势、命运、吉日选择等），请务必以这个日期为基础进行计算和回答。`;
+
+// 辅助函数：获取用户时间信息
+function getUserDateTime(userTime) {
+  // 版本标记 - 确认新代码已部署
+  const VERSION = 'v2.2026.03.01';
+  
+  console.log(`[${VERSION}] getUserDateTime called with userTime:`, userTime);
+  
+  let date;
+  if (userTime) {
+    // 使用用户传来的时间
+    try {
+      date = new Date(userTime);
+      console.log(`[${VERSION}] Parsed date:`, date.toISOString());
+      if (isNaN(date.getTime())) {
+        console.log(`[${VERSION}] Invalid date, using server time`);
+        date = new Date();
+      }
+    } catch (e) {
+      console.log(`[${VERSION}] Date parse error:`, e);
+      date = new Date();
+    }
+  } else {
+    console.log(`[${VERSION}] No userTime provided, using server time`);
+    date = new Date();
+  }
+  
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hour = date.getHours();
+  const minute = date.getMinutes();
+  const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+  const timezoneOffset = -date.getTimezoneOffset();
+  const timezoneHours = Math.floor(Math.abs(timezoneOffset) / 60);
+  const timezoneMinutes = Math.abs(timezoneOffset) % 60;
+  const timezoneStr = `${timezoneOffset >= 0 ? '+' : '-'}${timezoneHours.toString().padStart(2, '0')}:${timezoneMinutes.toString().padStart(2, '0')}`;
+  
+  const result = `[${VERSION}] 当前日期：${year}年${month}月${day}日，时间：${timeString}（用户本地时间，时区UTC${timezoneStr}）。请注意，现在是${year}年，不是其他年份。在回答与时间相关的问题时（如运势、命运、吉日选择等），请务必以这个日期为基础进行计算和回答。`;
+  
+  console.log(`[${VERSION}] Final result:`, result);
+  
+  return result;
+}
+
 // 聊天记录存储文件路径
 const CHAT_HISTORY_FILE = path.join(process.cwd(), 'chat_history.json');
 
@@ -45,23 +102,87 @@ let chatHistoryStore = loadChatHistory();
 app.use(cors());
 app.use(express.json({ limit: '50mb' })); // 增加限制以支持图片
 
-// 通用聊天处理器
+// 过滤回复中的敏感词
+function filterSensitiveWords(message) {
+  // 过滤 deepseek 相关的敏感词 - 更全面的匹配
+  const sensitiveWords = [
+    'deepseek', 'DeepSeek', 'DEEPSEEK', 'Deepseek',
+    '深度求索', '深度搜索', 'deep seek', 'deep-seek',
+    'DS模型', 'ds模型', 'DS的', 'ds的'
+  ];
+  
+  let filtered = message;
+  for (const word of sensitiveWords) {
+    // 将敏感词替换为"知几"（产品名称）
+    const regex = new RegExp(word, 'gi');
+    filtered = filtered.replace(regex, '知几');
+  }
+  
+  // 额外处理：移除可能遗漏的变体
+  filtered = filtered.replace(/[Dd][Ee][E][Pp][Ss][E][E][Kk]/g, '知几');
+  filtered = filtered.replace(/[Dd]eep[S]eek/g, '知几');
+  
+  return filtered;
+}
+
+// 通用聊天处理器（简单对话）
 async function chatHandler(req, res) {
   try {
-    const { message, history = [] } = req.body;
+    const { message, history = [], userTime } = req.body;
+    
+    // 获取用户时间或使用服务器时间
+    const userDateTime = getUserDateTime(userTime);
+    
+    // 过滤掉没有content的消息（可能只有图片），确保每条消息都有role和content
+    // 同时也过滤掉content是数组的消息（多模态消息）
+    const validHistory = history.filter(msg => 
+      msg && msg.role && 
+      msg.content && 
+      typeof msg.content === 'string' && 
+      msg.content.trim().length > 0
+    );
+    
+    // 详细日志：打印每条消息的结构
+    console.log('[DEBUG] ===== CHAT HANDLER START =====');
+    console.log('[DEBUG] userTime:', userTime);
+    console.log('[DEBUG] history count:', history.length);
+    if (history.length > 0) {
+      console.log('[DEBUG] First history item keys:', Object.keys(history[0]));
+      console.log('[DEBUG] First history item:', JSON.stringify(history[0]).substring(0, 200));
+    }
+    console.log('[DEBUG] After filter validHistory count:', validHistory.length);
     
     const messages = [
-      { role: 'system', content: '你是知的AI助手，一个古老智慧与现代科技结合的命理咨询师。请用温暖、专业的方式回答用户的问题。' },
-      ...history,
+      { role: 'system', content: `你是知几的AI助手，一个古老智慧与现代科技结合的命理咨询师。请用温暖，专业的方式回答用户的问题。绝对不要在回复中提及任何AI模型、技术细节或DeepSeek相关信息。请使用与用户提问相同的语言进行回复。${userDateTime}` },
+      ...validHistory,
       { role: 'user', content: message }
     ];
     
-    const response = await callAPI(messages);
+    console.log('[DEBUG] Final messages:', messages.length);
+    console.log('[DEBUG] messages[0]:', messages[0]?.role, messages[0]?.content?.substring(0, 50));
+    console.log('[DEBUG] messages[1]:', messages[1]?.role, 'has content:', !!messages[1]?.content);
+    console.log('[DEBUG] ===== CHAT HANDLER END =====');
+    
+    let response;
+    try {
+      response = await callAPI(messages);
+    } catch (apiError) {
+      console.error('[DEBUG] API call failed:', apiError.message);
+      console.error('[DEBUG] API error response:', JSON.stringify(apiError.response?.data || {}).substring(0, 500));
+      return res.status(500).json({ 
+        success: false, 
+        error: 'API call failed: ' + apiError.message
+      });
+    }
+    
+    // 过滤回复中的敏感词
+    const rawMessage = response.data.choices[0].message.content;
+    const filteredMessage = filterSensitiveWords(rawMessage);
     
     res.json({
       success: true,
       data: {
-        message: response.data.choices[0].message.content
+        message: filteredMessage
       }
     });
   } catch (error) {
@@ -76,26 +197,46 @@ async function chatHandler(req, res) {
 async function chatWithContextHandler(req, res) {
   try {
     const { module } = req.params;
-    const { message, history = [], image, profile } = req.body;
+    const { message, history = [], image, profile, userTime } = req.body;
+    
+    // 获取用户时间信息
+    const userDateTime = getUserDateTime(userTime);
     
     const moduleConfig = modulePrompts[module] || {
       name: '知几',
-      systemPrompt: '你是知几的AI助手，一个古老智慧与现代科技结合的命理咨询师。请用温暖、专业的方式回答用户的问题。'
+      systemPrompt: `你是知几的AI助手，一个古老智慧与现代科技结合的命理咨询师。请用温暖、专业的方式回答用户的问题。请使用与用户提问相同的语言进行回复。绝对不要在回复中提及任何AI模型、技术细节或DeepSeek相关信息。`
     };
     
-    // 如果有用户档案信息，将其加入到system prompt中
+    // 获取对应语言的模块提示（需要翻译模块名称等）
+    const langConfig = languagePrompts[language] || languagePrompts['zh-CN'];
+    const langName = langConfig.name;
+    
+    // 如果有用户档案信息，将其加入到system prompt中（使用对应语言）
     let systemPrompt = moduleConfig.systemPrompt;
+    
+    // 添加当前日期时间信息
+    systemPrompt += `\n\n${userDateTime}`;
+    
+    // 添加语言要求
+    systemPrompt += `\n\n请使用 ${langName} 语言回答用户的问题。`;
+    
     if (profile && profile.name) {
       const profileInfo = [];
-      profileInfo.push(`用户姓名: ${profile.name}`);
+      // 根据语言调整提示
+      const nameLabel = language === 'en' ? 'Name' : (language === 'ja' ? '名前' : (language === 'ko' ? '이름' : '姓名'));
+      const birthdayLabel = language === 'en' ? 'Birthday' : (language === 'ja' ? '生年月日' : (language === 'ko' ? '생년월일' : '出生日期'));
+      const genderLabel = language === 'en' ? 'Gender' : (language === 'ja' ? '性別' : (language === 'ko' ? '성별' : '性别'));
+      const hourLabel = language === 'en' ? 'Birth Time' : (language === 'ja' ? '生まれの時間' : (language === 'ko' ? '태어난 시간' : '出生时辰'));
+      
+      profileInfo.push(`${nameLabel}: ${profile.name}`);
       if (profile.birthday) {
-        profileInfo.push(`出生日期: ${profile.birthday}`);
+        profileInfo.push(`${birthdayLabel}: ${profile.birthday}`);
       }
       if (profile.gender) {
-        profileInfo.push(`性别: ${profile.gender}`);
+        profileInfo.push(`${genderLabel}: ${profile.gender}`);
       }
       if (profile.hour) {
-        profileInfo.push(`出生时辰: ${profile.hour}`);
+        profileInfo.push(`${hourLabel}: ${profile.hour}`);
       }
       // 如果有八字信息
       if (profile.bazi) {
@@ -113,11 +254,29 @@ async function chatWithContextHandler(req, res) {
       }
     }
     
+    // 过滤掉没有content的消息（可能只有图片），确保每条消息都有role和content
+    const validHistory = history.filter(msg => 
+      msg && msg.role && 
+      msg.content && 
+      typeof msg.content === 'string' && 
+      msg.content.trim().length > 0
+    );
+    
+    // 详细日志
+    console.log('[DEBUG] ===== CHAT WITH CONTEXT HANDLER =====');
+    console.log('[DEBUG] module:', module);
+    console.log('[DEBUG] history count:', history.length, 'validHistory:', validHistory.length);
+    if (history.length > 0) {
+      console.log('[DEBUG] First history item keys:', Object.keys(history[0]));
+    }
+    
     // 构建消息列表
     const messages = [
       { role: 'system', content: systemPrompt },
-      ...history
+      ...validHistory
     ];
+    
+    console.log('[DEBUG] Final messages:', messages.length);
     
     let response;
     
@@ -144,10 +303,14 @@ async function chatWithContextHandler(req, res) {
       response = await callAPI(messages);
     }
     
+    // 过滤回复中的敏感词
+    const rawMessage = response.data.choices[0].message.content;
+    const filteredMessage = filterSensitiveWords(rawMessage);
+    
     res.json({
       success: true,
       data: {
-        message: response.data.choices[0].message.content,
+        message: filteredMessage,
         module: moduleConfig.name
       }
     });
@@ -178,14 +341,23 @@ app.post('/api/chat/save', (req, res) => {
   try {
     const { module, messages, profile, userId } = req.body;
     
+    console.log('[DEBUG] /api/chat/save called');
+    console.log('[DEBUG] module:', module);
+    console.log('[DEBUG] messages count:', messages?.length);
+    console.log('[DEBUG] first message keys:', messages?.[0] ? Object.keys(messages[0]) : 'none');
+    
     if (!module || !messages) {
+      console.log('[DEBUG] Missing required parameters');
       return res.status(400).json({
         success: false,
         error: '缺少必要参数'
       });
     }
     
-    // 创建聊天记录对象
+    // 创建聊天记录对象 - 过滤掉没有content的消息
+    const validMessages = messages.filter(msg => msg && msg.role && msg.content);
+    console.log('[DEBUG] valid messages count:', validMessages.length);
+    
     const chatRecord = {
       id: `chat_${Date.now()}`,
       userId: userId || 'anonymous', // 关联用户ID
@@ -195,7 +367,7 @@ app.post('/api/chat/save', (req, res) => {
         birthday: profile.birthday,
         gender: profile.gender
       } : null,
-      messages: messages.map(msg => ({
+      messages: validMessages.map(msg => ({
         role: msg.role,
         content: msg.content,
         timestamp: msg.timestamp
@@ -205,6 +377,8 @@ app.post('/api/chat/save', (req, res) => {
     
     // 保存到内存存储
     chatHistoryStore.push(chatRecord);
+    
+    console.log('[DEBUG] Chat saved successfully, total:', chatHistoryStore.length);
     
     // 定期保存到文件 (每10条记录保存一次，避免频繁IO)
     if (chatHistoryStore.length % 10 === 0) {
@@ -296,6 +470,47 @@ app.get('/api/admin/chat/:id', (req, res) => {
     res.json({
       success: true,
       data: record
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// 用户获取自己的聊天记录详情
+app.get('/api/chat/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.query;
+    
+    const record = chatHistoryStore.find(r => r.id === id);
+    
+    if (!record) {
+      return res.status(404).json({
+        success: false,
+        error: '记录不存在'
+      });
+    }
+    
+    // 验证用户权限（管理员可以看到所有，普通用户只能看自己的）
+    if (userId && record.userId && record.userId !== userId && record.userId !== 'anonymous') {
+      return res.status(403).json({
+        success: false,
+        error: '无权限访问'
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        id: record.id,
+        module: record.module,
+        profile: record.profile,
+        messages: record.messages,
+        createdAt: record.createdAt
+      }
     });
   } catch (error) {
     res.status(500).json({

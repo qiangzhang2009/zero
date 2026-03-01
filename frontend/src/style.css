@@ -15,6 +15,53 @@ html, body, #app {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* RTL (从右向左) 支持 - 用于阿拉伯语 */
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] .sidebar {
+  left: auto;
+  right: 0;
+  border-right: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+html[dir="rtl"] .chat-layout {
+  margin-left: 0;
+  margin-right: 280px;
+}
+
+html[dir="rtl"] .message {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .message.user {
+  flex-direction: row;
+}
+
+html[dir="rtl"] .header-left {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .header-right {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .module-info {
+  text-align: right;
+}
+
+html[dir="rtl"] .active-indicator {
+  transform: rotate(180deg);
+}
+
+/* 阿拉伯语字体优化 */
+html[lang="ar"] body {
+  font-family: 'Tahoma', 'Arial', sans-serif;
+  letter-spacing: 0.5px;
+}
+
 body {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   color: #fff;

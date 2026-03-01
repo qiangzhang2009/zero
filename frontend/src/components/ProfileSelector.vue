@@ -1,9 +1,11 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useProfileStore } from '../stores/profile'
+import { useLanguageStore } from '../i18n'
 
 const emit = defineEmits(['close'])
 const profileStore = useProfileStore()
+const languageStore = useLanguageStore()
 
 const showCreateForm = ref(false)
 const editingProfile = ref(null)
@@ -30,21 +32,18 @@ const years = computed(() => {
   return list
 })
 
-const months = [
-  { value: 1, label: '1月' },
-  { value: 2, label: '2月' },
-  { value: 3, label: '3月' },
-  { value: 4, label: '4月' },
-  { value: 5, label: '5月' },
-  { value: 6, label: '6月' },
-  { value: 7, label: '7月' },
-  { value: 8, label: '8月' },
-  { value: 9, label: '9月' },
-  { value: 10, label: '10月' },
-  { value: 11, label: '11月' },
-  { value: 12, label: '12月' }
-]
-
+const months = computed(() => {
+  const lang = languageStore.currentLanguage
+  const monthLabels = {
+    'zh-CN': ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+    'en': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    'ja': ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+    'ko': ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+    'default': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+  }
+  const labels = monthLabels[lang] || monthLabels['default']
+  return labels.map((label, index) => ({ value: index + 1, label }))
+})
 const days = computed(() => {
   const list = []
   for (let i = 1; i <= 31; i++) {
@@ -141,7 +140,7 @@ function cancelEdit() {
 
 // 删除档案
 function deleteProfile(profileId) {
-  if (confirm('确定要删除这个档案吗？')) {
+  if (confirm(languageStore.t('profile.confirmDelete'))) {
     profileStore.deleteProfile(profileId)
   }
 }
@@ -179,9 +178,9 @@ function goBack() {
   <div class="profile-selector-overlay" @click.self="emit('close')">
     <div class="profile-selector">
       <div class="selector-header">
-        <h3>{{ editingProfile ? '修改档案' : (showCreateForm ? '新建档案' : '选择档案') }}</h3>
+        <h3>{{ editingProfile ? languageStore.t('profile.editProfile') : (showCreateForm ? languageStore.t('profile.createProfile') : languageStore.t('profile.selectProfile')) }}</h3>
         <button class="close-btn" @click="goBack">
-          {{ editingProfile || showCreateForm ? '← 返回' : '✕' }}
+          {{ editingProfile || showCreateForm ? '← ' + languageStore.t('back') : '✕' }}
         </button>
       </div>
       
@@ -218,7 +217,7 @@ function goBack() {
         <!-- 创建新档案按钮 -->
         <button class="create-btn" @click="showCreateForm = true">
           <span class="plus-icon">+</span>
-          <span>创建新档案</span>
+          <span>{{ languageStore.t('profile.createProfile') }}</span>
         </button>
       </div>
       
@@ -241,16 +240,16 @@ function goBack() {
           </div>
           
           <div class="form-group">
-            <label>姓名 *</label>
+            <label>{{ languageStore.t('profile.name') }} {{ languageStore.t('profile.required') }}</label>
             <input 
               v-model="formData.name" 
               type="text" 
-              placeholder="请输入姓名"
+              :placeholder="languageStore.t('profile.name')"
             />
           </div>
           
           <div class="form-group">
-            <label>出生日期</label>
+            <label>{{ languageStore.t('profile.birthday') }}</label>
             <div class="date-picker">
               <select v-model="selectedYear" class="year-select">
                 <option v-for="year in years" :key="year" :value="year">{{ year }}年</option>
@@ -265,7 +264,7 @@ function goBack() {
           </div>
           
           <div class="form-group">
-            <label>出生时辰</label>
+            <label>{{ languageStore.t('profile.birthTime') }}</label>
             <select v-model="formData.hour">
               <option value="">请选择时辰</option>
               <option value="子时">子时 (23:00-01:00)</option>
@@ -284,7 +283,7 @@ function goBack() {
           </div>
           
           <div class="form-group">
-            <label>性别</label>
+            <label>{{ languageStore.t('profile.gender') }}</label>
             <div class="gender-options">
               <button 
                 class="gender-btn"
@@ -305,9 +304,9 @@ function goBack() {
         </div>
         
         <div class="form-actions">
-          <button class="cancel-btn" @click="goBack">取消</button>
+          <button class="cancel-btn" @click="goBack">{{ languageStore.t('profile.cancel') }}</button>
           <button class="submit-btn" @click="editingProfile ? saveEdit() : createProfile()">
-            {{ editingProfile ? '保存修改' : '创建' }}
+            {{ editingProfile ? languageStore.t('profile.save') : languageStore.t('profile.create') }}
           </button>
         </div>
       </div>

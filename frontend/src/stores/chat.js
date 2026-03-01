@@ -5,6 +5,25 @@ import { useProfileStore } from './profile'
 
 const API_URL = import.meta.env.VITE_API_URL || '/api'
 
+// 前端敏感词过滤函数（额外保障）
+function filterClientSensitiveWords(message) {
+  if (!message) return message
+  // 过滤 deepseek 相关的敏感词
+  const sensitiveWords = [
+    'deepseek', 'DeepSeek', 'DEEPSEEK', 'Deepseek',
+    '深度求索', '深度搜索', 'deep seek', 'deep-seek',
+    'DS模型', 'ds模型', 'DS的', 'ds的'
+  ]
+  
+  let filtered = message
+  for (const word of sensitiveWords) {
+    const regex = new RegExp(word, 'gi')
+    filtered = filtered.replace(regex, '知几')
+  }
+  
+  return filtered
+}
+
 // 生成或获取用户ID
 function getUserId() {
   let userId = localStorage.getItem('zhiJi_user_id')
@@ -35,26 +54,104 @@ function saveToStorage(key, value) {
   }
 }
 
+// 获取当前模块对应的消息存储key
+function getModuleMessagesKey(moduleId) {
+  return `chat_messages_${moduleId}`
+}
+
 export const useChatStore = defineStore('chat', () => {
-  const messages = ref(loadFromStorage('chat_messages', []))
+  // 加载当前模块的消息
   const currentModule = ref(loadFromStorage('chat_current_module', 'bazi'))
+  const messages = ref(loadFromStorage(getModuleMessagesKey(currentModule.value), []))
   const isLoading = ref(false)
-  const history = ref(loadFromStorage('chat_history', []))
+  const history = ref(loadFromStorage(`chat_history_${currentModule.value}`, []))
+  
+  // 记录上次保存到服务器的聊天记录ID
+  const lastSavedChatId = ref(loadFromStorage('last_saved_chat_id', null))
 
   // 监听消息变化，自动保存到localStorage
   watch(messages, (newMessages) => {
-    saveToStorage('chat_messages', newMessages)
+    saveToStorage(getModuleMessagesKey(currentModule.value), newMessages)
   }, { deep: true })
 
-  // 监听当前模块变化
+  // 监听当前模块变化，加载对应模块的消息
   watch(currentModule, (newModule) => {
     saveToStorage('chat_current_module', newModule)
+    // 切换模块时，加载该模块保存的消息
+    messages.value = loadFromStorage(getModuleMessagesKey(newModule), [])
+    history.value = loadFromStorage(`chat_history_${newModule}`, [])
   })
 
   // 监听历史记录变化
   watch(history, (newHistory) => {
-    saveToStorage('chat_history', newHistory)
+    saveToStorage(`chat_history_${currentModule.value}`, newHistory)
   }, { deep: true })
+
+  // 从服务器加载历史聊天记录
+  async function loadChatFromServer() {
+    const userId = getUserId()
+    
+    try {
+      // 获取聊天记录列表
+      const response = await axios.get(`${API_URL}/chat/history`, {
+        params: { userId, limit: 20 }
+      })
+      
+      if (response.data.success && response.data.data.history) {
+        const historyList = response.data.data.history
+        
+        // 如果有历史记录，尝试加载最新一个与当前模块匹配的记录
+        if (historyList.length > 0) {
+          // 查找当前模块的最新记录
+          const moduleHistory = historyList.filter(h => h.module === currentModule.value)
+          
+          if (moduleHistory.length > 0) {
+            // 获取最新记录的详情
+            const latestChat = moduleHistory[0]
+            
+            try {
+              const detailResponse = await axios.get(`${API_URL}/chat/${latestChat.id}`, {
+                params: { userId }
+              })
+              
+              if (detailResponse.data.success && detailResponse.data.data.messages) {
+                // 只有当本地没有消息时才加载服务器的消息
+                if (messages.value.length === 0) {
+                  messages.value = detailResponse.data.data.messages
+                  saveToStorage(getModuleMessagesKey(currentModule.value), messages.value)
+                  
+                  // 同时更新历史记录
+                  const historyMessages = []
+                  for (const msg of detailResponse.data.data.messages) {
+                    historyMessages.push({ role: msg.role, content: msg.content })
+                  }
+                  history.value = historyMessages
+                  saveToStorage(`chat_history_${currentModule.value}`, history.value)
+                  
+                  lastSavedChatId.value = latestChat.id
+                  saveToStorage('last_saved_chat_id', latestChat.id)
+                  
+                  console.log('成功从服务器加载聊天记录')
+                }
+              }
+            } catch (detailError) {
+              console.warn('获取聊天记录详情失败:', detailError.message)
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.warn('从服务器加载聊天记录失败:', error.message)
+    }
+  }
+
+  // 初始化时尝试从服务器加载聊天记录
+  // 延迟一下确保页面完全加载
+  setTimeout(() => {
+    if (messages.value.length === 0) {
+      loadChatFromServer()
+    }
+  }, 1500)
 
   // 功能模块列表
   const modules = ref([
@@ -125,6 +222,9 @@ export const useChatStore = defineStore('chat', () => {
     
     isLoading.value = true
     
+    // 获取用户本地时间
+    const userLocalTime = new Date().toISOString();
+    
     try {
       const response = await axios.post(`${API_URL}/chat/${currentModule.value}`, {
         message: content,
@@ -135,20 +235,24 @@ export const useChatStore = defineStore('chat', () => {
           gender: profile.gender,
           hour: profile.hour,
           bazi: profile.bazi
-        } : null
+        } : null,
+        userTime: userLocalTime
       })
       
       const aiMessage = response.data.data.message
       
+      // 前端过滤敏感词（额外保障）
+      const filteredMessage = filterClientSensitiveWords(aiMessage)
+      
       // 更新最后一条消息
       messages.value.push({
         role: 'assistant',
-        content: aiMessage,
+        content: filteredMessage,
         timestamp: Date.now()
       })
       
       // 更新历史
-      history.value[history.value.length - 1] = { role: 'assistant', content: aiMessage }
+      history.value[history.value.length - 1] = { role: 'assistant', content: filteredMessage }
       
     } catch (error) {
       let errorMsg = '抱歉，发生了错误，请稍后再试。'
@@ -194,18 +298,18 @@ export const useChatStore = defineStore('chat', () => {
 
   // 切换模块
   function setModule(moduleId) {
+    // 切换模块，保留当前模块的消息（已通过watch自动保存）
     currentModule.value = moduleId
-    messages.value = []
-    history.value = []
+    // messages 和 history 会通过 watch 自动加载对应模块的数据
   }
 
-  // 清空对话
+  // 清空当前模块对话
   function clearChat() {
     messages.value = []
     history.value = []
-    // 清除localStorage
-    localStorage.removeItem('chat_messages')
-    localStorage.removeItem('chat_history')
+    // 清除当前模块的localStorage
+    localStorage.removeItem(getModuleMessagesKey(currentModule.value))
+    localStorage.removeItem(`chat_history_${currentModule.value}`)
   }
 
   // 发送带图片的消息
@@ -224,6 +328,9 @@ export const useChatStore = defineStore('chat', () => {
     
     isLoading.value = true
     
+    // 获取用户本地时间
+    const userLocalTime = new Date().toISOString();
+    
     try {
       const response = await axios.post(`${API_URL}/chat/${currentModule.value}`, {
         message: content,
@@ -235,20 +342,24 @@ export const useChatStore = defineStore('chat', () => {
           gender: profile.gender,
           hour: profile.hour,
           bazi: profile.bazi
-        } : null
+        } : null,
+        userTime: userLocalTime
       })
       
       const aiMessage = response.data.data.message
       
+      // 前端过滤敏感词（额外保障）
+      const filteredMessage = filterClientSensitiveWords(aiMessage)
+      
       // 更新最后一条消息
       messages.value.push({
         role: 'assistant',
-        content: aiMessage,
+        content: filteredMessage,
         timestamp: Date.now()
       })
       
       // 更新历史
-      history.value[history.value.length - 1] = { role: 'assistant', content: aiMessage }
+      history.value[history.value.length - 1] = { role: 'assistant', content: filteredMessage }
       
     } catch (error) {
       let errorMsg = '抱歉，发生了错误，请稍后再试。'
@@ -279,6 +390,7 @@ export const useChatStore = defineStore('chat', () => {
     sendMessage,
     sendMessageWithImage,
     setModule,
-    clearChat
+    clearChat,
+    loadChatFromServer
   }
 })

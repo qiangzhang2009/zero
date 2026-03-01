@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useChatStore } from '../stores/chat'
+import { useLanguageStore } from '../i18n'
 import { soundManager } from '../utils/sound'
 
 const props = defineProps({
@@ -10,6 +11,8 @@ const props = defineProps({
 const emit = defineEmits(['close', 'upload'])
 
 const chatStore = useChatStore()
+const languageStore = useLanguageStore()
+const t = (key) => languageStore.t(key)
 const isDragging = ref(false)
 const selectedFile = ref(null)
 const previewUrl = ref(null)
@@ -55,13 +58,13 @@ function handleFileSelect(file) {
   
   // 验证文件类型
   if (!acceptedTypes.includes(file.type)) {
-    alert('请上传图片文件 (JPG, PNG, GIF, WebP)')
+    alert(t('imageUpload.invalidType'))
     return
   }
   
   // 验证文件大小 (最大5MB)
   if (file.size > 5 * 1024 * 1024) {
-    alert('图片大小不能超过5MB')
+    alert(t('imageUpload.fileTooLarge'))
     return
   }
   
@@ -160,7 +163,7 @@ function removeImage() {
   <div v-if="visible" class="upload-overlay" @click.self="close">
     <div class="upload-modal">
       <div class="modal-header">
-        <h3>📸 上传图片</h3>
+        <h3>{{ t('imageUpload.title') }}</h3>
         <button class="close-btn" @click="close">✕</button>
       </div>
       
@@ -168,9 +171,9 @@ function removeImage() {
         <!-- 当前模块不支持时 -->
         <div v-if="!currentModuleSupportsImage" class="not-supported">
           <span class="not-supported-icon">⚠️</span>
-          <p>当前模块暂不支持图片上传</p>
+          <p>{{ t('imageUpload.notSupported') }}</p>
           <p class="supported-modules">
-            支持模块：手相、塔罗、梦境、风水、星座
+            {{ t('imageUpload.supportedModules') }}
           </p>
         </div>
         
@@ -195,8 +198,8 @@ function removeImage() {
             
             <template v-if="!selectedFile">
               <div class="drop-icon">📁</div>
-              <p class="drop-text">点击或拖拽图片到这里</p>
-              <p class="drop-hint">支持 JPG, PNG, GIF, WebP (最大5MB)</p>
+              <p class="drop-text">{{ t('imageUpload.dropText') }}</p>
+              <p class="drop-hint">{{ t('imageUpload.dropHint') }}</p>
             </template>
             
             <!-- 预览 -->
@@ -209,26 +212,26 @@ function removeImage() {
           <!-- 提示文字 -->
           <div class="upload-tips">
             <p v-if="chatStore.currentModule === 'palm'">
-              💡 建议：上传清晰的手掌照片，掌心朝上，光线均匀
+              {{ t('imageUpload.tipPalm') }}
             </p>
             <p v-else-if="chatStore.currentModule === 'tarot'">
-              💡 建议：确保塔罗牌图像清晰完整
+              {{ t('imageUpload.tipTarot') }}
             </p>
             <p v-else-if="chatStore.currentModule === 'dream'">
-              💡 建议：可以上传与梦境相关的图片或符号
+              {{ t('imageUpload.tipDream') }}
             </p>
             <p v-else>
-              💡 建议：上传清晰的图片以获得更准确的解读
+              {{ t('imageUpload.tipGeneral') }}
             </p>
           </div>
         </template>
       </div>
       
       <div class="modal-footer" v-if="currentModuleSupportsImage && selectedFile">
-        <button class="cancel-btn" @click="close">取消</button>
+        <button class="cancel-btn" @click="close">{{ t('profile.cancel') }}</button>
         <button class="upload-btn" @click="uploadImage" :disabled="uploading">
-          <span v-if="uploading">上传中...</span>
-          <span v-else>开始解读</span>
+          <span v-if="uploading">{{ t('imageUpload.uploading') }}</span>
+          <span v-else>{{ t('imageUpload.analyze') }}</span>
         </button>
       </div>
     </div>

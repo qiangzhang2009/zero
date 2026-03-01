@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API_KEY = process.env.API_KEY || 'sk-4de333eda23f498d9300bb0c4dacfdfc';
-const BASE_URL = process.env.BASE_URL || 'https://api.deepseek.com';
+const BASE_URL = process.env.AI_API_URL || 'https://api.deepseek.com';
 
 // 功能模块的Prompt配置
 export const modulePrompts = {
@@ -209,7 +209,7 @@ async function callAPI(messages, stream = false) {
     const response = await axios.post(
       `${BASE_URL}/v1/chat/completions`,
       {
-        model: 'deepseek-chat',
+        model: 'deepseek-chat', // 智慧模型
         messages,
         stream,
         temperature: 0.7,
