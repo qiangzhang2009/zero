@@ -383,13 +383,20 @@ app.post('/api/chat/save', (req, res) => {
     };
     
     // 保存到内存存储
-    chatHistoryStore.push(chatRecord);
-    
-    console.log('[DEBUG] Chat saved successfully, total:', chatHistoryStore.length);
+    try {
+      chatHistoryStore.push(chatRecord);
+      console.log('[DEBUG] Chat saved successfully, total:', chatHistoryStore.length);
+    } catch (e) {
+      console.error('[DEBUG] Error pushing to chatHistoryStore:', e);
+    }
     
     // 定期保存到文件 (每10条记录保存一次，避免频繁IO)
-    if (chatHistoryStore.length % 10 === 0) {
-      saveChatHistory(chatHistoryStore);
+    try {
+      if (chatHistoryStore.length % 10 === 0) {
+        saveChatHistory(chatHistoryStore);
+      }
+    } catch (e) {
+      console.error('[DEBUG] Error saving to file:', e);
     }
     
     res.json({
