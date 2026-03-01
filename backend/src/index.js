@@ -207,11 +207,7 @@ async function chatWithContextHandler(req, res) {
       systemPrompt: `你是知几的AI助手，一个古老智慧与现代科技结合的命理咨询师。请用温暖、专业的方式回答用户的问题。请使用与用户提问相同的语言进行回复。绝对不要在回复中提及任何AI模型、技术细节或DeepSeek相关信息。`
     };
     
-    // 获取对应语言的模块提示（需要翻译模块名称等）
-    const langConfig = languagePrompts[language] || languagePrompts['zh-CN'];
-    const langName = langConfig.name;
-    
-    // 如果有用户档案信息，将其加入到system prompt中（使用对应语言）
+    // 直接使用系统提示，让AI用与问题相同的语言回复
     let systemPrompt = moduleConfig.systemPrompt;
     
     // 添加当前日期时间信息
