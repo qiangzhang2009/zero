@@ -152,8 +152,11 @@ async function chatHandler(req, res) {
     }
     console.log('[DEBUG] After filter validHistory count:', validHistory.length);
     
+    // 重要年份提醒放在system prompt最前面
+    const yearReminder = '【重要】现在是2026年，不是2024年或任何其他年份。请务必使用2026年进行所有时间相关的计算和回答。';
+    
     const messages = [
-      { role: 'system', content: `你是知几的AI助手，一个古老智慧与现代科技结合的命理咨询师。请用温暖，专业的方式回答用户的问题。绝对不要在回复中提及任何AI模型、技术细节或DeepSeek相关信息。请使用与用户提问相同的语言进行回复。${userDateTime}` },
+      { role: 'system', content: `${yearReminder} 你是知几的AI助手，一个古老智慧与现代科技结合的命理咨询师。请用温暖，专业的方式回答用户的问题。绝对不要在回复中提及任何AI模型、技术细节或DeepSeek相关信息。请使用与用户提问相同的语言进行回复。${userDateTime}` },
       ...validHistory,
       { role: 'user', content: message }
     ];
@@ -207,8 +210,11 @@ async function chatWithContextHandler(req, res) {
       systemPrompt: `你是知几的AI助手，一个古老智慧与现代科技结合的命理咨询师。请用温暖、专业的方式回答用户的问题。请使用与用户提问相同的语言进行回复。绝对不要在回复中提及任何AI模型、技术细节或DeepSeek相关信息。`
     };
     
+    // 重要年份提醒放在system prompt最前面
+    const yearReminder = '【重要】现在是2026年，不是2024年或任何其他年份。请务必使用2026年进行所有时间相关的计算和回答。';
+    
     // 直接使用系统提示，让AI用与问题相同的语言回复
-    let systemPrompt = moduleConfig.systemPrompt;
+    let systemPrompt = yearReminder + '\n\n' + moduleConfig.systemPrompt;
     
     // 添加当前日期时间信息
     systemPrompt += `\n\n${userDateTime}`;
@@ -347,8 +353,10 @@ app.post('/api/chat/save', (req, res) => {
       });
     }
     
-    // 创建聊天记录对象 - 过滤掉没有content的消息
-    const validMessages = messages.filter(msg => msg && msg.role && msg.content);
+    // 创建聊天记录对象 - 过滤掉没有content的消息，确保content是字符串
+    const validMessages = messages.filter(msg => 
+      msg && msg.role && msg.content && typeof msg.content === 'string'
+    );
     console.log('[DEBUG] valid messages count:', validMessages.length);
     
     const chatRecord = {
