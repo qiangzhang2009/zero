@@ -213,16 +213,13 @@ async function chatWithContextHandler(req, res) {
     // 添加当前日期时间信息
     systemPrompt += `\n\n${userDateTime}`;
     
-    // 添加语言要求
-    systemPrompt += `\n\n请使用 ${langName} 语言回答用户的问题。`;
-    
     if (profile && profile.name) {
       const profileInfo = [];
-      // 根据语言调整提示
-      const nameLabel = language === 'en' ? 'Name' : (language === 'ja' ? '名前' : (language === 'ko' ? '이름' : '姓名'));
-      const birthdayLabel = language === 'en' ? 'Birthday' : (language === 'ja' ? '生年月日' : (language === 'ko' ? '생년월일' : '出生日期'));
-      const genderLabel = language === 'en' ? 'Gender' : (language === 'ja' ? '性別' : (language === 'ko' ? '성별' : '性别'));
-      const hourLabel = language === 'en' ? 'Birth Time' : (language === 'ja' ? '生まれの時間' : (language === 'ko' ? '태어난 시간' : '出生时辰'));
+      // 简化标签，使用通用中文
+      const nameLabel = '姓名';
+      const birthdayLabel = '出生日期';
+      const genderLabel = '性别';
+      const hourLabel = '出生时辰';
       
       profileInfo.push(`${nameLabel}: ${profile.name}`);
       if (profile.birthday) {
