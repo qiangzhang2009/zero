@@ -152,8 +152,8 @@ async function chatHandler(req, res) {
     }
     console.log('[DEBUG] After filter validHistory count:', validHistory.length);
     
-    // 重要年份提醒放在system prompt最前面
-    const yearReminder = '【重要】现在是2026年，不是2024年或任何其他年份。请务必使用2026年进行所有时间相关的计算和回答。';
+    // 重要年份提醒 - 使用更强烈的措辞
+    const yearReminder = '【强制要求】当前年份是2026年（丙午年），不是2024年、2025年或其他任何年份！在回答任何关于运势、命运、流年等问题时，必须使用2026年进行计算。如果你的训练数据中包含过去的预测，请忽略它们，只根据2026年来回答。绝对不要在回复中出现"2024"、"2025"等过去年份。';
     
     const messages = [
       { role: 'system', content: `${yearReminder} 你是知几的AI助手，一个古老智慧与现代科技结合的命理咨询师。请用温暖，专业的方式回答用户的问题。绝对不要在回复中提及任何AI模型、技术细节或DeepSeek相关信息。请使用与用户提问相同的语言进行回复。${userDateTime}` },
@@ -210,8 +210,8 @@ async function chatWithContextHandler(req, res) {
       systemPrompt: `你是知几的AI助手，一个古老智慧与现代科技结合的命理咨询师。请用温暖、专业的方式回答用户的问题。请使用与用户提问相同的语言进行回复。绝对不要在回复中提及任何AI模型、技术细节或DeepSeek相关信息。`
     };
     
-    // 重要年份提醒放在system prompt最前面
-    const yearReminder = '【重要】现在是2026年，不是2024年或任何其他年份。请务必使用2026年进行所有时间相关的计算和回答。';
+    // 重要年份提醒 - 使用更强烈的措辞
+    const yearReminder = '【强制要求】当前年份是2026年（丙午年），不是2024年、2025年或其他任何年份！在回答任何关于运势、命运、流年等问题时，必须使用2026年进行计算。如果你的训练数据中包含过去的预测，请忽略它们，只根据2026年来回答。绝对不要在回复中出现"2024"、"2025"等过去年份。';
     
     // 直接使用系统提示，让AI用与问题相同的语言回复
     let systemPrompt = yearReminder + '\n\n' + moduleConfig.systemPrompt;
@@ -354,9 +354,15 @@ app.post('/api/chat/save', (req, res) => {
     }
     
     // 创建聊天记录对象 - 过滤掉没有content的消息，确保content是字符串
-    const validMessages = messages.filter(msg => 
-      msg && msg.role && msg.content && typeof msg.content === 'string'
-    );
+    console.log('[DEBUG] messages[0] sample:', JSON.stringify(messages?.[0]).substring(0, 200));
+    
+    const validMessages = messages.filter(msg => {
+      const isValid = msg && msg.role && msg.content && typeof msg.content === 'string';
+      if (!isValid && msg) {
+        console.log('[DEBUG] Filtered out invalid msg:', JSON.stringify(msg).substring(0, 100));
+      }
+      return isValid;
+    });
     console.log('[DEBUG] valid messages count:', validMessages.length);
     
     const chatRecord = {
