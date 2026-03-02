@@ -20,14 +20,11 @@ const userPage = ref(1)
 const chatPage = ref(1)
 const selectedChat = ref(null)
 
-// 常量 - 直接使用 Railway 后端地址，避免缓存问题
-// 如果环境变量有值，使用环境变量；否则使用默认值
-const ADMIN_API = import.meta.env.VITE_API_URL 
-  ? import.meta.env.VITE_API_URL.replace(/\/api\/*$/, '') + '/api'
-  : 'https://zero-production-4a85.up.railway.app/api'
+// 常量 - 直接硬编码正确的 API 地址
+const RAILWAY_API = 'https://zero-production-4a85.up.railway.app/api'
+const ADMIN_API = RAILWAY_API
 
-// 调试用 - 实际部署时可删除
-console.log('[Admin] VITE_API_URL:', import.meta.env.VITE_API_URL)
+// 调试用
 console.log('[Admin] ADMIN_API:', ADMIN_API)
 
 // 登录
