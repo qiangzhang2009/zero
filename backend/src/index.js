@@ -548,6 +548,257 @@ app.get('/api/modules', (req, res) => {
   res.json({ success: true, data: modules });
 });
 
+// ==================== 运营管理后台 API ====================
+
+// 管理员登录验证
+app.post('/api/admin/login', (req, res) => {
+  const { password } = req.body;
+  if (password === ADMIN_PASSWORD) {
+    res.json({ success: true, token: ADMIN_PASSWORD, message: '登录成功' });
+  } else {
+    res.status(401).json({ success: false, error: '密码错误' });
+  }
+});
+
+// 获取运营统计数据
+app.get('/api/admin/stats', (req, res) => {
+  const { adminKey } = req.query;
+  
+  if (adminKey !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, error: '未授权' });
+  }
+  
+  try {
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const thisWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const thisMonth = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    
+    // 基础统计
+    const totalChats = chatHistoryStore.length;
+    const totalUsers = new Set(chatHistoryStore.map(c => c.userId)).size;
+    
+    // 今日统计
+    const todayChats = chatHistoryStore.filter(c => c.createdAt && c.createdAt.startsWith(today));
+    const todayUsers = new Set(todayChats.map(c => c.userId)).size;
+    
+    // 本周统计
+    const weekChats = chatHistoryStore.filter(c => c.createdAt && c.createdAt >= thisWeek);
+    const weekUsers = new Set(weekChats.map(c => c.userId)).size;
+    
+    // 本月统计
+    const monthChats = chatHistoryStore.filter(c => c.createdAt && c.createdAt >= thisMonth);
+    const monthUsers = new Set(monthChats.map(c => c.userId)).size;
+    
+    // 模块使用统计
+    const moduleStats = {};
+    chatHistoryStore.forEach(chat => {
+      const mod = chat.module || 'unknown';
+      if (!moduleStats[mod]) {
+        moduleStats[mod] = { count: 0, users: new Set() };
+      }
+      moduleStats[mod].count++;
+      if (chat.userId) {
+        moduleStats[mod].users.add(chat.userId);
+      }
+    });
+    
+    // 转换为可序列化格式
+    const moduleUsage = Object.entries(moduleStats).map(([module, data]) => ({
+      module,
+      count: data.count,
+      userCount: data.users.size
+    })).sort((a, b) => b.count - a.count);
+    
+    // 每日趋势（最近30天）
+    const dailyTrend = [];
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const dayChats = chatHistoryStore.filter(c => c.createdAt && c.createdAt.startsWith(date));
+      dailyTrend.push({
+        date,
+        count: dayChats.length,
+        users: new Set(dayChats.map(c => c.userId)).size
+      });
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        overview: {
+          totalChats,
+          totalUsers,
+          todayChats: todayChats.length,
+          todayUsers,
+          weekChats: weekChats.length,
+          weekUsers,
+          monthChats: monthChats.length,
+          monthUsers
+        },
+        moduleUsage,
+        dailyTrend: dailyTrend.map(d => ({ ...d, users: d.users.size }))
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 获取用户列表
+app.get('/api/admin/users', (req, res) => {
+  const { adminKey, page = 1, limit = 20 } = req.query;
+  
+  if (adminKey !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, error: '未授权' });
+  }
+  
+  try {
+    // 提取所有唯一用户及其聊天统计
+    const userMap = {};
+    chatHistoryStore.forEach(chat => {
+      const uid = chat.userId || 'anonymous';
+      if (!userMap[uid]) {
+        userMap[uid] = {
+          userId: uid,
+          chatCount: 0,
+          modules: new Set(),
+          lastChat: null,
+          firstChat: null
+        };
+      }
+      userMap[uid].chatCount++;
+      if (chat.module) {
+        userMap[uid].modules.add(chat.module);
+      }
+      const chatTime = chat.createdAt ? new Date(chat.createdAt) : null;
+      if (chatTime) {
+        if (!userMap[uid].lastChat || chatTime > new Date(userMap[uid].lastChat)) {
+          userMap[uid].lastChat = chat.createdAt;
+        }
+        if (!userMap[uid].firstChat || chatTime < new Date(userMap[uid].firstChat)) {
+          userMap[uid].firstChat = chat.createdAt;
+        }
+      }
+    });
+    
+    const users = Object.values(userMap).map(u => ({
+      ...u,
+      modules: Array.from(u.modules),
+      lastChat: u.lastChat,
+      firstChat: u.firstChat
+    })).sort((a, b) => new Date(b.lastChat) - new Date(a.lastChat));
+    
+    const start = (page - 1) * limit;
+    const paginatedUsers = users.slice(start, start + parseInt(limit));
+    
+    res.json({
+      success: true,
+      data: {
+        users: paginatedUsers,
+        total: users.length,
+        page: parseInt(page),
+        totalPages: Math.ceil(users.length / limit)
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 获取聊天记录详情
+app.get('/api/admin/chats', (req, res) => {
+  const { adminKey, page = 1, limit = 20, module, userId } = req.query;
+  
+  if (adminKey !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, error: '未授权' });
+  }
+  
+  try {
+    let chats = [...chatHistoryStore].sort((a, b) => 
+      new Date(b.createdAt) - new Date(a.createdAt)
+    );
+    
+    // 筛选
+    if (module) {
+      chats = chats.filter(c => c.module === module);
+    }
+    if (userId) {
+      chats = chats.filter(c => c.userId === userId);
+    }
+    
+    const start = (page - 1) * limit;
+    const paginatedChats = chats.slice(start, start + parseInt(limit)).map(c => ({
+      id: c.id,
+      userId: c.userId,
+      module: c.module,
+      profile: c.profile,
+      messageCount: c.messages ? c.messages.length : 0,
+      preview: c.messages && c.messages.length > 0 
+        ? c.messages[0].content.substring(0, 100) 
+        : '',
+      createdAt: c.createdAt
+    }));
+    
+    res.json({
+      success: true,
+      data: {
+        chats: paginatedChats,
+        total: chats.length,
+        page: parseInt(page),
+        totalPages: Math.ceil(chats.length / limit)
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 获取单条聊天记录的完整内容
+app.get('/api/admin/chat/:id', (req, res) => {
+  const { adminKey } = req.query;
+  const { id } = req.params;
+  
+  if (adminKey !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, error: '未授权' });
+  }
+  
+  try {
+    const chat = chatHistoryStore.find(c => c.id === id);
+    if (!chat) {
+      return res.status(404).json({ success: false, error: '记录不存在' });
+    }
+    res.json({ success: true, data: chat });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 导出数据
+app.get('/api/admin/export', (req, res) => {
+  const { adminKey, format = 'json' } = req.query;
+  
+  if (adminKey !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, error: '未授权' });
+  }
+  
+  try {
+    if (format === 'csv') {
+      const csvHeader = 'ID,用户ID,模块,消息数,创建时间\n';
+      const csvRows = chatHistoryStore.map(c => 
+        `${c.id},${c.userId || ''},${c.module || ''},${c.messages?.length || 0},${c.createdAt || ''}`
+      ).join('\n');
+      
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=chat_history.csv');
+      res.send(csvHeader + csvRows);
+    } else {
+      res.json({ success: true, data: chatHistoryStore });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // 启动服务器
 app.listen(PORT, () => {
   console.log(`知几智慧服务运行在 http://localhost:${PORT}`);
