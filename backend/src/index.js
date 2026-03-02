@@ -67,11 +67,73 @@ function getUserDateTime(userTime) {
   return result;
 }
 
+// 辅助函数：获取用户平台信息
+function getPlatformInfo(userAgent) {
+  if (!userAgent) return 'unknown';
+  if (userAgent.includes('Mobile') || userAgent.includes('Android')) return 'mobile';
+  if (userAgent.includes('iPad') || userAgent.includes('Tablet')) return 'tablet';
+  return 'desktop';
+}
+
 // 聊天记录存储文件路径
 const CHAT_HISTORY_FILE = path.join(process.cwd(), 'chat_history.json');
 
 // 简单的管理员密码配置
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'zhiJi_admin_2026';
+
+// 用户档案存储文件路径
+const USER_PROFILES_FILE = path.join(process.cwd(), 'user_profiles.json');
+
+// 会员配置存储文件路径  
+const MEMBERSHIPS_FILE = path.join(process.cwd(), 'memberships.json');
+
+// 读取用户档案
+function loadUserProfiles() {
+  try {
+    if (fs.existsSync(USER_PROFILES_FILE)) {
+      const data = fs.readFileSync(USER_PROFILES_FILE, 'utf-8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error('Error loading user profiles:', error);
+  }
+  return {};
+}
+
+// 保存用户档案
+function saveUserProfiles(profiles) {
+  try {
+    fs.writeFileSync(USER_PROFILES_FILE, JSON.stringify(profiles, null, 2));
+  } catch (error) {
+    console.error('Error saving user profiles:', error);
+  }
+}
+
+// 读取会员数据
+function loadMemberships() {
+  try {
+    if (fs.existsSync(MEMBERSHIPS_FILE)) {
+      const data = fs.readFileSync(MEMBERSHIPS_FILE, 'utf-8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error('Error loading memberships:', error);
+  }
+  return {};
+}
+
+// 保存会员数据
+function saveMemberships(memberships) {
+  try {
+    fs.writeFileSync(MEMBERSHIPS_FILE, JSON.stringify(memberships, null, 2));
+  } catch (error) {
+    console.error('Error saving memberships:', error);
+  }
+}
+
+// 内存中的用户档案和会员数据
+let userProfilesStore = loadUserProfiles();
+let membershipsStore = loadMemberships();
 
 // 读取聊天历史记录
 function loadChatHistory() {
@@ -369,18 +431,64 @@ app.post('/api/chat/save', (req, res) => {
       id: `chat_${Date.now()}`,
       userId: userId || 'anonymous', // 关联用户ID
       module,
+      // 扩展用户档案信息
       profile: profile ? {
-        name: profile.name,
-        birthday: profile.birthday,
-        gender: profile.gender
+        name: profile.name || null,
+        birthday: profile.birthday || null,
+        gender: profile.gender || null,
+        birthHour: profile.hour || null,  // 出生时辰
+        bazi: profile.bazi || null,        // 八字
+        location: profile.location || null // 出生地点
       } : null,
+      // 扩展会话信息
+      session: {
+        language: req.body.language || 'zh-CN',
+        userAgent: req.headers['user-agent'] || 'unknown',
+        platform: getPlatformInfo(req.headers['user-agent']),
+        referrer: req.body.referrer || null,
+        entryPoint: req.body.entryPoint || 'direct'
+      },
+      // 用户行为数据
+      behavior: {
+        messageCount: messages.length,
+        firstMessage: messages[0]?.content?.substring(0, 100) || null,
+        isReturningUser: !!userProfilesStore[userId || 'anonymous']
+      },
       messages: validMessages.map(msg => ({
         role: msg.role,
         content: msg.content,
         timestamp: msg.timestamp
       })),
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      // 商业化相关
+      isPremium: membershipsStore[userId]?.active || false,
+      subscriptionType: membershipsStore[userId]?.plan || 'free'
     };
+    
+    // 更新用户档案
+    if (userId && profile) {
+      if (!userProfilesStore[userId]) {
+        userProfilesStore[userId] = {
+          createdAt: new Date().toISOString(),
+          lastActiveAt: new Date().toISOString(),
+          totalChats: 0,
+          modulesUsed: [],
+          profile: {}
+        };
+      }
+      userProfilesStore[userId].lastActiveAt = new Date().toISOString();
+      userProfilesStore[userId].totalChats = (userProfilesStore[userId].totalChats || 0) + 1;
+      if (profile.name && !userProfilesStore[userId].profile.name) {
+        userProfilesStore[userId].profile.name = profile.name;
+      }
+      if (profile.birthday && !userProfilesStore[userId].profile.birthday) {
+        userProfilesStore[userId].profile.birthday = profile.birthday;
+      }
+      if (!userProfilesStore[userId].modulesUsed.includes(module)) {
+        userProfilesStore[userId].modulesUsed.push(module);
+      }
+      saveUserProfiles(userProfilesStore);
+    }
     
     // 保存到内存存储
     try {
@@ -775,25 +883,315 @@ app.get('/api/admin/chat/:id', (req, res) => {
 
 // 导出数据
 app.get('/api/admin/export', (req, res) => {
-  const { adminKey, format = 'json' } = req.query;
+  const { adminKey, format = 'json', type = 'chats' } = req.query;
   
   if (adminKey !== ADMIN_PASSWORD) {
     return res.status(401).json({ success: false, error: '未授权' });
   }
   
   try {
-    if (format === 'csv') {
-      const csvHeader = 'ID,用户ID,模块,消息数,创建时间\n';
-      const csvRows = chatHistoryStore.map(c => 
-        `${c.id},${c.userId || ''},${c.module || ''},${c.messages?.length || 0},${c.createdAt || ''}`
-      ).join('\n');
+    if (type === 'users') {
+      // 导出用户数据
+      const userList = Object.entries(userProfilesStore).map(([userId, profile]) => ({
+        userId,
+        ...profile,
+        isPremium: membershipsStore[userId]?.active || false,
+        subscriptionPlan: membershipsStore[userId]?.plan || 'free',
+        subscriptionExpiry: membershipsStore[userId]?.expiryDate || null
+      }));
       
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', 'attachment; filename=chat_history.csv');
-      res.send(csvHeader + csvRows);
+      if (format === 'csv') {
+        const csvHeader = '用户ID,创建时间,最后活跃,总聊天数,使用模块,姓名,生日,是否会员,订阅计划\n';
+        const csvRows = userList.map(u => 
+          `${u.userId},${u.createdAt || ''},${u.lastActiveAt || ''},${u.totalChats || 0},${(u.modulesUsed || []).join(';')},${u.profile?.name || ''},${u.profile?.birthday || ''},${u.isPremium},${u.subscriptionPlan}`
+        ).join('\n');
+        
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename=user_profiles.csv');
+        res.send(csvHeader + csvRows);
+      } else {
+        res.json({ success: true, data: userList });
+      }
+    } else if (type === 'memberships') {
+      // 导出会员数据
+      const membershipList = Object.entries(membershipsStore).map(([userId, membership]) => ({
+        userId,
+        ...membership
+      }));
+      
+      if (format === 'csv') {
+        const csvHeader = '用户ID,计划,激活状态,开始日期,到期日期,支付方式,支付金额\n';
+        const csvRows = membershipList.map(m => 
+          `${m.userId},${m.plan || ''},${m.active || false},${m.startDate || ''},${m.expiryDate || ''},${m.paymentMethod || ''},${m.amount || ''}`
+        ).join('\n');
+        
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename=memberships.csv');
+        res.send(csvHeader + csvRows);
+      } else {
+        res.json({ success: true, data: membershipList });
+      }
     } else {
-      res.json({ success: true, data: chatHistoryStore });
+      // 导出聊天记录
+      if (format === 'csv') {
+        const csvHeader = 'ID,用户ID,模块,消息数,创建时间,是否会员\n';
+        const csvRows = chatHistoryStore.map(c => 
+          `${c.id},${c.userId || ''},${c.module || ''},${c.messages?.length || 0},${c.createdAt || ''},${c.isPremium || false}`
+        ).join('\n');
+        
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename=chat_history.csv');
+        res.send(csvHeader + csvRows);
+      } else {
+        res.json({ success: true, data: chatHistoryStore });
+      }
     }
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 获取所有用户档案
+app.get('/api/admin/user-profiles', (req, res) => {
+  const { adminKey, page = 1, limit = 20 } = req.query;
+  
+  if (adminKey !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, error: '未授权' });
+  }
+  
+  try {
+    const users = Object.entries(userProfilesStore).map(([userId, profile]) => ({
+      userId,
+      ...profile,
+      isPremium: membershipsStore[userId]?.active || false,
+      subscriptionPlan: membershipsStore[userId]?.plan || 'free'
+    })).sort((a, b) => new Date(b.lastActiveAt || 0) - new Date(a.lastActiveAt || 0));
+    
+    const start = (page - 1) * limit;
+    const paginatedUsers = users.slice(start, start + parseInt(limit));
+    
+    res.json({
+      success: true,
+      data: {
+        users: paginatedUsers,
+        total: users.length,
+        page: parseInt(page),
+        totalPages: Math.ceil(users.length / limit)
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 获取单个用户详情
+app.get('/api/admin/user-profile/:userId', (req, res) => {
+  const { adminKey } = req.query;
+  const { userId } = req.params;
+  
+  if (adminKey !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, error: '未授权' });
+  }
+  
+  try {
+    const profile = userProfilesStore[userId];
+    if (!profile) {
+      return res.status(404).json({ success: false, error: '用户不存在' });
+    }
+    
+    // 获取该用户的所有聊天记录
+    const userChats = chatHistoryStore.filter(c => c.userId === userId);
+    
+    res.json({
+      success: true,
+      data: {
+        userId,
+        ...profile,
+        membership: membershipsStore[userId] || null,
+        recentChats: userChats.slice(0, 10),
+        totalChats: userChats.length
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 会员管理 API
+app.get('/api/admin/memberships', (req, res) => {
+  const { adminKey, page = 1, limit = 20, status } = req.query;
+  
+  if (adminKey !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, error: '未授权' });
+  }
+  
+  try {
+    let memberships = Object.entries(membershipsStore).map(([userId, membership]) => ({
+      userId,
+      ...membership,
+      userProfile: userProfilesStore[userId] || null
+    }));
+    
+    // 按状态筛选
+    if (status === 'active') {
+      memberships = memberships.filter(m => m.active);
+    } else if (status === 'expired') {
+      memberships = memberships.filter(m => !m.active || (m.expiryDate && new Date(m.expiryDate) < new Date()));
+    }
+    
+    memberships.sort((a, b) => new Date(b.startDate || 0) - new Date(a.startDate || 0));
+    
+    const start = (page - 1) * limit;
+    const paginatedMemberships = memberships.slice(start, start + parseInt(limit));
+    
+    res.json({
+      success: true,
+      data: {
+        memberships: paginatedMemberships,
+        total: memberships.length,
+        page: parseInt(page),
+        totalPages: Math.ceil(memberships.length / limit),
+        stats: {
+          totalMembers: memberships.length,
+          activeMembers: memberships.filter(m => m.active).length,
+          expiredMembers: memberships.filter(m => !m.active || (m.expiryDate && new Date(m.expiryDate) < new Date())).length
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 添加/更新会员
+app.post('/api/admin/membership', (req, res) => {
+  const { adminKey } = req.query;
+  const { userId, plan, durationDays, paymentMethod, amount, notes } = req.body;
+  
+  if (adminKey !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, error: '未授权' });
+  }
+  
+  if (!userId || !plan) {
+    return res.status(400).json({ success: false, error: '缺少必要参数' });
+  }
+  
+  try {
+    const startDate = new Date();
+    const expiryDate = new Date(startDate.getTime() + durationDays * 24 * 60 * 60 * 1000);
+    
+    membershipsStore[userId] = {
+      plan,
+      active: true,
+      startDate: startDate.toISOString(),
+      expiryDate: expiryDate.toISOString(),
+      paymentMethod: paymentMethod || 'manual',
+      amount: amount || 0,
+      notes: notes || '',
+      createdAt: new Date().toISOString()
+    };
+    
+    saveMemberships(membershipsStore);
+    
+    res.json({ success: true, message: '会员添加成功', data: membershipsStore[userId] });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 删除会员
+app.delete('/api/admin/membership/:userId', (req, res) => {
+  const { adminKey } = req.query;
+  const { userId } = req.params;
+  
+  if (adminKey !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, error: '未授权' });
+  }
+  
+  try {
+    if (membershipsStore[userId]) {
+      delete membershipsStore[userId];
+      saveMemberships(membershipsStore);
+      res.json({ success: true, message: '会员已删除' });
+    } else {
+      res.status(404).json({ success: false, error: '会员不存在' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 获取高级统计报表
+app.get('/api/admin/analytics', (req, res) => {
+  const { adminKey, period = '30' } = req.query;
+  
+  if (adminKey !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, error: '未授权' });
+  }
+  
+  try {
+    const days = parseInt(period);
+    const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    
+    // 筛选时间范围内的数据
+    const recentChats = chatHistoryStore.filter(c => c.createdAt && new Date(c.createdAt) >= startDate);
+    const recentUsers = Object.entries(userProfilesStore)
+      .filter(([_, p]) => p.lastActiveAt && new Date(p.lastActiveAt) >= startDate);
+    
+    // 用户留存分析
+    const retention = {};
+    for (let i = 0; i < days; i++) {
+      const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      const dayUsers = new Set(recentChats.filter(c => c.createdAt?.startsWith(date)).map(c => c.userId));
+      retention[date] = dayUsers.size;
+    }
+    
+    // 模块使用排名
+    const moduleStats = {};
+    recentChats.forEach(chat => {
+      const mod = chat.module || 'unknown';
+      if (!moduleStats[mod]) {
+        moduleStats[mod] = { count: 0, users: new Set() };
+      }
+      moduleStats[mod].count++;
+      if (chat.userId) moduleStats[mod].users.add(chat.userId);
+    });
+    
+    // 付费转化分析
+    const totalUsers = new Set(recentChats.map(c => c.userId)).size;
+    const premiumUsers = new Set(recentChats.filter(c => c.isPremium).map(c => c.userId)).size;
+    
+    // 平均会话长度
+    const avgMessageCount = recentChats.reduce((sum, c) => sum + (c.messages?.length || 0), 0) / (recentChats.length || 1);
+    
+    // 用户参与度
+    const engagement = {
+      high: recentUsers.filter(([_, p]) => p.totalChats > 10).length,
+      medium: recentUsers.filter(([_, p]) => p.totalChats > 3 && p.totalChats <= 10).length,
+      low: recentUsers.filter(([_, p]) => p.totalChats <= 3).length
+    };
+    
+    res.json({
+      success: true,
+      data: {
+        period: days,
+        overview: {
+          totalChats: recentChats.length,
+          totalUsers: totalUsers,
+          avgMessagesPerChat: Math.round(avgMessageCount * 10) / 10,
+          premiumConversionRate: totalUsers > 0 ? Math.round(premiumUsers / totalUsers * 1000) / 10 : 0
+        },
+        retention,
+        moduleRanking: Object.entries(moduleStats)
+          .map(([mod, data]) => ({ module: mod, count: data.count, users: data.users.size }))
+          .sort((a, b) => b.count - a.count),
+        engagement,
+        premiumStats: {
+          total: Object.values(membershipsStore).filter(m => m.active).length,
+          revenue: Object.values(membershipsStore).reduce((sum, m) => sum + (m.amount || 0), 0)
+        }
+      }
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
