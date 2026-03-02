@@ -1,0 +1,12 @@
+[    2767ms] [ERROR] TypeError: D.t is not a function
+    at https://zero.zxqconsulting.com/assets/index-C9Mj6UOR.js:34:48036
+    at et (https://zero.zxqconsulting.com/assets/index-C9Mj6UOR.js:13:10020)
+    at Proxy.<anonymous> (https://zero.zxqconsulting.com/assets/index-C9Mj6UOR.js:34:47844)
+    at Hr (https://zero.zxqconsulting.com/assets/index-C9Mj6UOR.js:13:17918)
+    at ca.B [as fn] (https://zero.zxqconsulting.com/assets/index-C9Mj6UOR.js:13:27610)
+    at ca.run (https://zero.zxqconsulting.com/assets/index-C9Mj6UOR.js:9:1927)
+    at G (https://zero.zxqconsulting.com/assets/index-C9Mj6UOR.js:13:27999)
+    at U (https://zero.zxqconsulting.com/assets/index-C9Mj6UOR.js:13:26682)
+    at se (https://zero.zxqconsulting.com/assets/index-C9Mj6UOR.js:13:26455)
+    at v (https://zero.zxqconsulting.com/assets/index-C9Mj6UOR.js:13:23109) @ https://zero.zxqconsulting.com/assets/index-C9Mj6UOR.js:12
+[    3357ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ https://zero.zxqconsulting.com/:0
