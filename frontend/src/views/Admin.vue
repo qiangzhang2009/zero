@@ -20,10 +20,14 @@ const userPage = ref(1)
 const chatPage = ref(1)
 const selectedChat = ref(null)
 
-// 常量 - 处理可能的 /api 后缀
+// 常量 - 环境变量已包含 /api，需要移除
 let API_BASE = import.meta.env.VITE_API_URL || ''
-// 移除可能的尾部 /api，确保不会重复
-API_BASE = API_BASE.replace(/\/api\/?$/, '')
+// 移除末尾的 /api
+if (API_BASE.endsWith('/api')) {
+  API_BASE = API_BASE.slice(0, -4)
+} else if (API_BASE.endsWith('/api/')) {
+  API_BASE = API_BASE.slice(0, -5)
+}
 const ADMIN_API = API_BASE
 
 // 调试用 - 实际部署时可删除
