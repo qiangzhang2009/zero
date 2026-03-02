@@ -20,8 +20,11 @@ const userPage = ref(1)
 const chatPage = ref(1)
 const selectedChat = ref(null)
 
-// 常量
-const ADMIN_API = import.meta.env.VITE_API_URL || ''
+// 常量 - 处理可能的 /api 后缀
+let API_BASE = import.meta.env.VITE_API_URL || ''
+// 移除可能的尾部 /api，确保不会重复
+API_BASE = API_BASE.replace(/\/api\/?$/, '')
+const ADMIN_API = API_BASE
 
 // 登录
 async function login() {
