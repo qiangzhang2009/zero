@@ -393,11 +393,8 @@ async function chatWithContextHandler(req, res) {
   }
 }
 
-// 路由
+// 路由 - 注意顺序：/api/chat/save 必须在 /api/chat/:module 之前
 app.post('/api/chat', chatHandler);
-app.post('/api/chat/:module', chatWithContextHandler);
-
-// 保存聊天记录到服务器
 app.post('/api/chat/save', (req, res) => {
   try {
     const { module, messages, profile, userId } = req.body;
