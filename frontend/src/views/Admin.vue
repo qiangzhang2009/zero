@@ -20,6 +20,54 @@ const userPage = ref(1)
 const chatPage = ref(1)
 const selectedChat = ref(null)
 
+// 新增：用户档案、会员、分析
+const profiles = ref([])
+const memberships = ref([])
+const analytics = ref(null)
+const profilePage = ref(1)
+const membershipPage = ref(1)
+const selectedUserProfile = ref(null)
+
+// 新增：会员表单数据
+const newMember = ref({
+  userId: '',
+  plan: 'monthly',
+  days: 30,
+  amount: 0
+})
+
+// 计划名称映射
+function getPlanName(plan) {
+  const names = {
+    monthly: '月度会员',
+    quarterly: '季度会员',
+    yearly: '年度会员',
+    lifetime: '终身会员'
+  }
+  return names[plan] || plan
+}
+
+// 提交会员
+async function submitMembership() {
+  if (!newMember.value.userId) {
+    alert('请输入用户ID')
+    return
+  }
+  await addMembership(newMember.value.userId, newMember.value.plan, newMember.value.days, newMember.value.amount)
+  newMember.value = { userId: '', plan: 'monthly', days: 30, amount: 0 }
+}
+
+// 删除会员
+async function deleteMembership(userId) {
+  if (!confirm('确定要删除该会员资格吗？')) return
+  const data = await adminFetch(`${ADMIN_API}/admin/membership/${userId}?adminKey=${getToken()}`, {
+    method: 'DELETE'
+  })
+  if (data.success) {
+    loadMemberships()
+  }
+}
+
 // 常量 - 直接硬编码正确的 API 地址
 const RAILWAY_API = 'https://zero-production-4a85.up.railway.app/api'
 const ADMIN_API = RAILWAY_API
@@ -135,9 +183,62 @@ function closeChat() {
   selectedChat.value = null
 }
 
+// 加载用户档案
+async function loadProfiles(page = 1) {
+  profilePage.value = page
+  const data = await adminFetch(`${ADMIN_API}/admin/user-profiles?adminKey=${getToken()}&page=${page}&limit=20`)
+  if (data.success) {
+    profiles.value = data.data.users
+  }
+}
+
+// 加载会员列表
+async function loadMemberships(page = 1) {
+  membershipPage.value = page
+  const data = await adminFetch(`${ADMIN_API}/admin/memberships?adminKey=${getToken()}&page=${page}&limit=20`)
+  if (data.success) {
+    memberships.value = data.data.memberships
+  }
+}
+
+// 加载高级分析
+async function loadAnalytics(period = 30) {
+  const data = await adminFetch(`${ADMIN_API}/admin/analytics?adminKey=${getToken()}&period=${period}`)
+  if (data.success) {
+    analytics.value = data.data
+  }
+}
+
+// 查看用户详情
+async function viewUserProfile(userId) {
+  const data = await adminFetch(`${ADMIN_API}/admin/user-profile/${userId}?adminKey=${getToken()}`)
+  if (data.success) {
+    selectedUserProfile.value = data.data
+  }
+}
+
+// 关闭用户详情
+function closeUserProfile() {
+  selectedUserProfile.value = null
+}
+
+// 添加会员
+async function addMembership(userId, plan, durationDays, amount) {
+  const data = await adminFetch(`${ADMIN_API}/admin/membership?adminKey=${getToken()}`, {
+    method: 'POST',
+    body: JSON.stringify({ userId, plan, durationDays, amount })
+  })
+  if (data.success) {
+    alert('会员添加成功！')
+    loadMemberships()
+  } else {
+    alert('添加失败：' + data.error)
+  }
+}
+
 // 导出数据
-async function exportData(format = 'json') {
-  const url = `${ADMIN_API}/admin/export?adminKey=${getToken()}&format=${format}`
+async function exportData(format = 'json', type = 'chats') {
+  const url = `${ADMIN_API}/admin/export?adminKey=${getToken()}&format=${format}&type=${type}`
   window.open(url, '_blank')
 }
 
@@ -219,6 +320,24 @@ onMounted(() => {
           @click="currentTab = 'users'; loadUsers()"
         >
           用户管理
+        </button>
+        <button 
+          :class="{ active: currentTab === 'profiles' }" 
+          @click="currentTab = 'profiles'; loadProfiles()"
+        >
+          📋 用户档案
+        </button>
+        <button 
+          :class="{ active: currentTab === 'memberships' }" 
+          @click="currentTab = 'memberships'; loadMemberships()"
+        >
+          💎 会员管理
+        </button>
+        <button 
+          :class="{ active: currentTab === 'analytics' }" 
+          @click="currentTab = 'analytics'; loadAnalytics()"
+        >
+          📊 数据分析
         </button>
         <button 
           :class="{ active: currentTab === 'chats' }" 
@@ -398,15 +517,209 @@ onMounted(() => {
           
           <div class="export-options">
             <div class="export-card">
-              <h4>导出JSON格式</h4>
-              <p>完整的聊天记录数据，包含所有字段</p>
-              <button @click="exportData('json')" class="export-btn">导出 JSON</button>
+              <h4>聊天记录</h4>
+              <p>完整的聊天记录数据</p>
+              <button @click="exportData('json', 'chats')" class="export-btn">JSON</button>
+              <button @click="exportData('csv', 'chats')" class="export-btn">CSV</button>
             </div>
             
             <div class="export-card">
-              <h4>导出CSV格式</h4>
-              <p>适合在Excel中打开和分析</p>
-              <button @click="exportData('csv')" class="export-btn">导出 CSV</button>
+              <h4>用户档案</h4>
+              <p>用户信息和档案数据</p>
+              <button @click="exportData('json', 'users')" class="export-btn">JSON</button>
+              <button @click="exportData('csv', 'users')" class="export-btn">CSV</button>
+            </div>
+            
+            <div class="export-card">
+              <h4>会员数据</h4>
+              <p>会员订阅和支付记录</p>
+              <button @click="exportData('json', 'memberships')" class="export-btn">JSON</button>
+              <button @click="exportData('csv', 'memberships')" class="export-btn">CSV</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 用户档案 -->
+        <div v-if="currentTab === 'profiles'" class="tab-content">
+          <h3>用户档案管理</h3>
+          <p class="tab-desc">查看和管理所有用户的详细档案信息</p>
+          
+          <div class="data-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>用户ID</th>
+                  <th>姓名</th>
+                  <th>生日</th>
+                  <th>聊天次数</th>
+                  <th>使用模块</th>
+                  <th>最后活跃</th>
+                  <th>会员状态</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="profile in profiles" :key="profile.userId">
+                  <td>{{ profile.userId }}</td>
+                  <td>{{ profile.profile?.name || '-' }}</td>
+                  <td>{{ profile.profile?.birthday || '-' }}</td>
+                  <td>{{ profile.totalChats || 0 }}</td>
+                  <td>{{ (profile.modulesUsed || []).join(', ') }}</td>
+                  <td>{{ formatDate(profile.lastActiveAt) }}</td>
+                  <td>
+                    <span :class="['badge', profile.isPremium ? 'premium' : 'free']">
+                      {{ profile.isPremium ? '会员' : '免费' }}
+                    </span>
+                  </td>
+                  <td>
+                    <button @click="viewUserProfile(profile.userId)" class="action-btn">查看详情</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- 会员管理 -->
+        <div v-if="currentTab === 'memberships'" class="tab-content">
+          <h3>会员管理</h3>
+          <p class="tab-desc">管理用户会员订阅状态</p>
+          
+          <div class="stats-cards">
+            <div class="stat-card">
+              <div class="stat-value">{{ memberships.length || 0 }}</div>
+              <div class="stat-label">总会员数</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">{{ memberships.filter(m => m.active).length || 0 }}</div>
+              <div class="stat-label">活跃会员</div>
+            </div>
+          </div>
+          
+          <div class="add-membership-form">
+            <h4>添加会员</h4>
+            <input v-model="newMember.userId" placeholder="用户ID" />
+            <select v-model="newMember.plan">
+              <option value="monthly">月度会员</option>
+              <option value="quarterly">季度会员</option>
+              <option value="yearly">年度会员</option>
+              <option value="lifetime">终身会员</option>
+            </select>
+            <input v-model="newMember.days" type="number" placeholder="天数" />
+            <input v-model="newMember.amount" type="number" placeholder="金额" />
+            <button @click="submitMembership" class="submit-btn">添加</button>
+          </div>
+          
+          <div class="data-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>用户ID</th>
+                  <th>计划</th>
+                  <th>状态</th>
+                  <th>开始日期</th>
+                  <th>到期日期</th>
+                  <th>金额</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="m in memberships" :key="m.userId">
+                  <td>{{ m.userId }}</td>
+                  <td>{{ getPlanName(m.plan) }}</td>
+                  <td>
+                    <span :class="['badge', m.active ? 'active' : 'expired']">
+                      {{ m.active ? '活跃' : '已过期' }}
+                    </span>
+                  </td>
+                  <td>{{ formatDate(m.startDate) }}</td>
+                  <td>{{ formatDate(m.expiryDate) }}</td>
+                  <td>¥{{ m.amount || 0 }}</td>
+                  <td>
+                    <button @click="deleteMembership(m.userId)" class="action-btn delete">删除</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- 数据分析 -->
+        <div v-if="currentTab === 'analytics'" class="tab-content">
+          <h3>高级数据分析</h3>
+          
+          <div class="analytics-controls">
+            <select @change="loadAnalytics($event.target.value)">
+              <option value="7">最近7天</option>
+              <option value="30" selected>最近30天</option>
+              <option value="90">最近90天</option>
+            </select>
+          </div>
+          
+          <div v-if="analytics" class="analytics-grid">
+            <div class="stat-card large">
+              <div class="stat-title">核心指标</div>
+              <div class="stat-row">
+                <div class="stat-item">
+                  <div class="stat-value">{{ analytics.overview.totalChats }}</div>
+                  <div class="stat-label">总对话数</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">{{ analytics.overview.totalUsers }}</div>
+                  <div class="stat-label">活跃用户</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">{{ analytics.overview.avgMessagesPerChat }}</div>
+                  <div class="stat-label">平均消息数</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">{{ analytics.overview.premiumConversionRate }}%</div>
+                  <div class="stat-label">付费转化率</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-title">模块使用排名</div>
+              <div class="module-ranking">
+                <div v-for="mod in analytics.moduleRanking.slice(0, 10)" :key="mod.module" class="module-item">
+                  <span class="module-name">{{ mod.module }}</span>
+                  <span class="module-count">{{ mod.count }}</span>
+                  <span class="module-users">{{ mod.users }}人</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-title">用户参与度</div>
+              <div class="engagement">
+                <div class="engagement-item high">
+                  <span class="engagement-label">高活跃</span>
+                  <span class="engagement-value">{{ analytics.engagement.high }}</span>
+                </div>
+                <div class="engagement-item medium">
+                  <span class="engagement-label">中活跃</span>
+                  <span class="engagement-value">{{ analytics.engagement.medium }}</span>
+                </div>
+                <div class="engagement-item low">
+                  <span class="engagement-label">低活跃</span>
+                  <span class="engagement-value">{{ analytics.engagement.low }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-title">会员统计</div>
+              <div class="premium-stats">
+                <div class="premium-item">
+                  <span>总会员数:</span>
+                  <span>{{ analytics.premiumStats.total }}</span>
+                </div>
+                <div class="premium-item">
+                  <span>总收入:</span>
+                  <span>¥{{ analytics.premiumStats.revenue }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -906,5 +1219,185 @@ onMounted(() => {
   border: 1px solid #333;
   border-radius: 8px;
   color: #fff;
+}
+
+/* 新增样式 */
+.tab-desc {
+  color: #888;
+  margin-bottom: 16px;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.badge.premium, .badge.active {
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  color: #000;
+}
+
+.badge.free, .badge.expired {
+  background: #333;
+  color: #888;
+}
+
+.data-table {
+  overflow-x: auto;
+}
+
+.data-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th, .data-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+.data-table th {
+  background: #1a1a2e;
+  font-weight: 600;
+}
+
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card.large .stat-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.add-membership-form {
+  background: #1a1a2e;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.add-membership-form input, 
+.add-membership-form select {
+  padding: 8px 12px;
+  background: #252540;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+}
+
+.submit-btn {
+  padding: 8px 20px;
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  border: none;
+  border-radius: 6px;
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.analytics-controls {
+  margin-bottom: 20px;
+}
+
+.analytics-controls select {
+  padding: 8px 16px;
+  background: #1a1a2e;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+}
+
+.module-ranking {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.module-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  background: #252540;
+  border-radius: 4px;
+}
+
+.module-name {
+  color: #ffd700;
+}
+
+.module-count {
+  color: #fff;
+}
+
+.module-users {
+  color: #888;
+}
+
+.engagement {
+  display: flex;
+  gap: 12px;
+}
+
+.engagement-item {
+  flex: 1;
+  padding: 16px;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.engagement-item.high {
+  background: linear-gradient(135deg, #00c853, #00e676);
+}
+
+.engagement-item.medium {
+  background: linear-gradient(135deg, #ff9800, #ffb300);
+}
+
+.engagement-item.low {
+  background: linear-gradient(135deg, #9e9e9e, #bdbdbd);
+}
+
+.engagement-label {
+  display: block;
+  font-size: 12px;
+  color: #000;
+}
+
+.engagement-value {
+  display: block;
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+}
+
+.premium-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.premium-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  background: #252540;
+  border-radius: 6px;
 }
 </style>
