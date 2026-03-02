@@ -519,6 +519,9 @@ app.post('/api/chat/save', (req, res) => {
   }
 });
 
+// 模块聊天路由 (必须在 /api/chat/save 之后)
+app.post('/api/chat/:module', chatWithContextHandler);
+
 // 获取聊天记录列表
 app.get('/api/chat/history', (req, res) => {
   try {
