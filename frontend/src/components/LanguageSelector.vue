@@ -1,16 +1,34 @@
 <script setup>
-import { ref } from 'vue'
-import { useLanguageStore, supportedLanguages, getLanguageByCode, t } from '../i18n'
+import { ref, nextTick, watch } from 'vue'
+import { useLanguageStore, supportedLanguages, getLanguageByCode, t, detectSystemLanguage } from '../i18n'
 
 const emit = defineEmits(['close'])
 const languageStore = useLanguageStore()
 
 const isOpen = ref(false)
+const listRef = ref(null)
 
 function selectLanguage(code) {
   languageStore.setLanguage(code)
   isOpen.value = false
   emit('close')
+}
+
+// 重置为系统语言
+function resetToSystemLanguage() {
+  const systemLang = detectSystemLanguage()
+  languageStore.setLanguage(systemLang)
+  isOpen.value = false
+  emit('close')
+}
+
+// 打开时确保滚动到顶部
+async function openDropdown() {
+  isOpen.value = true
+  await nextTick()
+  if (listRef.value) {
+    listRef.value.scrollTop = 0
+  }
 }
 
 function getCurrentLangInfo() {
@@ -21,7 +39,7 @@ function getCurrentLangInfo() {
 <template>
   <div class="language-selector">
     <!-- 当前语言显示 -->
-    <button class="language-btn" @click="isOpen = !isOpen">
+    <button class="language-btn" @click="openDropdown">
       <span class="lang-flag">{{ getCurrentLangInfo().flag }}</span>
       <span class="lang-name">{{ getCurrentLangInfo().nativeName }}</span>
       <span class="lang-arrow">▼</span>
@@ -34,7 +52,16 @@ function getCurrentLangInfo() {
           <span>{{ t('language.title', languageStore.currentLanguage) }}</span>
           <button class="close-btn" @click="isOpen = false">✕</button>
         </div>
-        <div class="language-list">
+        
+        <!-- 重置为系统语言按钮 -->
+        <div class="system-lang-reset">
+          <button class="reset-btn" @click="resetToSystemLanguage">
+            <span class="reset-icon">🔄</span>
+            <span>{{ t('language.switch', languageStore.currentLanguage) }}</span>
+          </button>
+        </div>
+        
+        <div class="language-list" ref="listRef">
           <button 
             v-for="lang in supportedLanguages" 
             :key="lang.code"
@@ -116,6 +143,35 @@ function getCurrentLangInfo() {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   font-weight: 600;
   color: #fff;
+  font-size: 14px;
+}
+
+.system-lang-reset {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.reset-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 10px;
+  color: #fbbf24;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.reset-btn:hover {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: rgba(251, 191, 36, 0.5);
+}
+
+.reset-icon {
   font-size: 14px;
 }
 
@@ -205,12 +261,16 @@ function getCurrentLangInfo() {
     padding: 16px 20px;
   }
   
+  .system-lang-reset {
+    padding: 12px 16px;
+  }
+  
   .language-list {
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    max-height: 65vh;
-    padding-bottom: 20px;
+    max-height: 55vh;
+    padding: 8px 12px 20px;
   }
   
   .language-option {

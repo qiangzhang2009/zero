@@ -443,6 +443,9 @@ function getModuleId(index) {
     <!-- Footer -->
     <footer class="footer">
       <p>{{ footer }}</p>
+      <p class="admin-link">
+        <router-link to="/admin" target="_blank">运营管理后台</router-link>
+      </p>
     </footer>
   </div>
 </template>
@@ -839,6 +842,21 @@ function getModuleId(index) {
   padding: 30px 20px;
   color: rgba(255, 255, 255, 0.3);
   font-size: 13px;
+}
+
+.footer .admin-link {
+  margin-top: 10px;
+}
+
+.footer .admin-link a {
+  color: rgba(255, 255, 255, 0.15);
+  text-decoration: none;
+  font-size: 11px;
+  transition: color 0.2s;
+}
+
+.footer .admin-link a:hover {
+  color: rgba(255, 255, 255, 0.3);
 }
 
 /* 响应式 */
