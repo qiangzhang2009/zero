@@ -3,7 +3,10 @@ import { ref, watch } from 'vue'
 import axios from 'axios'
 import { useProfileStore } from './profile'
 
-const API_URL = import.meta.env.VITE_API_URL || '/api'
+// 处理可能的 /api 后缀，避免路径重复
+let apiBase = import.meta.env.VITE_API_URL || ''
+apiBase = apiBase.replace(/\/api\/?$/, '')
+const API_URL = apiBase || '/api'
 
 // 前端敏感词过滤函数（额外保障）
 function filterClientSensitiveWords(message) {

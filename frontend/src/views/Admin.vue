@@ -26,6 +26,10 @@ let API_BASE = import.meta.env.VITE_API_URL || ''
 API_BASE = API_BASE.replace(/\/api\/?$/, '')
 const ADMIN_API = API_BASE
 
+// 调试用 - 实际部署时可删除
+console.log('[Admin] VITE_API_URL:', import.meta.env.VITE_API_URL)
+console.log('[Admin] ADMIN_API:', ADMIN_API)
+
 // 登录
 async function login() {
   if (!password.value) {
