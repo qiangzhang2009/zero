@@ -20,15 +20,11 @@ const userPage = ref(1)
 const chatPage = ref(1)
 const selectedChat = ref(null)
 
-// 常量 - 环境变量已包含 /api，需要移除
-let API_BASE = import.meta.env.VITE_API_URL || ''
-// 移除末尾的 /api
-if (API_BASE.endsWith('/api')) {
-  API_BASE = API_BASE.slice(0, -4)
-} else if (API_BASE.endsWith('/api/')) {
-  API_BASE = API_BASE.slice(0, -5)
-}
-const ADMIN_API = API_BASE
+// 常量 - 直接使用 Railway 后端地址，避免缓存问题
+// 如果环境变量有值，使用环境变量；否则使用默认值
+const ADMIN_API = import.meta.env.VITE_API_URL 
+  ? import.meta.env.VITE_API_URL.replace(/\/api\/*$/, '') + '/api'
+  : 'https://zero-production-4a85.up.railway.app/api'
 
 // 调试用 - 实际部署时可删除
 console.log('[Admin] VITE_API_URL:', import.meta.env.VITE_API_URL)
@@ -45,7 +41,7 @@ async function login() {
   error.value = ''
   
   try {
-    const res = await fetch(`${ADMIN_API}/api/admin/login`, {
+    const res = await fetch(`${ADMIN_API}/admin/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: password.value })
@@ -94,7 +90,7 @@ async function adminFetch(url, options = {}) {
 
 // 加载统计数据
 async function loadStats() {
-  const data = await adminFetch(`${ADMIN_API}/api/admin/stats?adminKey=${getToken()}`)
+  const data = await adminFetch(`${ADMIN_API}/admin/stats?adminKey=${getToken()}`)
   if (data.success) {
     stats.value = data.data
   }
@@ -111,7 +107,7 @@ async function loadModules() {
 // 加载用户列表
 async function loadUsers(page = 1) {
   userPage.value = page
-  const data = await adminFetch(`${ADMIN_API}/api/admin/users?adminKey=${getToken()}&page=${page}&limit=20`)
+  const data = await adminFetch(`${ADMIN_API}/admin/users?adminKey=${getToken()}&page=${page}&limit=20`)
   if (data.success) {
     users.value = data.data.users
   }
@@ -120,7 +116,7 @@ async function loadUsers(page = 1) {
 // 加载聊天记录
 async function loadChats(page = 1, module = '', userId = '') {
   chatPage.value = page
-  let url = `${ADMIN_API}/api/admin/chats?adminKey=${getToken()}&page=${page}&limit=20`
+  let url = `${ADMIN_API}/admin/chats?adminKey=${getToken()}&page=${page}&limit=20`
   if (module) url += `&module=${module}`
   if (userId) url += `&userId=${userId}`
   const data = await adminFetch(url)
@@ -131,7 +127,7 @@ async function loadChats(page = 1, module = '', userId = '') {
 
 // 查看聊天详情
 async function viewChat(id) {
-  const data = await adminFetch(`${ADMIN_API}/api/admin/chat/${id}?adminKey=${getToken()}`)
+  const data = await adminFetch(`${ADMIN_API}/admin/chat/${id}?adminKey=${getToken()}`)
   if (data.success) {
     selectedChat.value = data.data
   }
@@ -144,7 +140,7 @@ function closeChat() {
 
 // 导出数据
 async function exportData(format = 'json') {
-  const url = `${ADMIN_API}/api/admin/export?adminKey=${getToken()}&format=${format}`
+  const url = `${ADMIN_API}/admin/export?adminKey=${getToken()}&format=${format}`
   window.open(url, '_blank')
 }
 
