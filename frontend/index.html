@@ -7,7 +7,151 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>知几 - AI命理咨询 © ZXQ</title>
+    <meta name="description" content="知几(ZhiJi) - 结合古老智慧与现代AI技术的命理咨询平台。提供八字算命、风水布局、紫微斗数、梅花易数等玄学服务。">
+    <meta name="keywords" content="八字算命,风水布局,紫微斗数,梅花易数,命理咨询,AI算命,玄学,周易,塔罗占卜,黄帝内经">
     <link rel="manifest" href="/manifest.json">
+
+    <!-- GEO: Schema.org 结构化数据 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://zero.zxqconsulting.com/#organization",
+          "name": "知几",
+          "url": "https://zero.zxqconsulting.com",
+          "description": "结合古老智慧与现代AI技术的命理咨询平台",
+          "sameAs": [
+            "https://github.com/qiangzhang2009"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://zero.zxqconsulting.com/#website",
+          "url": "https://zero.zxqconsulting.com",
+          "name": "知几 - AI命理咨询",
+          "publisher": {
+            "@id": "https://zero.zxqconsulting.com/#organization"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://zero.zxqconsulting.com/chat/{search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "WebApplication",
+          "@id": "https://zero.zxqconsulting.com/#webapp",
+          "name": "知几AI命理助手",
+          "applicationCategory": "LifestyleApplication",
+          "operatingSystem": "Web Browser, iOS, Android",
+          "url": "https://zero.zxqconsulting.com",
+          "provider": {
+            "@id": "https://zero.zxqconsulting.com/#organization"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "CNY"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://zero.zxqconsulting.com/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "八字算命真的准确吗？",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "八字命理是中国传统文化的瑰宝，有数千年的历史积累。我们的AI结合现代技术，能够提供更加精准和个性化的解读，但命理仅供参考，人生仍需自己努力。"
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "知几的八字算命服务收费吗？",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "知几提供基础的八字解读服务免费使用。用户可以创建个人档案，获得基础的命理分析和建议。部分高级功能可能需要会员权限。"
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "如何开始八字算命？",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "1. 访问知几网站 2. 点击创建档案，输入出生年月日时和出生地 3. 选择八字模块开始咨询 4. AI会根据您的八字提供详细解读"
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "风水布局真的有效吗？",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "风水学是中华民族的传统智慧，通过调整环境气场来提升运势。我们的AI风水师会根据您提供的房屋情况，分析吉凶方位并给出具体调整建议。"
+              }
+            }
+          ]
+        },
+        {
+          "@type": "HowTo",
+          "@id": "https://zero.zxqconsulting.com/#howto-bazi",
+          "name": "如何使用八字算命服务",
+          "description": "通过知几AI命理平台进行八字算命的完整流程",
+          "step": [
+            {
+              "@type": "HowToStep",
+              "name": "步骤一：创建个人档案",
+              "text": "在知几网站首页点击创建档案，填写您的姓名、出生年月日时和出生地点信息。系统会自动计算您的八字。",
+              "url": "https://zero.zxqconsulting.com/#create-profile"
+            },
+            {
+              "@type": "HowToStep",
+              "name": "步骤二：选择咨询模块",
+              "text": "选择您感兴趣的命理模块，如八字精批、玄空风水、紫微斗数等。每个模块都有专业的AI命理师为您服务。",
+              "url": "https://zero.zxqconsulting.com/chat/bazi"
+            },
+            {
+              "@type": "HowToStep",
+              "name": "步骤三：描述您的问题",
+              "text": "向AI命理师描述您想了解的问题，如事业发展、财运走势、婚姻感情等。AI会根据您的八字给出个性化解读。",
+              "url": "https://zero.zxqconsulting.com/chat/bazi"
+            },
+            {
+              "@type": "HowToStep",
+              "name": "步骤四：获取解读结果",
+              "text": "AI会分析您的八字命盘，提供五行分析、大运流年、喜用神等专业解读，并给出针对性的建议和指导。",
+              "url": "https://zero.zxqconsulting.com/chat/bazi"
+            }
+          ],
+          "totalTime": "PT10M",
+          "tool": {
+            "@type": "HowToTool",
+            "name": "知几AI命理平台"
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://zero.zxqconsulting.com/#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "首页",
+              "item": "https://zero.zxqconsulting.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "八字算命",
+              "item": "https://zero.zxqconsulting.com/chat/bazi"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="app"></div>
