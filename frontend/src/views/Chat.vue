@@ -134,6 +134,12 @@ const inputSuggestions = computed(() => {
   const module = chatStore.currentModule
   const lang = languageStore.currentLanguage
   const translations = suggestionsTranslations[lang] || suggestionsTranslations['en'] || suggestionsTranslations['zh-CN']
+  
+  // MBTI 模块特殊处理：显示测试版本按钮
+  if (module === 'mbti') {
+    return ['开始简易版测试', '开始标准版测试']
+  }
+  
   return translations[module] || translations.default
 })
 
@@ -249,6 +255,18 @@ function scrollToBottom() {
 }
 
 function handleSuggestionClick(suggestion) {
+  // MBTI 模块：点击建议时开始测试
+  if (chatStore.currentModule === 'mbti') {
+    if (suggestion.includes('简易版')) {
+      startMbtiTest('simple')
+    } else if (suggestion.includes('标准版')) {
+      startMbtiTest('standard')
+    } else {
+      startMbtiTest('simple')
+    }
+    return
+  }
+  
   inputMessage.value = suggestion
   sendMessage()
 }
