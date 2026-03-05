@@ -9,12 +9,6 @@ let apiBase = import.meta.env.VITE_API_URL || ''
 if (!apiBase || apiBase === '/api') {
   apiBase = 'https://zero-production-4a85.up.railway.app/api'
 }
-// 移除末尾的 /api
-if (apiBase.endsWith('/api')) {
-  apiBase = apiBase.slice(0, -4)
-} else if (apiBase.endsWith('/api/')) {
-  apiBase = apiBase.slice(0, -5)
-}
 const API_URL = apiBase
 
 // 前端敏感词过滤函数（额外保障）
