@@ -498,11 +498,9 @@ app.post('/api/chat/save', (req, res) => {
       console.error('[DEBUG] Error pushing to chatHistoryStore:', e);
     }
     
-    // 定期保存到文件 (每10条记录保存一次，避免频繁IO)
+    // 立即保存到文件（确保数据不丢失）
     try {
-      if (chatHistoryStore.length % 10 === 0) {
-        saveChatHistory(chatHistoryStore);
-      }
+      saveChatHistory(chatHistoryStore);
     } catch (e) {
       console.error('[DEBUG] Error saving to file:', e);
     }
