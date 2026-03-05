@@ -9,6 +9,7 @@ import { voiceInput } from '../utils/voice'
 import ProfileSelector from '../components/ProfileSelector.vue'
 import ImageUpload from '../components/ImageUpload.vue'
 import { questionTranslations, greetingTranslations, namePrefixTranslations, suggestionsTranslations } from '../i18n/translations'
+import { marked } from 'marked'
 
 const route = useRoute()
 const chatStore = useChatStore()
@@ -19,6 +20,23 @@ const inputMessage = ref('')
 const messagesContainer = ref(null)
 const isStreaming = ref(false)
 const inputRef = ref(null)
+
+// 解析 Markdown 为 HTML
+const renderMarkdown = (text) => {
+  if (!text) return ''
+  // 配置 marked 选项
+  marked.setOptions({
+    breaks: true,
+    gfm: true
+  })
+  return marked.parse(text)
+}
+
+// 格式化消息内容（解析 Markdown）
+const formatContent = (content) => {
+  if (!content) return ''
+  return renderMarkdown(content)
+}
 
 // 打字机效果相关
 const displayText = ref('')
@@ -313,7 +331,7 @@ function openImageUpload() {
           
           <div class="message-content" :class="msg.role">
             <span v-if="isTyping && currentMessageIndex === index">{{ displayText }}</span>
-            <span v-else>{{ msg.content }}</span>
+            <span v-else v-html="formatContent(msg.content)"></span>
           </div>
           
           <!-- 消息操作按钮 -->
@@ -595,6 +613,84 @@ function openImageUpload() {
   white-space: pre-wrap; 
   font-size: 15px;
   position: relative;
+}
+
+/* Markdown 渲染样式 - 乔布斯风格简洁优雅 */
+.message-content p {
+  margin: 0 0 12px 0;
+}
+.message-content p:last-child {
+  margin-bottom: 0;
+}
+.message-content h1,
+.message-content h2,
+.message-content h3,
+.message-content h4 {
+  margin: 16px 0 8px 0;
+  font-weight: 600;
+  color: #fbf2d4;
+  line-height: 1.4;
+}
+.message-content h1 { font-size: 20px; }
+.message-content h2 { font-size: 18px; }
+.message-content h3 { font-size: 16px; }
+.message-content h4 { font-size: 15px; }
+.message-content ul,
+.message-content ol {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+.message-content li {
+  margin: 4px 0;
+  line-height: 1.6;
+}
+.message-content strong {
+  color: #fbf2d4;
+  font-weight: 600;
+}
+.message-content em {
+  font-style: italic;
+  color: rgba(251, 191, 36, 0.9);
+}
+.message-content code {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+  font-size: 13px;
+}
+.message-content pre {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 12px 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+.message-content pre code {
+  background: none;
+  padding: 0;
+}
+.message-content blockquote {
+  border-left: 3px solid rgba(251, 191, 36, 0.5);
+  margin: 12px 0;
+  padding: 8px 16px;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(251, 191, 36, 0.05);
+  border-radius: 0 8px 8px 0;
+}
+.message-content hr {
+  border: none;
+  border-top: 1px solid rgba(251, 191, 36, 0.2);
+  margin: 16px 0;
+}
+.message-content a {
+  color: #fbbf24;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+.message-content a:hover {
+  border-bottom-color: #fbbf24;
 }
 .message-content.assistant {
   border-top-left-radius: 4px;
