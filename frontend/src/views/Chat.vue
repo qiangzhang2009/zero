@@ -10,6 +10,7 @@ import ProfileSelector from '../components/ProfileSelector.vue'
 import ImageUpload from '../components/ImageUpload.vue'
 import { questionTranslations, greetingTranslations, namePrefixTranslations, suggestionsTranslations } from '../i18n/translations'
 import { marked } from 'marked'
+import { mbtiQuestions, mbtiDescriptions, calculateMBTI } from '../data/mbti'
 
 const route = useRoute()
 const chatStore = useChatStore()
@@ -38,6 +39,59 @@ const formatContent = (content) => {
   return renderMarkdown(content)
 }
 
+// MBTI 测试相关函数
+const startMbtiTest = (version) => {
+  mbtiTestVersion.value = version
+  mbtiCurrentQuestion.value = 0
+  mbtiAnswers.value = []
+  mbtiTestResult.value = null
+  showMbtiTest.value = true
+}
+
+const selectMbtiOption = (option) => {
+  const questions = mbtiQuestions[mbtiTestVersion.value] || mbtiQuestions.simple
+  mbtiAnswers.value.push({
+    question: mbtiCurrentQuestion.value,
+    dimension: questions[mbtiCurrentQuestion.value].dimension,
+    value: option.value,
+    text: option.text
+  })
+  
+  if (mbtiCurrentQuestion.value < questions.length - 1) {
+    mbtiCurrentQuestion.value++
+  } else {
+    // 完成测试，计算结果
+    finishMbtiTest()
+  }
+}
+
+const finishMbtiTest = () => {
+  const type = calculateMBTI(mbtiAnswers.value)
+  mbtiTestResult.value = {
+    type,
+    ...mbtiDescriptions[type]
+  }
+  // 发送结果给 AI 分析
+  const resultText = `我完成了MBTI测试，测试版本：${mbtiTestVersion.value === 'simple' ? '简易版' : mbtiTestVersion.value === 'standard' ? '标准版' : '完整版'}。我的MBTI类型是：${type}（${mbtiTestResult.value.name}）。`
+  sendMessage(resultText)
+  showMbtiTest.value = false
+}
+
+const closeMbtiTest = () => {
+  showMbtiTest.value = false
+  mbtiTestResult.value = null
+}
+
+const currentMbtiQuestion = computed(() => {
+  const questions = mbtiQuestions[mbtiTestVersion.value] || mbtiQuestions.simple
+  return questions[mbtiCurrentQuestion.value]
+})
+
+const mbtiProgress = computed(() => {
+  const questions = mbtiQuestions[mbtiTestVersion.value] || mbtiQuestions.simple
+  return ((mbtiCurrentQuestion.value + 1) / questions.length) * 100
+})
+
 // 打字机效果相关
 const displayText = ref('')
 const isTyping = ref(false)
@@ -46,6 +100,13 @@ const currentMessageIndex = ref(-1)
 // 新增：弹窗控制
 const showProfileSelector = ref(false)
 const showImageUpload = ref(false)
+
+// MBTI 测试相关状态
+const showMbtiTest = ref(false)
+const mbtiTestVersion = ref('simple') // simple, standard, full
+const mbtiCurrentQuestion = ref(0)
+const mbtiAnswers = ref([])
+const mbtiTestResult = ref(null)
 
 // 新增：语音输入状态
 const isVoiceListening = ref(false)
@@ -445,6 +506,50 @@ function openImageUpload() {
       v-if="showProfileSelector" 
       @close="showProfileSelector = false" 
     />
+    
+    <!-- MBTI 测试弹窗 -->
+    <div v-if="showMbtiTest" class="mbti-modal-overlay" @click.self="closeMbtiTest">
+      <div class="mbti-modal">
+        <div class="mbti-modal-header">
+          <h3>MBTI性格测试 · {{ mbtiTestVersion === 'simple' ? '简易版' : mbtiTestVersion === 'standard' ? '标准版' : '完整版' }}</h3>
+          <button class="close-btn" @click="closeMbtiTest">×</button>
+        </div>
+        
+        <div class="mbti-modal-body">
+          <!-- 测试结果 -->
+          <div v-if="mbtiTestResult" class="mbti-result">
+            <div class="mbti-type">{{ mbtiTestResult.type }}</div>
+            <div class="mbti-type-name">{{ mbtiTestResult.name }}</div>
+            <p class="mbti-desc">{{ mbtiTestResult.desc }}</p>
+            <div class="mbti-strengths">
+              <span v-for="s in mbtiTestResult.strengths" :key="s" class="strength-tag">{{ s }}</span>
+            </div>
+            <p class="mbti-career">适合职业：{{ mbtiTestResult.career.join('、') }}</p>
+            <button class="start-test-btn" @click="closeMbtiTest">开始探索</button>
+          </div>
+          
+          <!-- 测试题目 -->
+          <div v-else class="mbti-questions">
+            <div class="mbti-progress-bar">
+              <div class="mbti-progress" :style="{ width: mbtiProgress + '%' }"></div>
+            </div>
+            <div class="mbti-question-num">第 {{ mbtiCurrentQuestion + 1 }} 题</div>
+            <div class="mbti-question-text">{{ currentMbtiQuestion?.question }}</div>
+            <div class="mbti-options">
+              <button 
+                v-for="(option, idx) in currentMbtiQuestion?.options" 
+                :key="idx"
+                class="mbti-option"
+                @click="selectMbtiOption(option)"
+              >
+                <span class="option-label">{{ String.fromCharCode(65 + idx) }}、</span>
+                {{ option.text }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     
     <!-- 图片上传弹窗 -->
     <ImageUpload 
@@ -945,5 +1050,189 @@ function openImageUpload() {
   .suggestions { padding: 12px 16px 8px; }
   .guess-section { padding: 12px 16px; }
   .input-tools { display: none; }
+}
+
+/* MBTI 测试弹窗样式 */
+.mbti-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+}
+
+.mbti-modal {
+  background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 20px;
+  width: 90%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.mbti-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(251, 191, 36, 0.1);
+}
+
+.mbti-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fbf2d4;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #fbbf24;
+}
+
+.mbti-modal-body {
+  padding: 24px;
+}
+
+.mbti-progress-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.mbti-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.mbti-question-num {
+  font-size: 13px;
+  color: rgba(251, 191, 36, 0.8);
+  margin-bottom: 8px;
+}
+
+.mbti-question-text {
+  font-size: 17px;
+  color: #fff;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.mbti-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mbti-option {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px 20px;
+  text-align: left;
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mbti-option:hover {
+  background: rgba(251, 191, 36, 0.15);
+  border-color: rgba(251, 191, 36, 0.3);
+  transform: translateX(4px);
+}
+
+.option-label {
+  color: #fbbf24;
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+/* 测试结果样式 */
+.mbti-result {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.mbti-type {
+  font-size: 56px;
+  font-weight: 700;
+  color: #fbbf24;
+  line-height: 1.2;
+  text-shadow: 0 0 30px rgba(251, 191, 36, 0.4);
+}
+
+.mbti-type-name {
+  font-size: 24px;
+  color: #fbf2d4;
+  margin-bottom: 16px;
+}
+
+.mbti-desc {
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.mbti-strengths {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.strength-tag {
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #fbbf24;
+}
+
+.mbti-career {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.start-test-btn {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: none;
+  border-radius: 25px;
+  padding: 14px 40px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.start-test-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
 }
 </style>
