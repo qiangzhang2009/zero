@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_KEY = process.env.API_KEY || 'sk-4de333eda23f498d9300bb0c4dacfdfc';
+const API_KEY = process.env.API_KEY || 'sk-e6003dee19174bab99ff55c821ca99c1';
 const BASE_URL = process.env.AI_API_URL || 'https://api.deepseek.com';
 
 // 功能模块的Prompt配置
