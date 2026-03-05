@@ -161,7 +161,10 @@ function saveChatHistory(history) {
 let chatHistoryStore = loadChatHistory();
 
 // 中间件
-app.use(cors());
+app.use(cors({
+  origin: ['https://zero.zxqconsulting.com', 'https://zero-production-4a85.up.railway.app'],
+  credentials: true
+}));
 app.use(express.json({ limit: '50mb' })); // 增加限制以支持图片
 
 // 过滤回复中的敏感词

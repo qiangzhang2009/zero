@@ -5,13 +5,17 @@ import { useProfileStore } from './profile'
 
 // 处理可能的 /api 后缀，避免路径重复
 let apiBase = import.meta.env.VITE_API_URL || ''
+// 如果是 Vercel 部署（相对路径），使用 Railway API
+if (!apiBase || apiBase === '/api') {
+  apiBase = 'https://zero-production-4a85.up.railway.app'
+}
 // 移除末尾的 /api
 if (apiBase.endsWith('/api')) {
   apiBase = apiBase.slice(0, -4)
 } else if (apiBase.endsWith('/api/')) {
   apiBase = apiBase.slice(0, -5)
 }
-const API_URL = apiBase || '/api'
+const API_URL = apiBase
 
 // 前端敏感词过滤函数（额外保障）
 function filterClientSensitiveWords(message) {

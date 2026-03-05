@@ -143,7 +143,7 @@ async function loadStats() {
 
 // 加载模块列表
 async function loadModules() {
-  const data = await adminFetch(`${ADMIN_API}/api/modules`)
+  const data = await adminFetch(`${ADMIN_API}/modules`)
   if (data.success) {
     modules.value = data.data
   }
