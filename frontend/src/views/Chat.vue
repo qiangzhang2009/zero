@@ -80,6 +80,8 @@ const finishMbtiTest = () => {
 const closeMbtiTest = () => {
   showMbtiTest.value = false
   mbtiTestResult.value = null
+  mbtiCurrentQuestion.value = 0
+  mbtiAnswers.value = []
 }
 
 const currentMbtiQuestion = computed(() => {
@@ -107,6 +109,7 @@ const mbtiTestVersion = ref('simple') // simple, standard, full
 const mbtiCurrentQuestion = ref(0)
 const mbtiAnswers = ref([])
 const mbtiTestResult = ref(null)
+const mbtiShowVersionSelect = ref(false)
 
 // 新增：语音输入状态
 const isVoiceListening = ref(false)
@@ -190,6 +193,13 @@ watch(() => route.params.module, (newModule) => {
       timestamp: Date.now(),
       typed: true
     }]
+    
+    // MBTI 模块：自动弹出测试选择
+    if (newModule === 'mbti') {
+      setTimeout(() => {
+        showMbtiTest.value = true
+      }, 500)
+    }
   }
 })
 
@@ -534,6 +544,28 @@ function openImageUpload() {
         </div>
         
         <div class="mbti-modal-body">
+          <!-- 选择测试版本 -->
+          <div v-if="!mbtiTestResult && !currentMbtiQuestion" class="mbti-version-select">
+            <div class="mbti-intro">
+              <p>MBTI旨在帮助人们更深入地了解自己的性格特点和行为偏好。接下来，我将基于您的回答，为您生成一份详细的性格类型分析报告。</p>
+            </div>
+            <div class="mbti-version-options">
+              <button class="mbti-version-btn" @click="startMbtiTest('simple')">
+                <span class="version-name">简易版</span>
+                <span class="version-desc">28题 · 约5分钟</span>
+              </button>
+              <button class="mbti-version-btn" @click="startMbtiTest('standard')">
+                <span class="version-name">标准版</span>
+                <span class="version-desc">93题 · 约15分钟</span>
+              </button>
+              <button class="mbti-version-btn" @click="startMbtiTest('full')">
+                <span class="version-name">完整版</span>
+                <span class="version-desc">200题 · 约30分钟</span>
+              </button>
+            </div>
+            <button class="mbti-what-is" @click="sendMessage('MBTI是什么？')">什么是MBTI？</button>
+          </div>
+          
           <!-- 测试结果 -->
           <div v-if="mbtiTestResult" class="mbti-result">
             <div class="mbti-type">{{ mbtiTestResult.type }}</div>
@@ -1252,5 +1284,70 @@ function openImageUpload() {
 .start-test-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+}
+
+/* 版本选择样式 */
+.mbti-version-select {
+  text-align: center;
+}
+
+.mbti-intro {
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.7;
+  margin-bottom: 24px;
+  font-size: 15px;
+}
+
+.mbti-version-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.mbti-version-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 14px;
+  padding: 18px 20px;
+  text-align: left;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mbti-version-btn:hover {
+  background: rgba(251, 191, 36, 0.15);
+  border-color: rgba(251, 191, 36, 0.5);
+  transform: translateX(6px);
+}
+
+.mbti-version-btn .version-name {
+  font-size: 17px;
+  font-weight: 600;
+  color: #fbf2d4;
+}
+
+.mbti-version-btn .version-desc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.mbti-what-is {
+  background: none;
+  border: none;
+  color: rgba(251, 191, 36, 0.8);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px 16px;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.mbti-what-is:hover {
+  color: #fbbf24;
 }
 </style>
