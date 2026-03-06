@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Chat from '../views/Chat.vue'
-import Admin from '../views/Admin.vue'
 
 const routes = [
   {
@@ -13,12 +12,6 @@ const routes = [
     path: '/chat/:module?',
     name: 'Chat',
     component: Chat
-  },
-  {
-    path: '/admin',
-    name: 'Admin',
-    component: Admin,
-    meta: { requiresAuth: true }
   }
 ]
 

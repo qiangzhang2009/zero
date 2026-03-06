@@ -2,11 +2,38 @@
 import { useRouter } from 'vue-router'
 import { useChatStore } from '../stores/chat'
 import { useLanguageStore } from '../i18n'
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 
 const router = useRouter()
 const chatStore = useChatStore()
 const languageStore = useLanguageStore()
+
+// MBTI弹窗控制
+const showMbtiPopup = ref(false)
+const hasSeenMbtiPopup = ref(true)
+
+onMounted(() => {
+  // 检查用户是否已经看过MBTI弹窗
+  const seen = localStorage.getItem('has_seen_mbti_popup')
+  if (!seen) {
+    hasSeenMbtiPopup.value = false
+    // 延迟1秒显示弹窗，让页面先加载完成
+    setTimeout(() => {
+      showMbtiPopup.value = true
+    }, 1000)
+  }
+})
+
+function closeMbtiPopup() {
+  showMbtiPopup.value = false
+  localStorage.setItem('has_seen_mbti_popup', 'true')
+}
+
+function startMbtiTest() {
+  closeMbtiPopup()
+  chatStore.setModule('mbti')
+  router.push('/chat/mbti')
+}
 
 // 直接使用 languageStore.currentLanguage 来获取当前语言
 const currentLang = computed(() => languageStore.currentLanguage)
@@ -355,6 +382,23 @@ function getModuleId(index) {
 
 <template>
   <div class="home">
+    <!-- MBTI测试弹窗 -->
+    <div v-if="showMbtiPopup" class="mbti-popup-overlay" @click.self="closeMbtiPopup">
+      <div class="mbti-popup">
+        <button class="mbti-popup-close" @click="closeMbtiPopup">×</button>
+        <div class="mbti-popup-icon">🎯</div>
+        <h2 class="mbti-popup-title">发现真实的自己</h2>
+        <p class="mbti-popup-desc">MBTI职业性格测试，帮助您深入了解性格特点，发现潜在优势</p>
+        <div class="mbti-popup-versions">
+          <button class="mbti-version-btn" @click="startMbtiTest">
+            <span class="version-name">立即测试</span>
+            <span class="version-arrow">→</span>
+          </button>
+        </div>
+        <button class="mbti-popup-skip" @click="closeMbtiPopup">暂不测试</button>
+      </div>
+    </div>
+    
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero-bg">
@@ -443,9 +487,6 @@ function getModuleId(index) {
     <!-- Footer -->
     <footer class="footer">
       <p>{{ footer }}</p>
-      <p class="admin-link">
-        <router-link to="/admin" target="_blank">运营管理后台</router-link>
-      </p>
     </footer>
   </div>
 </template>
@@ -844,21 +885,6 @@ function getModuleId(index) {
   font-size: 13px;
 }
 
-.footer .admin-link {
-  margin-top: 10px;
-}
-
-.footer .admin-link a {
-  color: rgba(255, 255, 255, 0.15);
-  text-decoration: none;
-  font-size: 11px;
-  transition: color 0.2s;
-}
-
-.footer .admin-link a:hover {
-  color: rgba(255, 255, 255, 0.3);
-}
-
 /* 响应式 */
 @media (max-width: 768px) {
   .hero-title {
@@ -899,5 +925,131 @@ function getModuleId(index) {
   .question-box {
     padding: 28px;
   }
+}
+
+/* MBTI弹窗样式 */
+.mbti-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mbti-popup {
+  background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 24px;
+  padding: 40px;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.4s ease;
+}
+
+.mbti-popup-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.mbti-popup-close:hover {
+  color: #fbbf24;
+}
+
+.mbti-popup-icon {
+  font-size: 56px;
+  margin-bottom: 20px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.mbti-popup-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #fbf2d4;
+  margin-bottom: 12px;
+}
+
+.mbti-popup-desc {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.mbti-popup-versions {
+  margin-bottom: 16px;
+}
+
+.mbti-popup .mbti-version-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: none;
+  border-radius: 14px;
+  padding: 18px 24px;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.mbti-popup .mbti-version-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+}
+
+.version-arrow {
+  font-size: 20px;
+}
+
+.mbti-popup-skip {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px;
+  transition: color 0.2s;
+}
+
+.mbti-popup-skip:hover {
+  color: rgba(255, 255, 255, 0.8);
 }
 </style>
