@@ -22,6 +22,13 @@ const messagesContainer = ref(null)
 const isStreaming = ref(false)
 const inputRef = ref(null)
 
+// 追踪工具埋点辅助函数
+const track = (toolName, action, params = {}) => {
+  if (typeof window !== 'undefined' && window.zxqTrack) {
+    window.zxqTrack.tool(toolName, action, params)
+  }
+}
+
 // 解析 Markdown 为 HTML
 const renderMarkdown = (text) => {
   if (!text) return ''
@@ -46,6 +53,8 @@ const startMbtiTest = (version) => {
   mbtiAnswers.value = []
   mbtiTestResult.value = null
   showMbtiTest.value = true
+  // 追踪 MBTI 开始
+  track('MBTI测试', 'start', { test_version: version })
 }
 
 const selectMbtiOption = (option) => {
@@ -71,6 +80,12 @@ const finishMbtiTest = () => {
     type,
     ...mbtiDescriptions[type]
   }
+  // 追踪 MBTI 完成
+  track('MBTI测试', 'complete', {
+    mbti_type: type,
+    test_version: mbtiTestVersion.value,
+    answers_count: mbtiAnswers.value.length,
+  })
   // 发送结果给 AI 分析
   const resultText = `我完成了MBTI测试，测试版本：${mbtiTestVersion.value === 'simple' ? '简易版' : mbtiTestVersion.value === 'standard' ? '标准版' : '完整版'}。我的MBTI类型是：${type}（${mbtiTestResult.value.name}）。`
   sendMessage(resultText)
@@ -239,6 +254,14 @@ async function sendMessage() {
   inputMessage.value = ''
   isStreaming.value = true
   playSendSound() // 发送音效
+
+  // 追踪用户发送消息（AI对话工具）
+  const toolName = route.params.toolId ? String(route.params.toolId) : 'ai_chat'
+  track(toolName, 'submit', {
+    message_length: message.length,
+    tool_section: 'chat',
+    has_profile: !!profileStore.currentProfile,
+  })
   
   // 发送消息
   await chatStore.sendMessage(message)
