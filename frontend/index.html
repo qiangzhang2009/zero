@@ -11,8 +11,66 @@
     <meta name="keywords" content="八字算命,风水布局,紫微斗数,梅花易数,命理咨询,AI算命,玄学,周易,塔罗占卜,黄帝内经">
     <link rel="manifest" href="/manifest.json">
 
-    <!-- 数据追踪 SDK -->
-    <script src="https://website-backend-admin.vercel.app/api/tracking?tenant=zero" async></script>
+    <!-- 数据追踪 SDK - 使用绝对路径 -->
+    <script>
+      // 直接内联追踪代码，避免跨域和缓存问题
+      (function() {
+        var tenantSlug = 'zero';
+        var trackingUrl = 'https://website-backend-admin.vercel.app/api/tracking';
+        var visitorId = localStorage.getItem('zt_visitor_id') || 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        if (!localStorage.getItem('zt_visitor_id')) localStorage.setItem('zt_visitor_id', visitorId);
+        
+        var sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        
+        function track(eventType, eventData) {
+          var data = {
+            event_type: eventType,
+            tenant_slug: tenantSlug,
+            session_id: sessionId,
+            visitor_id: visitorId,
+            timestamp: new Date().toISOString(),
+            website_url: window.location.origin,
+            page_url: window.location.href,
+            page_title: document.title,
+            referrer: document.referrer,
+            user_agent: navigator.userAgent,
+            event_data: eventData
+          };
+          navigator.sendBeacon
+            ? navigator.sendBeacon(trackingUrl, JSON.stringify(data))
+            : fetch(trackingUrl, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data),
+                keepalive: true
+              }).catch(function() {});
+        }
+        
+        track('page_view', {page_path: window.location.pathname, page_title: document.title});
+        
+        window.zxqTrack = {
+          tool: function(toolName, action, params) {
+            track('tool_interaction', {tool_name: toolName, action: action, ...params});
+          },
+          form: function(formName, fields, result) {
+            track('form_submit', {form_name: formName, fields: fields, submit_result: result});
+          },
+          custom: function(eventName, data) {
+            track('custom', {event_name: eventName, ...data});
+          }
+        };
+        
+        document.addEventListener('submit', function(e) {
+          var form = e.target;
+          if (form.tagName !== 'FORM') return;
+          var formName = form.name || form.id || 'anonymous';
+          var formData = new FormData(form);
+          var fields = {};
+          formData.forEach(function(value, key) { fields[key] = value; });
+          setTimeout(function() { window.zxqTrack.form(formName, fields, 'success'); }, 500);
+        });
+      })();
+    </script>
 
     <!-- GEO: Schema.org 结构化数据 -->
     <script type="application/ld+json">
