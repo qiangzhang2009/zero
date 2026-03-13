@@ -167,10 +167,15 @@ const currentModule = computed(() => {
 
 const introMessage = computed(() => {
   const profile = profileStore.currentProfile
-  const lang = languageStore.currentLanguage
-  
-  // 使用翻译的开场白
-  let intro = chatStore.moduleIntros[chatStore.currentModule] || (greetingTranslations[lang] || greetingTranslations['zh-CN'])
+  const lang = languageStore.currentLanguage.value
+
+  // 使用对应语言的开场白
+  const moduleIntro = chatStore.moduleIntros[chatStore.currentModule]
+  let intro = moduleIntro ? moduleIntro[lang] : null
+  if (!intro) {
+    // 如果没有对应语言版本，回退到中文
+    intro = moduleIntro ? moduleIntro['zh-CN'] : (greetingTranslations[lang] || greetingTranslations['zh-CN'])
+  }
   
   // 如果有档案信息，加入到开场白
   if (profile && profile.name) {
