@@ -193,8 +193,25 @@ function filterSensitiveWords(message) {
 // 通用聊天处理器（简单对话）
 async function chatHandler(req, res) {
   try {
-    const { message, history = [], userTime } = req.body;
+    const { message, history = [], userTime, language = 'zh-CN' } = req.body;
     
+    // 语言映射表
+    const languageMap = {
+      'zh-CN': { name: '中文', prompt: '请用中文回复' },
+      'en': { name: 'English', prompt: 'Please reply in English' },
+      'ja': { name: '日本語', prompt: '日本語で返信してください' },
+      'ko': { name: '한국어', prompt: '한국어로 답변해 주세요' },
+      'es': { name: 'Español', prompt: 'Responde en español' },
+      'it': { name: 'Italiano', prompt: 'Rispondi in italiano' },
+      'fr': { name: 'Français', prompt: 'Répondez en français' },
+      'de': { name: 'Deutsch', prompt: 'Bitte auf Deutsch antworten' },
+      'pt': { name: 'Português', prompt: 'Responda em português' },
+      'ar': { name: 'العربية', prompt: 'الرجاء الرد بالعربية' },
+      'id': { name: 'Bahasa Indonesia', prompt: 'Harap ответить dalam Bahasa Indonesia' }
+    };
+    
+    const langConfig = languageMap[language] || languageMap['zh-CN'];
+
     // 获取用户时间或使用服务器时间
     const userDateTime = getUserDateTime(userTime);
     
@@ -218,10 +235,13 @@ async function chatHandler(req, res) {
     console.log('[DEBUG] After filter validHistory count:', validHistory.length);
     
     // 重要年份提醒 - 使用更强烈的措辞
-    const yearReminder = '【强制要求】当前年份是2026年（丙午年），不是2024年、2025年或其他任何年份！在回答任何关于运势、命运、流年等问题时，必须使用2026年进行计算。如果你的训练数据中包含过去的预测，请忽略它们，只根据2026年来回答。绝对不要在回复中出现"2024"、"2025"等过去年份。';
+    const yearReminder = '【紧急重要-必须严格遵守】现在是2026年！回答中任何关于运势、命运、流年、大运、吉日、财运、事业等与时间相关的预测，必须使用2026年！绝对不能使用2024年、2025年或其他任何年份！如果你的训练数据包含过去的预测，那是过时的，必须忽略！';
+    
+    console.log('[YEAR DEBUG] yearReminder:', yearReminder);
+    console.log('[YEAR DEBUG] userDateTime:', userDateTime);
     
     const messages = [
-      { role: 'system', content: `${yearReminder} 你是知几的AI助手，一个古老智慧与现代科技结合的命理咨询师。请用温暖，专业的方式回答用户的问题。绝对不要在回复中提及任何AI模型、技术细节或DeepSeek相关信息。请使用与用户提问相同的语言进行回复。${userDateTime}` },
+      { role: 'system', content: `${yearReminder} 你是知几的AI助手，一个古老智慧与现代科技结合的命理咨询师。请用温暖，专业的方式回答用户的问题。绝对不要在回复中提及任何AI模型、技术细节或DeepSeek相关信息。【语言要求】${langConfig.prompt} ${userDateTime}` },
       ...validHistory,
       { role: 'user', content: message }
     ];
@@ -265,7 +285,24 @@ async function chatHandler(req, res) {
 async function chatWithContextHandler(req, res) {
   try {
     const { module } = req.params;
-    const { message, history = [], image, profile, userTime } = req.body;
+    const { message, history = [], image, profile, userTime, language = 'zh-CN' } = req.body;
+    
+    // 语言映射表
+    const languageMap = {
+      'zh-CN': { name: '中文', prompt: '请用中文回复' },
+      'en': { name: 'English', prompt: 'Please reply in English' },
+      'ja': { name: '日本語', prompt: '日本語で返信してください' },
+      'ko': { name: '한국어', prompt: '한국어로 답변해 주세요' },
+      'es': { name: 'Español', prompt: 'Responde en español' },
+      'it': { name: 'Italiano', prompt: 'Rispondi in italiano' },
+      'fr': { name: 'Français', prompt: 'Répondez en français' },
+      'de': { name: 'Deutsch', prompt: 'Bitte auf Deutsch antworten' },
+      'pt': { name: 'Português', prompt: 'Responda em português' },
+      'ar': { name: 'العربية', prompt: 'الرجاء الرد بالعربية' },
+      'id': { name: 'Bahasa Indonesia', prompt: 'Harap ответить dalam Bahasa Indonesia' }
+    };
+    
+    const langConfig = languageMap[language] || languageMap['zh-CN'];
     
     // 获取用户时间信息
     const userDateTime = getUserDateTime(userTime);
@@ -276,10 +313,13 @@ async function chatWithContextHandler(req, res) {
     };
     
     // 重要年份提醒 - 使用更强烈的措辞
-    const yearReminder = '【强制要求】当前年份是2026年（丙午年），不是2024年、2025年或其他任何年份！在回答任何关于运势、命运、流年等问题时，必须使用2026年进行计算。如果你的训练数据中包含过去的预测，请忽略它们，只根据2026年来回答。绝对不要在回复中出现"2024"、"2025"等过去年份。';
+    const yearReminder = '【紧急重要-必须严格遵守】现在是2026年！回答中任何关于运势、命运、流年、大运、吉日、财运、事业等与时间相关的预测，必须使用2026年！绝对不能使用2024年、2025年或其他任何年份！如果你的训练数据包含过去的预测，那是过时的，必须忽略！';
     
-    // 直接使用系统提示，让AI用与问题相同的语言回复
+    // 直接使用系统提示，让AI用用户选择的语言回复
     let systemPrompt = yearReminder + '\n\n' + moduleConfig.systemPrompt;
+    
+    // 添加语言要求
+    systemPrompt += `\n\n【语言要求】${langConfig.prompt}`;
     
     // 添加当前日期时间信息
     systemPrompt += `\n\n${userDateTime}`;

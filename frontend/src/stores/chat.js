@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import axios from 'axios'
 import { useProfileStore } from './profile'
+import { useLanguageStore } from '../i18n'
 
 // 处理可能的 /api 后缀，避免路径重复
 let apiBase = import.meta.env.VITE_API_URL || ''
@@ -10,6 +11,10 @@ if (!apiBase || apiBase === '/api') {
   apiBase = 'https://zero-production-4a85.up.railway.app/api'
 }
 const API_URL = apiBase
+
+// 后台管理系统 API 地址
+const TRACKING_API_URL = 'https://website-backend-admin-hnq64q20z-johnzhangs-projects-50e83ec4.vercel.app/api/tracking'
+const TENANT_SLUG = 'zero'
 
 // 前端敏感词过滤函数（额外保障）
 function filterClientSensitiveWords(message) {
@@ -41,6 +46,16 @@ function getUserId() {
   return userId
 }
 
+// 生成或获取会话ID（用于追踪同一对话）
+function getSessionId() {
+  let sessionId = sessionStorage.getItem('zhiJi_session_id')
+  if (!sessionId) {
+    sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+    sessionStorage.setItem('zhiJi_session_id', sessionId)
+  }
+  return sessionId
+}
+
 // 从localStorage加载保存的数据
 function loadFromStorage(key, defaultValue) {
   try {
@@ -58,6 +73,126 @@ function saveToStorage(key, value) {
   } catch (e) {
     console.warn('Failed to save to localStorage:', e)
   }
+}
+
+// 发送到后台管理系统
+async function trackToBackend(module, userMessage, aiMessage, action = 'response') {
+  try {
+    const visitorId = getUserId()
+    const sessionId = getSessionId()
+    await fetch(TRACKING_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_type: action === 'start' ? 'chat_start' : 'chat_message',
+        tenant_slug: TENANT_SLUG,
+        visitor_id: visitorId,
+        session_id: sessionId,
+        timestamp: new Date().toISOString(),
+        website_url: window.location.origin,
+        page_url: window.location.href,
+        page_title: document.title,
+        referrer: document.referrer,
+        user_agent: navigator.userAgent,
+        event_data: {
+          module: module,
+          user_message: userMessage,
+          ai_message: aiMessage || '',
+          action: action,
+          conversation_turns: action === 'response' ? 1 : 0
+        }
+      })
+    })
+  } catch (error) {
+    console.warn('Failed to track to backend:', error)
+  }
+}
+
+// 追踪模块选择
+function trackModuleSelect(moduleId, moduleName) {
+  try {
+    const visitorId = getUserId()
+    fetch(TRACKING_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_type: 'module_select',
+        tenant_slug: TENANT_SLUG,
+        visitor_id: visitorId,
+        event_data: {
+          module_id: moduleId,
+          module_name: moduleName,
+          timestamp: new Date().toISOString()
+        }
+      })
+    })
+  } catch (error) {
+    console.warn('Failed to track module select:', error)
+  }
+}
+
+// 追踪模块切换
+function trackModuleSwitch(fromModule, toModule) {
+  try {
+    const visitorId = getUserId()
+    fetch(TRACKING_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_type: 'module_switch',
+        tenant_slug: TENANT_SLUG,
+        visitor_id: visitorId,
+        event_data: {
+          from_module: fromModule,
+          to_module: toModule,
+          timestamp: new Date().toISOString()
+        }
+      })
+    })
+  } catch (error) {
+    console.warn('Failed to track module switch:', error)
+  }
+}
+
+// 追踪档案创建/更新
+function trackProfile(profileData, action = 'create') {
+  try {
+    const visitorId = getUserId()
+    fetch(TRACKING_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_type: 'profile_' + action,
+        tenant_slug: TENANT_SLUG,
+        visitor_id: visitorId,
+        event_data: {
+          profile_id: profileData.profile_id || 'default',
+          profile_type: profileData.profile_type || 'bazi',
+          name: profileData.name,
+          birthday: profileData.birthday,
+          birth_time: profileData.hour,
+          gender: profileData.gender,
+          profile_data: profileData.bazi || {},
+          completeness: calculateProfileCompleteness(profileData),
+          timestamp: new Date().toISOString()
+        }
+      })
+    })
+  } catch (error) {
+    console.warn('Failed to track profile:', error)
+  }
+}
+
+// 计算档案完整度
+function calculateProfileCompleteness(profile) {
+  if (!profile) return 0
+  let completeness = 0
+  if (profile.name) completeness += 20
+  if (profile.birthday) completeness += 30
+  if (profile.hour) completeness += 20
+  if (profile.gender) completeness += 10
+  if (profile.bazi && Object.keys(profile.bazi).length > 0) completeness += 20
+  return completeness
 }
 
 // 获取当前模块对应的消息存储key
@@ -219,6 +354,9 @@ export const useChatStore = defineStore('chat', () => {
       timestamp: Date.now()
     })
     
+    // 记录用户发送的消息到后台
+    trackToBackend(currentModule.value, content, '', 'start')
+    
     // 更新历史记录
     history.value.push(
       { role: 'user', content: content },
@@ -227,8 +365,10 @@ export const useChatStore = defineStore('chat', () => {
     
     isLoading.value = true
     
-    // 获取用户本地时间
+    // 获取用户本地时间和语言
     const userLocalTime = new Date().toISOString();
+    const languageStore = useLanguageStore();
+    const currentLanguage = languageStore.currentLanguage;
     
     try {
       const response = await axios.post(`${API_URL}/chat/${currentModule.value}`, {
@@ -241,7 +381,8 @@ export const useChatStore = defineStore('chat', () => {
           hour: profile.hour,
           bazi: profile.bazi
         } : null,
-        userTime: userLocalTime
+        userTime: userLocalTime,
+        language: currentLanguage
       })
       
       const aiMessage = response.data.data.message
@@ -255,6 +396,9 @@ export const useChatStore = defineStore('chat', () => {
         content: filteredMessage,
         timestamp: Date.now()
       })
+
+      // 发送到后台管理系统（AI 回复）
+      trackToBackend(currentModule.value, '', filteredMessage, 'response')
       
       // 更新历史
       history.value[history.value.length - 1] = { role: 'assistant', content: filteredMessage }
@@ -303,6 +447,14 @@ export const useChatStore = defineStore('chat', () => {
 
   // 切换模块
   function setModule(moduleId) {
+    const previousModule = currentModule.value
+    // 追踪模块切换
+    if (previousModule && previousModule !== moduleId) {
+      trackModuleSwitch(previousModule, moduleId)
+    }
+    // 追踪模块选择
+    trackModuleSelect(moduleId, modules.value.find(m => m.id === moduleId)?.name || moduleId)
+    
     // 切换模块，保留当前模块的消息（已通过watch自动保存）
     currentModule.value = moduleId
     // messages 和 history 会通过 watch 自动加载对应模块的数据
@@ -330,12 +482,17 @@ export const useChatStore = defineStore('chat', () => {
       { role: 'user', content: content, image: imageBase64 },
       { role: 'assistant', content: '' }
     )
+
+    // 记录用户发送的消息到后台
+    trackToBackend(currentModule.value, content, '', 'start')
     
     isLoading.value = true
     
-    // 获取用户本地时间
+    // 获取用户本地时间和语言
     const userLocalTime = new Date().toISOString();
-    
+    const languageStore = useLanguageStore();
+    const currentLanguage = languageStore.currentLanguage;
+
     try {
       const response = await axios.post(`${API_URL}/chat/${currentModule.value}`, {
         message: content,
@@ -348,7 +505,8 @@ export const useChatStore = defineStore('chat', () => {
           hour: profile.hour,
           bazi: profile.bazi
         } : null,
-        userTime: userLocalTime
+        userTime: userLocalTime,
+        language: currentLanguage
       })
       
       const aiMessage = response.data.data.message
@@ -362,16 +520,19 @@ export const useChatStore = defineStore('chat', () => {
         content: filteredMessage,
         timestamp: Date.now()
       })
-      
+
+      // 发送到后台管理系统（AI 回复）
+      trackToBackend(currentModule.value, '', filteredMessage, 'response')
+
       // 更新历史
       history.value[history.value.length - 1] = { role: 'assistant', content: filteredMessage }
-      
+
     } catch (error) {
       let errorMsg = '抱歉，发生了错误，请稍后再试。'
       if (error.response?.data?.error) {
         errorMsg = error.response.data.error
       }
-      
+
       messages.value.push({
         role: 'assistant',
         content: errorMsg,
@@ -379,7 +540,7 @@ export const useChatStore = defineStore('chat', () => {
       })
     } finally {
       isLoading.value = false
-      
+
       // 保存聊天记录到服务器
       saveChatToServer()
     }
