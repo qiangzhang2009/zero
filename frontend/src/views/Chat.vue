@@ -142,7 +142,7 @@ function playReceiveSound() {
 // 猜你想问 - 预制问题（多语言版本）
 const guessYouWantQuestions = computed(() => {
   const module = chatStore.currentModule
-  const lang = languageStore.currentLanguage
+  const lang = languageStore.currentLanguage.value
   const translations = questionTranslations[lang] || questionTranslations['en'] || questionTranslations['zh-CN']
   return translations[module] || translations.default
 })
@@ -150,7 +150,7 @@ const guessYouWantQuestions = computed(() => {
 // 快捷输入建议（多语言版本）
 const inputSuggestions = computed(() => {
   const module = chatStore.currentModule
-  const lang = languageStore.currentLanguage
+  const lang = languageStore.currentLanguage.value
   const translations = suggestionsTranslations[lang] || suggestionsTranslations['en'] || suggestionsTranslations['zh-CN']
   
   // MBTI 模块特殊处理：显示测试版本按钮
