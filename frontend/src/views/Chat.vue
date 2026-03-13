@@ -168,9 +168,10 @@ const currentModule = computed(() => {
 const introMessage = computed(() => {
   const profile = profileStore.currentProfile
   const lang = languageStore.currentLanguage.value
+  const currentModule = chatStore.currentModule
 
   // 使用对应语言的开场白
-  const moduleIntro = chatStore.moduleIntros[chatStore.currentModule]
+  const moduleIntro = chatStore.moduleIntros[currentModule]
   let intro = moduleIntro ? moduleIntro[lang] : null
   if (!intro) {
     // 如果没有对应语言版本，回退到中文
