@@ -223,6 +223,16 @@ watch(() => route.params.module, (newModule) => {
   }
 })
 
+// 监听语言变化，更新欢迎语
+watch(() => languageStore.currentLanguage.value, () => {
+  if (chatStore.messages.length > 0 && chatStore.messages[0].role === 'assistant') {
+    chatStore.messages[0] = {
+      ...chatStore.messages[0],
+      content: introMessage.value
+    }
+  }
+})
+
 // 打字机效果函数
 async function typeText(text, messageIndex) {
   if (isTyping.value) return
