@@ -1,6 +1,61 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
+// 后台管理系统 API 地址
+const TRACKING_API_URL = 'https://websites-admin.zxqconsulting.com/api/tracking'
+const TENANT_SLUG = 'zero'
+
+// 生成或获取用户ID
+function getUserId() {
+  let userId = localStorage.getItem('zhiJi_user_id')
+  if (!userId) {
+    userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+    localStorage.setItem('zhiJi_user_id', userId)
+  }
+  return userId
+}
+
+// 计算档案完整度
+function calculateProfileCompleteness(profile) {
+  if (!profile) return 0
+  let completeness = 0
+  if (profile.name) completeness += 20
+  if (profile.birthday) completeness += 30
+  if (profile.hour) completeness += 20
+  if (profile.gender) completeness += 10
+  if (profile.bazi && Object.keys(profile.bazi).length > 0) completeness += 20
+  return completeness
+}
+
+// 追踪档案创建/更新
+function trackProfile(profileData, action = 'create') {
+  try {
+    const visitorId = getUserId()
+    fetch(TRACKING_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_type: 'profile_' + action,
+        tenant_slug: TENANT_SLUG,
+        visitor_id: visitorId,
+        event_data: {
+          profile_id: profileData.id || profileData.profile_id || 'default',
+          profile_type: 'bazi',
+          name: profileData.name,
+          birthday: profileData.birthday,
+          birth_time: profileData.hour,
+          gender: profileData.gender,
+          profile_data: profileData.bazi || {},
+          completeness: calculateProfileCompleteness(profileData),
+          timestamp: new Date().toISOString()
+        }
+      })
+    })
+  } catch (error) {
+    console.warn('Failed to track profile:', error)
+  }
+}
+
 export const useProfileStore = defineStore('profile', () => {
   // 档案列表
   const profiles = ref([])
@@ -57,6 +112,8 @@ export const useProfileStore = defineStore('profile', () => {
     }
     profiles.value.push(newProfile)
     saveProfiles()
+    // 追踪档案创建
+    trackProfile(newProfile, 'create')
     return newProfile
   }
 
@@ -66,6 +123,9 @@ export const useProfileStore = defineStore('profile', () => {
     if (index !== -1) {
       profiles.value[index] = { ...profiles.value[index], ...data }
       saveProfiles()
+      
+      // 追踪档案更新
+      trackProfile(profiles.value[index], 'update')
       
       // 如果更新的是当前档案，也更新currentProfile
       if (currentProfile.value?.id === profileId) {

@@ -13,7 +13,7 @@ if (!apiBase || apiBase === '/api') {
 const API_URL = apiBase
 
 // 后台管理系统 API 地址
-const TRACKING_API_URL = 'https://website-backend-admin-hnq64q20z-johnzhangs-projects-50e83ec4.vercel.app/api/tracking'
+const TRACKING_API_URL = 'https://websites-admin.zxqconsulting.com/api/tracking'
 const TENANT_SLUG = 'zero'
 
 // 前端敏感词过滤函数（额外保障）

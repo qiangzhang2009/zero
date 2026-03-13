@@ -16,12 +16,99 @@
       // 直接内联追踪代码，避免跨域和缓存问题
       (function() {
         var tenantSlug = 'zero';
-        var trackingUrl = 'https://website-backend-admin.vercel.app/api/tracking';
+        var trackingUrl = 'https://websites-admin.zxqconsulting.com/api/tracking';
         var visitorId = localStorage.getItem('zt_visitor_id') || 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         if (!localStorage.getItem('zt_visitor_id')) localStorage.setItem('zt_visitor_id', visitorId);
-        
+
         var sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        
+        var currentModule = null;
+        var conversationTurns = 0;
+
+        // 获取设备信息
+        function getDeviceInfo() {
+          var ua = navigator.userAgent || '';
+          var deviceType = 'desktop';
+          if (/tablet|ipad|playbook|silk/i.test(ua)) {
+            deviceType = 'tablet';
+          } else if (/mobile|iphone|ipod|android|blackberry|opera mini|iemobile/i.test(ua)) {
+            deviceType = 'mobile';
+          }
+
+          var browser = 'unknown';
+          if (ua.includes('Firefox')) {
+            browser = 'Firefox';
+          } else if (ua.includes('Chrome')) {
+            browser = 'Chrome';
+          } else if (ua.includes('Safari') && !ua.includes('Chrome')) {
+            browser = 'Safari';
+          } else if (ua.includes('Edge')) {
+            browser = 'Edge';
+          }
+
+          var os = 'unknown';
+          if (ua.includes('Windows')) {
+            os = 'Windows';
+          } else if (ua.includes('Mac')) {
+            os = 'macOS';
+          } else if (ua.includes('Linux')) {
+            os = 'Linux';
+          } else if (ua.includes('Android')) {
+            os = 'Android';
+          } else if (ua.includes('iOS') || ua.includes('iPhone') || ua.includes('iPad')) {
+            os = 'iOS';
+          }
+
+          return {
+            deviceType: deviceType,
+            browser: browser,
+            os: os,
+            screenWidth: window.screen.width,
+            screenHeight: window.screen.height,
+            language: navigator.language || 'unknown'
+          };
+        }
+
+        // 获取访问来源
+        function getTrafficSource() {
+          var referrer = document.referrer || '';
+          if (!referrer) return 'direct';
+
+          try {
+            var refUrl = new URL(referrer);
+            var hostname = refUrl.hostname;
+
+            var searchEngines = ['google', 'bing', 'yahoo', 'baidu', 'yandex', 'duckduckgo', 'sogou'];
+            if (searchEngines.some(function(se) { return hostname.includes(se); })) {
+              return 'search';
+            }
+
+            var socialMedia = ['facebook', 'twitter', 'linkedin', 'instagram', 'youtube', 'tiktok', 'weibo', 'zhihu'];
+            if (socialMedia.some(function(sm) { return hostname.includes(sm); })) {
+              return 'social';
+            }
+
+            return 'referral';
+          } catch (e) {
+            return 'direct';
+          }
+        }
+
+        // 获取地理信息（异步）
+        var geoInfo = {};
+        fetch('https://ipapi.co/json/')
+          .then(function(response) { return response.json(); })
+          .then(function(data) {
+            geoInfo = {
+              country: data.country_name || data.country || '',
+              region: data.region || '',
+              city: data.city || '',
+              isp: data.org || ''
+            };
+          })
+          .catch(function() {});
+
+        var deviceInfo = getDeviceInfo();
+
         function track(eventType, eventData) {
           var data = {
             event_type: eventType,
@@ -34,8 +121,23 @@
             page_title: document.title,
             referrer: document.referrer,
             user_agent: navigator.userAgent,
+            // 设备信息
+            device_type: deviceInfo.deviceType,
+            browser: deviceInfo.browser,
+            os: deviceInfo.os,
+            screen_resolution: deviceInfo.screenWidth + 'x' + deviceInfo.screenHeight,
+            language: deviceInfo.language,
+            // 访问来源
+            traffic_source: getTrafficSource(),
+            // 地理信息
+            geo_country: geoInfo.country || '',
+            geo_region: geoInfo.region || '',
+            geo_city: geoInfo.city || '',
+            geo_isp: geoInfo.isp || '',
+            // 事件数据
             event_data: eventData
           };
+          console.log('[Tracking] Sending:', eventType, eventData);
           navigator.sendBeacon
             ? navigator.sendBeacon(trackingUrl, JSON.stringify(data))
             : fetch(trackingUrl, {
@@ -46,15 +148,129 @@
               }).catch(function() {});
         }
         
+        // 页面浏览
         track('page_view', {page_path: window.location.pathname, page_title: document.title});
         
+        // 页面离开事件
+        var pageStartTime = Date.now();
+        window.addEventListener('beforeunload', function() {
+          var duration = Math.round((Date.now() - pageStartTime) / 1000);
+          track('page_leave', {duration_seconds: duration, page_path: window.location.pathname});
+        });
+        
+        // 滚动事件（每30秒记录一次）
+        var maxScroll = 0;
+        window.addEventListener('scroll', function() {
+          var scrollPercent = Math.round((window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100);
+          if (scrollPercent > maxScroll) maxScroll = scrollPercent;
+        });
+        setInterval(function() {
+          if (maxScroll > 0) {
+            track('scroll', {scroll_depth: maxScroll, page_path: window.location.pathname});
+            maxScroll = 0;
+          }
+        }, 30000);
+        
+        // 统一追踪对象 - 完整版
         window.zxqTrack = {
+          // 页面浏览
+          pageView: function(pageData) {
+            track('page_view', pageData || {});
+          },
+          
+          // 工具交互（兼容旧版）
           tool: function(toolName, action, params) {
             track('tool_interaction', {tool_name: toolName, action: action, ...params});
           },
+          
+          // 工具启动
+          toolStart: function(toolName, params) {
+            currentModule = toolName;
+            conversationTurns = 0;
+            track('tool_start', {module_id: toolName, module_name: toolName, ...params});
+          },
+          
+          // 工具输入
+          toolInput: function(toolName, inputParams) {
+            track('tool_input', {module_id: toolName, input_params: inputParams});
+          },
+          
+          // 工具输出
+          toolOutput: function(toolName, outputResult, duration) {
+            track('tool_output', {module_id: toolName, output_result: outputResult, duration_ms: duration});
+          },
+          
+          // 工具完成
+          toolComplete: function(toolName, result, duration, steps) {
+            track('tool_complete', {module_id: toolName, output_result: result, duration_ms: duration, completed_steps: steps});
+            currentModule = null;
+          },
+          
+          // 工具放弃
+          toolAbandon: function(toolName, completedSteps, totalSteps) {
+            track('tool_abandon', {module_id: toolName, completed_steps: completedSteps, total_steps: totalSteps});
+            currentModule = null;
+          },
+          
+          // 表单提交（兼容旧版）
           form: function(formName, fields, result) {
             track('form_submit', {form_name: formName, fields: fields, submit_result: result});
           },
+          
+          // Chat 消息
+          chat: function(module, userMsg, aiMsg, action) {
+            if (action === 'start') {
+              currentModule = module;
+              conversationTurns = 1;
+              track('chat_start', {module: module, user_message: userMsg});
+            } else if (action === 'response') {
+              conversationTurns++;
+              track('chat_message', {module: module, user_message: userMsg, ai_message: aiMsg, action: action, conversation_turns: conversationTurns});
+            }
+          },
+          
+          // Chat 结束
+          chatEnd: function(module, duration, messageCount) {
+            track('chat_end', {module: module, duration_seconds: duration, message_count: messageCount});
+            currentModule = null;
+          },
+          
+          // 用户档案
+          profile: function(profileData, action) {
+            track('profile_' + (action || 'create'), {
+              profile_id: profileData.profile_id || 'default',
+              profile_type: profileData.profile_type || 'default',
+              name: profileData.name,
+              avatar: profileData.avatar,
+              birthday: profileData.birthday,
+              birth_time: profileData.birth_time,
+              gender: profileData.gender,
+              profile_data: profileData.profile_data || {},
+              completeness: profileData.completeness || 0
+            });
+          },
+          
+          // 模块选择
+          moduleSelect: function(moduleId, moduleName) {
+            track('module_select', {module_id: moduleId, module_name: moduleName});
+          },
+          
+          // 模块切换
+          moduleSwitch: function(fromModule, toModule) {
+            track('module_switch', {from_module: fromModule, to_module: toModule});
+          },
+          
+          // 用户偏好
+          preference: function(key, value) {
+            track('preference_update', {preference_key: key, preference_value: value});
+          },
+          
+          // 用户生命周期
+          lifecycle: function(stage) {
+            track('lifecycle_update', {lifecycle_stage: stage});
+          },
+          
+          // 自定义事件（兼容旧版）
           custom: function(eventName, data) {
             track('custom', {event_name: eventName, ...data});
           }

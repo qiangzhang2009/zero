@@ -10,7 +10,7 @@ app.use(router)
 
 // 初始化数据追踪
 const TENANT_SLUG = 'zero' // 知几网站
-const TRACKING_URL = 'https://website-backend-admin.vercel.app/api/tracking'
+const TRACKING_URL = 'https://websites-admin.zxqconsulting.com/api/tracking'
 
 // 获取或生成访客ID
 function getVisitorId() {
