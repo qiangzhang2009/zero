@@ -144,6 +144,7 @@ function getCurrentLangInfo() {
     width: 90vw;
     max-height: 80vh;
     border-radius: 20px;
+    overflow: visible;
   }
   
   .language-list {
