@@ -135,26 +135,47 @@ function getCurrentLangInfo() {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
-@media (max-width: 480px) {
-  .language-dropdown {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100vw;
-    height: 100vh;
-    max-height: 100vh;
-    border-radius: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .language-list {
-    flex: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+.language-list {
+  padding: 8px;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.language-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  background: none;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.language-option:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.language-option.active {
+  background: rgba(251, 191, 36, 0.15);
+}
+
+.option-flag {
+  font-size: 20px;
+}
+
+.option-name {
+  flex: 1;
+  font-size: 14px;
+}
+
+.check-icon {
+  color: #fbbf24;
+  font-weight: bold;
 }
 
 .dropdown-header {
@@ -210,49 +231,6 @@ function getCurrentLangInfo() {
   color: #fff;
 }
 
-.language-list {
-  padding: 8px;
-  max-height: 340px;
-  overflow-y: auto;
-}
-
-.language-option {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 12px 14px;
-  background: none;
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: left;
-}
-
-.language-option:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.language-option.active {
-  background: rgba(251, 191, 36, 0.15);
-}
-
-.option-flag {
-  font-size: 20px;
-}
-
-.option-name {
-  flex: 1;
-  font-size: 14px;
-}
-
-.check-icon {
-  color: #fbbf24;
-  font-weight: bold;
-}
-
 /* 动画 */
 .fade-enter-active,
 .fade-leave-active {
@@ -265,17 +243,20 @@ function getCurrentLangInfo() {
   transform: translateY(-10px);
 }
 
-/* 移动端适配 */
+/* 移动端适配 - 全屏模态框 */
 @media (max-width: 480px) {
   .language-dropdown {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 360px;
-    max-height: 80vh;
-    border-radius: 20px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
   }
   
   .dropdown-header {
@@ -291,7 +272,7 @@ function getCurrentLangInfo() {
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    max-height: 55vh;
+    max-height: none;
     padding: 8px 12px 20px;
   }
   
