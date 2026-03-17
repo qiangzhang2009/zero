@@ -138,12 +138,14 @@ function getCurrentLangInfo() {
 @media (max-width: 480px) {
   .language-dropdown {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90vw;
-    height: 70vh;
-    border-radius: 20px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
     display: flex;
     flex-direction: column;
   }
