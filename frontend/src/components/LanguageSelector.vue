@@ -142,13 +142,14 @@ function getCurrentLangInfo() {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 90vw;
-    max-height: 80vh;
+    height: 70vh;
     border-radius: 20px;
-    overflow: visible;
+    display: flex;
+    flex-direction: column;
   }
   
   .language-list {
-    max-height: calc(80vh - 120px);
+    flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
