@@ -268,7 +268,19 @@ export function t(key, lang = 'zh-CN') {
 import { defineStore } from 'pinia'
 
 export const useLanguageStore = defineStore('language', () => {
-  const currentLanguage = ref(loadFromStorage('zhiJi_language', detectSystemLanguage()))
+  // 始终检测系统语言作为默认值，然后检查localStorage是否有用户手动设置的语言
+  const systemLang = detectSystemLanguage()
+  const storedLang = (() => {
+    try {
+      const stored = localStorage.getItem('zhiJi_language')
+      return stored ? JSON.parse(stored) : null
+    } catch {
+      return null
+    }
+  })()
+  
+  // 如果用户没有手动设置过语言，则使用系统语言；否则使用用户选择的语言
+  const currentLanguage = ref(storedLang || systemLang)
   
   function loadFromStorage(key, defaultValue) {
     try {
