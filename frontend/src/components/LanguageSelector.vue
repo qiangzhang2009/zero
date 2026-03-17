@@ -148,6 +148,8 @@ function getCurrentLangInfo() {
   
   .language-list {
     max-height: calc(80vh - 120px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
