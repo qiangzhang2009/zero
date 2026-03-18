@@ -145,8 +145,11 @@ function playReceiveSound() {
 const guessYouWantQuestions = computed(() => {
   const module = chatStore.currentModule
   const lang = languageStore.currentLanguage.value
+  console.log('guessYouWantQuestions:', { module, lang, available: Object.keys(questionTranslations) })
   const translations = questionTranslations[lang] || questionTranslations['en'] || questionTranslations['zh-CN']
-  return translations[module] || translations.default
+  const result = translations[module] || translations.default
+  console.log('guessYouWantQuestions result:', result)
+  return result
 })
 
 // 快捷输入建议（多语言版本）
