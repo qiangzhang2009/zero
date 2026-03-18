@@ -11580,3 +11580,817 @@ websites-admin.zxqconsulting.com/api/tracking:1  Failed to load resource: the se
 
 ---
 
+_**Assistant (claude-4.6-opus-max-thinking)**_
+
+<think>
+用户说问题没有解决。让我重新检查一下代码逻辑，看看问题出在哪里。
+
+从用户的控制台输出来看，似乎是网络请求错误（400错误），但这不是主要问题。用户说的是"猜你想问"和"试试这样问"的问题始终是英文。
+
+让我再仔细检查
+</think>
+
+让我重新检查代码，看看问题出在哪里。
+一下代码，看看是否有问题。
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+代码看起来正确。让我检查一下问题是否在于 `questionTranslations` 是否被正确导入。让我检查导入部分：
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+导入
+</think>
+
+让我检查 translations.js 中英文的问题看起来正确。让我检查一下 translations.js 中的 questionTranslations 是否有所有需要的语言。列表：
+让我检查英文问题列表是否存在。
+
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+让我检查是否有模块名称映射问题。问题可能是因为 `chatStore.currentModule` 返回的模块名称（如 '
+</think>
+
+让我检查 chatbazi'）和 translations.js 中的键不匹配。
+
+让我检查 chatStore 中的模块名称是什么。Store 中的模块名称是否和 translations.js 中的键匹配：
+让我检查 chat store 中的模块 ID。
+
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+让我检查 chat store 的结构：
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+让我
+</think>
+
+让我检查模块列表定义：
+检查模块列表是如何定义的：
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+让我搜索一下 modules 是如何使用的：
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+让我检查 Chat.vue 中是如何使用模块的：
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+让我搜索 modules 在哪里定义的：
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+让我看看 modules 的定义：
+
+---
+
+Tool use: **read_file_v2**
+
+---
+
+<think>
+我看到了问题！chat store 中的模块 ID 是 `bazi`, `fengshui` 等，而 translations.js 中的键也是 `bazi`, `fengshui` 等。看起来应该匹配。
+
+让我仔细检查一下 `languageStore.currentLanguage` 的值是否正确获取。问题可能出在 `languageStore.currentLanguage` 上。
+
+让我检查
+</think>
+
+让我检查 languageStore.currentLanguage 的具体实现：
+问题一下 `languageStore.currentLanguage` 是什么类型的值：可能是 `languageStore.currentLanguage` 返回的是 ref 而不是值。让我检查：
+
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+让我检查 `currentLanguage` 的定义：
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+好的，`currentLanguage` 是一个 ref，所以 `languageStore.currentLanguage.value` 是正确的。让我检查 Chat.vue 中 guessYouWantQuestions 的实现，看看它是否正确地使用了
+</think>
+
+让我仔细检查代码。让我看看是否是缓存问题：
+问题是代码逻辑看起来是正确的。但可能是 computed 和 ref 值：浏览器缓存问题。让我确认一下问题：
+
+用户说问题没有解决，可能是因为：
+1. 浏览器缓存了旧的 JS 文件
+2. 或者代码没有正确生效
+
+让我在代码中添加一些调试信息，帮助诊断问题。让我先检查 guessYouWantQuestions 的 computed 是否有正确触发：
+
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+让我检查 guessYouWantQuestions 的显示部分，它看起来没问题。但问题可能是 guessYouWantQuestions 是在 messages.length > 0 时显示的。
+
+让我添加一个
+</think>
+
+让我添加一个 watch 来监听语言变化，确保 watch 来强制刷新 guessYouWantQuestions 和 inputSuggestions 当语言改变时：语言切换时更新问题列表：
+
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+让我看一下问题可能出在哪里。让我检查一下 guessYouWantQuestions 是否被正确重新计算。
+
+等等，我注意到模板中的 `<span class="guess-title">猜你想问</span>` 也是硬编码的中文！这也应该被多
+</think>
+
+我发现问题了！模板中的"猜你想问"标题也是硬编码的！让我修复它：
+让我搜索语言化。让我修复它：所有在模板中的硬编码标题：
+
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+让我修复模板中的硬编码 "猜你想问" 和 "试试这样问：" 标题：
+
+---
+
+Tool use: **edit_file_v2**
+
+---
+
+<think>
+现在
+</think>
+
+现在修复"试试这样问"标题：
+修复 "试试这样问：" 标题：
+
+---
+
+Tool use: **edit_file_v2**
+
+---
+
+<think>
+现在构建并部署：
+
+---
+
+Tool use: **run_terminal_command_v2**
+
+---
+
+<think>
+提交并推送：
+
+---
+
+Tool use: **run_terminal_command_v2**
+
+---
+
+<think>
+现在
+</think>
+
+已修复！问题是标题"猜你想问"应该完成了。让我总结一下修复的内容告诉用户。和"试试这样问："也是硬编码的中文，没有使用多语言翻译。
+
+现在请强制刷新页面（Ctrl+Shift+R 或 Cmd+Shift+R）测试：
+1. 切换语言后，"猜你想问"标题和"试试这样问"标题应该变成对应语言
+2. 下面的问题列表也应该变成对应语言
+
+---
+
+_**User**_
+
+硬刷新后发现还是没有解决：draw:140 [Tracking] Sending: page_view {page_path: '/chat/draw', page_title: '知几 - AI命理咨询 © ZXQ'}
+content.js:208 {userHasLoggedIn: true}
+content.js:208 userHasLoggedIn
+content.js:216 https://zero.zxqconsulting.com/chat/draw true
+draw:1 <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
+index-IDmiRAQx.js:34  POST https://websites-admin.zxqconsulting.com/api/tracking 400 (Bad Request)
+jp @ index-IDmiRAQx.js:34
+c @ index-IDmiRAQx.js:34
+S @ index-IDmiRAQx.js:21
+(anonymous) @ index-IDmiRAQx.js:92
+(anonymous) @ index-IDmiRAQx.js:13
+yn @ index-IDmiRAQx.js:13
+pt @ index-IDmiRAQx.js:13
+t.__weh.t.__weh @ index-IDmiRAQx.js:13
+Il @ index-IDmiRAQx.js:13
+Pl @ index-IDmiRAQx.js:13
+Promise.then
+Al @ index-IDmiRAQx.js:13
+od @ index-IDmiRAQx.js:13
+em @ index-IDmiRAQx.js:13
+o.scheduler @ index-IDmiRAQx.js:13
+c.scheduler @ index-IDmiRAQx.js:9
+trigger @ index-IDmiRAQx.js:9
+Rs @ index-IDmiRAQx.js:9
+notify @ index-IDmiRAQx.js:9
+trigger @ index-IDmiRAQx.js:9
+set value @ index-IDmiRAQx.js:9
+C @ index-IDmiRAQx.js:29
+(anonymous) @ index-IDmiRAQx.js:29
+Promise.then
+L @ index-IDmiRAQx.js:29
+R @ index-IDmiRAQx.js:29
+install @ index-IDmiRAQx.js:29
+use @ index-IDmiRAQx.js:13
+(anonymous) @ index-IDmiRAQx.js:92
+instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2 [DEPRECATED] Default export is deprecated. Instead use `import { create } from 'zustand'`.
+f @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+46089 @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+a @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+74823 @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+a @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+Promise.then
+(anonymous) @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+(anonymous) @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+(anonymous) @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+(anonymous) @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+r @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+s @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+Promise.then
+r @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+s @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+(anonymous) @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+(anonymous) @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+(anonymous) @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+(anonymous) @ feedback.js:2
+index-IDmiRAQx.js:34  POST https://websites-admin.zxqconsulting.com/api/tracking 400 (Bad Request)
+jp @ index-IDmiRAQx.js:34
+c @ index-IDmiRAQx.js:34
+S @ index-IDmiRAQx.js:21
+o @ index-IDmiRAQx.js:92
+onClick @ index-IDmiRAQx.js:92
+yn @ index-IDmiRAQx.js:13
+pt @ index-IDmiRAQx.js:13
+a @ index-IDmiRAQx.js:17
+index-IDmiRAQx.js:34  POST https://websites-admin.zxqconsulting.com/api/tracking 400 (Bad Request)
+jp @ index-IDmiRAQx.js:34
+c @ index-IDmiRAQx.js:34
+S @ index-IDmiRAQx.js:21
+o @ index-IDmiRAQx.js:92
+onClick @ index-IDmiRAQx.js:92
+yn @ index-IDmiRAQx.js:13
+pt @ index-IDmiRAQx.js:13
+a @ index-IDmiRAQx.js:17
+index-IDmiRAQx.js:34  POST https://websites-admin.zxqconsulting.com/api/tracking 400 (Bad Request)
+Fp @ index-IDmiRAQx.js:34
+c @ index-IDmiRAQx.js:34
+S @ index-IDmiRAQx.js:21
+o @ index-IDmiRAQx.js:92
+onClick @ index-IDmiRAQx.js:92
+yn @ index-IDmiRAQx.js:13
+pt @ index-IDmiRAQx.js:13
+a @ index-IDmiRAQx.js:17
+index-IDmiRAQx.js:34  POST https://websites-admin.zxqconsulting.com/api/tracking 400 (Bad Request)
+jp @ index-IDmiRAQx.js:34
+c @ index-IDmiRAQx.js:34
+S @ index-IDmiRAQx.js:21
+(anonymous) @ index-IDmiRAQx.js:92
+yn @ index-IDmiRAQx.js:13
+pt @ index-IDmiRAQx.js:13
+o.call @ index-IDmiRAQx.js:13
+D @ index-IDmiRAQx.js:9
+Cr @ index-IDmiRAQx.js:13
+te @ index-IDmiRAQx.js:13
+$ @ index-IDmiRAQx.js:13
+run @ index-IDmiRAQx.js:9
+Ee @ index-IDmiRAQx.js:13
+ee @ index-IDmiRAQx.js:13
+y @ index-IDmiRAQx.js:13
+$ @ index-IDmiRAQx.js:13
+run @ index-IDmiRAQx.js:9
+Ee @ index-IDmiRAQx.js:13
+ee @ index-IDmiRAQx.js:13
+y @ index-IDmiRAQx.js:13
+$ @ index-IDmiRAQx.js:13
+run @ index-IDmiRAQx.js:9
+Ee @ index-IDmiRAQx.js:13
+ee @ index-IDmiRAQx.js:13
+y @ index-IDmiRAQx.js:13
+$ @ index-IDmiRAQx.js:13
+run @ index-IDmiRAQx.js:9
+runIfDirty @ index-IDmiRAQx.js:9
+yn @ index-IDmiRAQx.js:13
+Pl @ index-IDmiRAQx.js:13
+Promise.then
+Al @ index-IDmiRAQx.js:13
+od @ index-IDmiRAQx.js:13
+em @ index-IDmiRAQx.js:13
+o.scheduler @ index-IDmiRAQx.js:13
+c.scheduler @ index-IDmiRAQx.js:9
+trigger @ index-IDmiRAQx.js:9
+Rs @ index-IDmiRAQx.js:9
+notify @ index-IDmiRAQx.js:9
+trigger @ index-IDmiRAQx.js:9
+set value @ index-IDmiRAQx.js:9
+C @ index-IDmiRAQx.js:29
+(anonymous) @ index-IDmiRAQx.js:29
+Promise.then
+L @ index-IDmiRAQx.js:29
+R @ index-IDmiRAQx.js:29
+o @ index-IDmiRAQx.js:92
+onClick @ index-IDmiRAQx.js:92
+yn @ index-IDmiRAQx.js:13
+pt @ index-IDmiRAQx.js:13
+a @ index-IDmiRAQx.js:17
+index-IDmiRAQx.js:34  POST https://websites-admin.zxqconsulting.com/api/tracking 400 (Bad Request)
+jp @ index-IDmiRAQx.js:34
+c @ index-IDmiRAQx.js:34
+S @ index-IDmiRAQx.js:21
+o @ index-IDmiRAQx.js:92
+onClick @ index-IDmiRAQx.js:92
+yn @ index-IDmiRAQx.js:13
+pt @ index-IDmiRAQx.js:13
+a @ index-IDmiRAQx.js:17
+index-IDmiRAQx.js:34  POST https://websites-admin.zxqconsulting.com/api/tracking 400 (Bad Request)
+Fp @ index-IDmiRAQx.js:34
+c @ index-IDmiRAQx.js:34
+S @ index-IDmiRAQx.js:21
+o @ index-IDmiRAQx.js:92
+onClick @ index-IDmiRAQx.js:92
+yn @ index-IDmiRAQx.js:13
+pt @ index-IDmiRAQx.js:13
+a @ index-IDmiRAQx.js:17
+index-IDmiRAQx.js:34  POST https://websites-admin.zxqconsulting.com/api/tracking 400 (Bad Request)
+jp @ index-IDmiRAQx.js:34
+c @ index-IDmiRAQx.js:34
+S @ index-IDmiRAQx.js:21
+(anonymous) @ index-IDmiRAQx.js:92
+yn @ index-IDmiRAQx.js:13
+pt @ index-IDmiRAQx.js:13
+o.call @ index-IDmiRAQx.js:13
+D @ index-IDmiRAQx.js:9
+Cr @ index-IDmiRAQx.js:13
+te @ index-IDmiRAQx.js:13
+$ @ index-IDmiRAQx.js:13
+run @ index-IDmiRAQx.js:9
+Ee @ index-IDmiRAQx.js:13
+ee @ index-IDmiRAQx.js:13
+y @ index-IDmiRAQx.js:13
+$ @ index-IDmiRAQx.js:13
+run @ index-IDmiRAQx.js:9
+Ee @ index-IDmiRAQx.js:13
+ee @ index-IDmiRAQx.js:13
+y @ index-IDmiRAQx.js:13
+$ @ index-IDmiRAQx.js:13
+run @ index-IDmiRAQx.js:9
+Ee @ index-IDmiRAQx.js:13
+ee @ index-IDmiRAQx.js:13
+y @ index-IDmiRAQx.js:13
+$ @ index-IDmiRAQx.js:13
+run @ index-IDmiRAQx.js:9
+runIfDirty @ index-IDmiRAQx.js:9
+yn @ index-IDmiRAQx.js:13
+Pl @ index-IDmiRAQx.js:13
+Promise.then
+Al @ index-IDmiRAQx.js:13
+od @ index-IDmiRAQx.js:13
+em @ index-IDmiRAQx.js:13
+o.scheduler @ index-IDmiRAQx.js:13
+c.scheduler @ index-IDmiRAQx.js:9
+trigger @ index-IDmiRAQx.js:9
+Rs @ index-IDmiRAQx.js:9
+notify @ index-IDmiRAQx.js:9
+trigger @ index-IDmiRAQx.js:9
+set value @ index-IDmiRAQx.js:9
+C @ index-IDmiRAQx.js:29
+(anonymous) @ index-IDmiRAQx.js:29
+Promise.then
+L @ index-IDmiRAQx.js:29
+R @ index-IDmiRAQx.js:29
+o @ index-IDmiRAQx.js:92
+onClick @ index-IDmiRAQx.js:92
+yn @ index-IDmiRAQx.js:13
+pt @ index-IDmiRAQx.js:13
+a @ index-IDmiRAQx.js:17
+index-IDmiRAQx.js:34  POST https://websites-admin.zxqconsulting.com/api/tracking 400 (Bad Request)
+Fp @ index-IDmiRAQx.js:34
+c @ index-IDmiRAQx.js:34
+S @ index-IDmiRAQx.js:21
+o @ index-IDmiRAQx.js:92
+onClick @ index-IDmiRAQx.js:92
+yn @ index-IDmiRAQx.js:13
+pt @ index-IDmiRAQx.js:13
+a @ index-IDmiRAQx.js:17
+index-IDmiRAQx.js:34  POST https://websites-admin.zxqconsulting.com/api/tracking 400 (Bad Request)
+jp @ index-IDmiRAQx.js:34
+c @ index-IDmiRAQx.js:34
+S @ index-IDmiRAQx.js:21
+(anonymous) @ index-IDmiRAQx.js:92
+yn @ index-IDmiRAQx.js:13
+pt @ index-IDmiRAQx.js:13
+o.call @ index-IDmiRAQx.js:13
+D @ index-IDmiRAQx.js:9
+Cr @ index-IDmiRAQx.js:13
+te @ index-IDmiRAQx.js:13
+$ @ index-IDmiRAQx.js:13
+run @ index-IDmiRAQx.js:9
+Ee @ index-IDmiRAQx.js:13
+ee @ index-IDmiRAQx.js:13
+y @ index-IDmiRAQx.js:13
+$ @ index-IDmiRAQx.js:13
+run @ index-IDmiRAQx.js:9
+Ee @ index-IDmiRAQx.js:13
+ee @ index-IDmiRAQx.js:13
+y @ index-IDmiRAQx.js:13
+$ @ index-IDmiRAQx.js:13
+run @ index-IDmiRAQx.js:9
+Ee @ index-IDmiRAQx.js:13
+ee @ index-IDmiRAQx.js:13
+y @ index-IDmiRAQx.js:13
+$ @ index-IDmiRAQx.js:13
+run @ index-IDmiRAQx.js:9
+runIfDirty @ index-IDmiRAQx.js:9
+yn @ index-IDmiRAQx.js:13
+Pl @ index-IDmiRAQx.js:13
+Promise.then
+Al @ index-IDmiRAQx.js:13
+od @ index-IDmiRAQx.js:13
+em @ index-IDmiRAQx.js:13
+o.scheduler @ index-IDmiRAQx.js:13
+c.scheduler @ index-IDmiRAQx.js:9
+trigger @ index-IDmiRAQx.js:9
+Rs @ index-IDmiRAQx.js:9
+notify @ index-IDmiRAQx.js:9
+trigger @ index-IDmiRAQx.js:9
+set value @ index-IDmiRAQx.js:9
+C @ index-IDmiRAQx.js:29
+(anonymous) @ index-IDmiRAQx.js:29
+Promise.then
+L @ index-IDmiRAQx.js:29
+R @ index-IDmiRAQx.js:29
+o @ index-IDmiRAQx.js:92
+onClick @ index-IDmiRAQx.js:92
+yn @ index-IDmiRAQx.js:13
+pt @ index-IDmiRAQx.js:13
+a @ index-IDmiRAQx.js:17
+index-IDmiRAQx.js:34  POST https://websites-admin.zxqconsulting.com/api/tracking 400 (Bad Request)
+jp @ index-IDmiRAQx.js:34
+c @ index-IDmiRAQx.js:34
+S @ index-IDmiRAQx.js:21
+o @ index-IDmiRAQx.js:92
+onClick @ index-IDmiRAQx.js:92
+yn @ index-IDmiRAQx.js:13
+pt @ index-IDmiRAQx.js:13
+a @ index-IDmiRAQx.js:17
+
+
+---
+
+_**Assistant (claude-4.6-opus-max-thinking)**_
+
+<think>
+用户说问题仍然没有解决。让我检查代码中的具体问题。
+
+从 console 日志可以看到，用户在 `/chat/draw` 页面。
+
+让我重新检查代码逻辑，看看问题出在哪里。可能的问题是：
+1. `languageStore.currentLanguage` 可能返回的不是正确的语言代码
+2. translations.js 中的数据可能有问题
+
+让我检查一下语言代码是否正确匹配。问题可能是用户在页面上，但是语言设置可能是不同的。
+
+让我在代码中添加调试信息，或者直接检查代码逻辑是否正确。
+
+让我检查 guessYouWantQuestions 的实现是否正确：
+
+```javascript
+const guessYouWantQuestions = computed(() => {
+  const module = chatStore.currentModule
+  const lang = languageStore.currentLanguage.value
+  const translations = questionTranslations[lang] || questionTranslations['en'] || questionTranslations['zh-CN']
+  return translations[module] || translations.default
+})
+```
+
+问题可能是：
+1. `lang` 可能返回的不是 'en' 或 'ja' 等，而是其他值
+2. 或者 translations
+</think>
+
+让我检查.js 中 questionTranslations[lang] 没有对应语言
+
+让我检查 i18n/index.js 看看语言是如何初始化的：语言存储和获取逻辑，看看是否有问题。
+
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+让我添加一些调试代码来检查问题。或者，让我检查 t 函数是否正确使用。问题可能是 `t('chat.guessYouWant', languageStore.currentLanguage.value)` 这个调用方式。
+
+让我检查
+</think>
+
+让我检查一下 t 函数的调用方式是否正确：
+一下 t 函数的签名：
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+t 函数签名是 `t(key, lang = 'zh-CN')`，第一个是 key，第二个是语言代码。但在我修复 Chat.vue 时，我传入了 `t('chat.guessYouWant', languageStore.currentLanguage.value)`。这应该是正确的，因为 `languageStore.currentLanguage.value` 返回的是类似 'zh-CN' 或 'en' 这样的字符串。让我仔细检查 guessYouWantQuestions 的代码逻辑。可能问题在于
+</think>
+
+让我检查 translations.js 中 draw 模块的问题翻译 translations.js 中的某些语言缺少 'draw' 模块的问题？让我检查一下 translations.js 中 draw 模块的翻译：是否存在：
+让我的 translations.js 中是否有 draw 模块的问题翻译：
+
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+所有的 draw 翻译都存在。用户切换到 draw 模块（从 URL `/chat/draw` 可以看出），而显示的仍然可能是英文问题。
+
+让我仔细检查一下问题：可能是因为代码没有正确部署，或者存在其他问题。让我添加一些调试日志来帮助诊断问题。
+
+实际上，让我直接测试一下：在浏览器中，问题可能是因为 `questionTranslations` 导入的问题。让我检查一下导入是否正确。
+</think>
+
+让我添加调试日志来诊断问题：
+让我在 guessYouWantQuestions computed 中添加调试：
+
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+代码看起来正确。让我检查一下 `chatStore.currentModule` 的实际值和 `languageStore.currentLanguage.value` 的值。可能是当前模块不是 'bazi' 或 'draw'，而是其他值。让我检查一下 chat store 中的 currentModule 初始值：实际上，让我直接在代码中添加 console.log 来调试。但更简单的方法是先验证问题是否在于模块ID不匹配。
+
+让我检查一下 chatStore 中的模块 ID 是否和 translations.js 中的键匹配。根据之前的检查，chatStore 中的模块 ID 包括：'bazi', 'fengshui', 'tarot', 'palm', 'dream', 'zodiac', 'mbti', 'draw', 'huangdi', 'lifenumber', 'ziwei', 'zhouyi', 'naming', 'marriage', 'company', 'luckyday', 'digital', 'daodejing', 'question'
+
+而 translations.js 中的键包括：'bazi', 'fengshui', 'tarot', 'palm', 'dream', 'zodiac', 'mbti', 'draw', 'huangdi', 'lifenumber', 'ziwei', 'zhouyi', 'naming', 'marriage', 'company', 'luckyday', 'digital', 'daodejing', 'question'
+
+这些是匹配的。让我检查一下问题是否在于 computed 没有正确响应语言变化。
+
+我发现问题了！代码中 `questionTranslations[lang]` 可能会因为 `lang` 不存在而返回 undefined。
+
+fallback 逻辑可能存在问题。我注意到问题可能是 `questionTranslations` 没有被正确导入，或者 translations.js 文件根本没有被正确导出。我怀疑
+</think>
+
+让我添加一些调试日志来这可能是生产构建的问题，需要在代码中加入调试日志来确认。诊断问题：
+让我临时添加调试日志：
+
+
+---
+
+Tool use: **edit_file_v2**
+
+---
+
+<think>
+现在构建并推送：
+
+---
+
+Tool use: **run_terminal_command_v2**
+
+---
+
+<think>
+推送：
+
+---
+
+Tool use: **run_terminal_command_v2**
+
+---
+
+<think>
+已
+</think>
+
+请刷新页面，打开浏览器的开发者工具（F12），查看 Console部署。请用户测试，然后查看控制台日志。 中的日志输出。应该能看到类似这样的日志：
+
+```
+guessYouWantQuestions: { module: 'draw', lang: 'en', available: [...] }
+guessYouWantQuestions result: ['Draw a career fortune stick', ...]
+```
+
+请告诉我：
+1. `module` 显示什么模块？
+2. `lang` 显示什么语言代码？
+3. `available` 显示哪些语言可用？
+
+这样我就能确定问题在哪里了。
+
+---
+
+_**User**_
+
+八字 模块，当前语言是中文，一共11种语言可供选择，我看到 猜你想问 和 试试这样问 还是显示英文问题 ：daodejing:140 [Tracking] Sending: page_view {page_path: '/chat/daodejing', page_title: '知几 - AI命理咨询 © ZXQ'}
+index-Dgg1r93N.js:92 guessYouWantQuestions: {module: 'daodejing', lang: undefined, available: Array(12)}
+index-Dgg1r93N.js:92 guessYouWantQuestions result: (5) ['What does Tao Te Ching say?', 'Meaning of Tao follows nature?', 'What is ruling by non-action?', 'Interpretation of highest goodness is like water?', 'How to cultivate mind and nature?']
+content.js:208 {userHasLoggedIn: true}
+content.js:208 userHasLoggedIn
+content.js:216 https://zero.zxqconsulting.com/chat/daodejing true
+index-Dgg1r93N.js:34  POST https://websites-admin.zxqconsulting.com/api/tracking 400 (Bad Request)
+jp @ index-Dgg1r93N.js:34
+c @ index-Dgg1r93N.js:34
+S @ index-Dgg1r93N.js:21
+(anonymous) @ index-Dgg1r93N.js:92
+(anonymous) @ index-Dgg1r93N.js:13
+yn @ index-Dgg1r93N.js:13
+pt @ index-Dgg1r93N.js:13
+t.__weh.t.__weh @ index-Dgg1r93N.js:13
+Il @ index-Dgg1r93N.js:13
+Pl @ index-Dgg1r93N.js:13
+Promise.then
+Al @ index-Dgg1r93N.js:13
+od @ index-Dgg1r93N.js:13
+em @ index-Dgg1r93N.js:13
+o.scheduler @ index-Dgg1r93N.js:13
+c.scheduler @ index-Dgg1r93N.js:9
+trigger @ index-Dgg1r93N.js:9
+Rs @ index-Dgg1r93N.js:9
+notify @ index-Dgg1r93N.js:9
+trigger @ index-Dgg1r93N.js:9
+set value @ index-Dgg1r93N.js:9
+C @ index-Dgg1r93N.js:29
+(anonymous) @ index-Dgg1r93N.js:29
+Promise.then
+L @ index-Dgg1r93N.js:29
+R @ index-Dgg1r93N.js:29
+install @ index-Dgg1r93N.js:29
+use @ index-Dgg1r93N.js:13
+(anonymous) @ index-Dgg1r93N.js:92
+daodejing:1 <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
+instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2 [DEPRECATED] Default export is deprecated. Instead use `import { create } from 'zustand'`.
+f @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+46089 @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+a @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+74823 @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+a @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+Promise.then
+(anonymous) @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+(anonymous) @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+(anonymous) @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+(anonymous) @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+r @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+s @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+Promise.then
+r @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+s @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+(anonymous) @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+(anonymous) @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+(anonymous) @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+(anonymous) @ feedback.js:2
+daodejing:140 [Tracking] Sending: scroll {scroll_depth: 100, page_path: '/chat/daodejing'}
+index-Dgg1r93N.js:92 guessYouWantQuestions: {module: 'bazi', lang: undefined, available: Array(12)}
+index-Dgg1r93N.js:92 guessYouWantQuestions result: (5) ['How good is my destiny?', 'What is my favorable element?', 'How is my career this year?', 'When will my marriage come?', 'Will my fortune be good?']
+index-Dgg1r93N.js:34  POST https://websites-admin.zxqconsulting.com/api/tracking 400 (Bad Request)
+jp @ index-Dgg1r93N.js:34
+c @ index-Dgg1r93N.js:34
+S @ index-Dgg1r93N.js:21
+o @ index-Dgg1r93N.js:92
+onClick @ index-Dgg1r93N.js:92
+yn @ index-Dgg1r93N.js:13
+pt @ index-Dgg1r93N.js:13
+a @ index-Dgg1r93N.js:17
+index-Dgg1r93N.js:34  POST https://websites-admin.zxqconsulting.com/api/tracking 400 (Bad Request)
+jp @ index-Dgg1r93N.js:34
+c @ index-Dgg1r93N.js:34
+S @ index-Dgg1r93N.js:21
+(anonymous) @ index-Dgg1r93N.js:92
+yn @ index-Dgg1r93N.js:13
+pt @ index-Dgg1r93N.js:13
+o.call @ index-Dgg1r93N.js:13
+D @ index-Dgg1r93N.js:9
+Cr @ index-Dgg1r93N.js:13
+te @ index-Dgg1r93N.js:13
+$ @ index-Dgg1r93N.js:13
+run @ index-Dgg1r93N.js:9
+Ee @ index-Dgg1r93N.js:13
+ee @ index-Dgg1r93N.js:13
+y @ index-Dgg1r93N.js:13
+$ @ index-Dgg1r93N.js:13
+run @ index-Dgg1r93N.js:9
+Ee @ index-Dgg1r93N.js:13
+ee @ index-Dgg1r93N.js:13
+y @ index-Dgg1r93N.js:13
+$ @ index-Dgg1r93N.js:13
+run @ index-Dgg1r93N.js:9
+Ee @ index-Dgg1r93N.js:13
+ee @ index-Dgg1r93N.js:13
+y @ index-Dgg1r93N.js:13
+$ @ index-Dgg1r93N.js:13
+run @ index-Dgg1r93N.js:9
+runIfDirty @ index-Dgg1r93N.js:9
+yn @ index-Dgg1r93N.js:13
+Pl @ index-Dgg1r93N.js:13
+Promise.then
+Al @ index-Dgg1r93N.js:13
+od @ index-Dgg1r93N.js:13
+em @ index-Dgg1r93N.js:13
+o.scheduler @ index-Dgg1r93N.js:13
+c.scheduler @ index-Dgg1r93N.js:9
+trigger @ index-Dgg1r93N.js:9
+Rs @ index-Dgg1r93N.js:9
+notify @ index-Dgg1r93N.js:9
+trigger @ index-Dgg1r93N.js:9
+set value @ index-Dgg1r93N.js:9
+C @ index-Dgg1r93N.js:29
+(anonymous) @ index-Dgg1r93N.js:29
+Promise.then
+L @ index-Dgg1r93N.js:29
+R @ index-Dgg1r93N.js:29
+o @ index-Dgg1r93N.js:92
+onClick @ index-Dgg1r93N.js:92
+yn @ index-Dgg1r93N.js:13
+pt @ index-Dgg1r93N.js:13
+a @ index-Dgg1r93N.js:17
+index-Dgg1r93N.js:34  POST https://websites-admin.zxqconsulting.com/api/tracking 400 (Bad Request)
+Fp @ index-Dgg1r93N.js:34
+c @ index-Dgg1r93N.js:34
+S @ index-Dgg1r93N.js:21
+o @ index-Dgg1r93N.js:92
+onClick @ index-Dgg1r93N.js:92
+yn @ index-Dgg1r93N.js:13
+pt @ index-Dgg1r93N.js:13
+a @ index-Dgg1r93N.js:17
+daodejing:140 [Tracking] Sending: scroll {scroll_depth: 100, page_path: '/chat/bazi'}
+
+
+---
+

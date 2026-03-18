@@ -17,6 +17,12 @@ const chatStore = useChatStore()
 const profileStore = useProfileStore()
 const languageStore = useLanguageStore()
 
+// 获取当前语言，处理可能的 undefined 情况
+const getCurrentLang = () => {
+  const lang = languageStore.currentLanguage?.value || languageStore.currentLanguage || 'zh-CN'
+  return lang
+}
+
 const inputMessage = ref('')
 const messagesContainer = ref(null)
 const isStreaming = ref(false)
@@ -144,8 +150,12 @@ function playReceiveSound() {
 // 猜你想问 - 预制问题（多语言版本）
 const guessYouWantQuestions = computed(() => {
   const module = chatStore.currentModule
-  const lang = languageStore.currentLanguage.value
-  console.log('guessYouWantQuestions:', { module, lang, available: Object.keys(questionTranslations) })
+  // 处理 currentLanguage 可能是 ref 或普通值的情况
+  let lang = languageStore.currentLanguage?.value
+  if (!lang) {
+    lang = languageStore.currentLanguage || 'zh-CN'
+  }
+  console.log('guessYouWantQuestions:', { module, lang, currentLanguage: languageStore.currentLanguage })
   const translations = questionTranslations[lang] || questionTranslations['en'] || questionTranslations['zh-CN']
   const result = translations[module] || translations.default
   console.log('guessYouWantQuestions result:', result)
@@ -155,7 +165,7 @@ const guessYouWantQuestions = computed(() => {
 // 快捷输入建议（多语言版本）
 const inputSuggestions = computed(() => {
   const module = chatStore.currentModule
-  const lang = languageStore.currentLanguage.value
+  const lang = getCurrentLang()
   const translations = suggestionsTranslations[lang] || suggestionsTranslations['en'] || suggestionsTranslations['zh-CN']
   
   // MBTI 模块特殊处理：显示测试版本按钮
@@ -169,7 +179,7 @@ const inputSuggestions = computed(() => {
 
 // MBTI版本名称（多语言）
 const mbtiVersionName = computed(() => {
-  const lang = languageStore.currentLanguage.value
+  const lang = getCurrentLang()
   const versions = {
     'zh-CN': { simple: '简易版', standard: '标准版', full: '完整版' },
     'en': { simple: 'Simple', standard: 'Standard', full: 'Full' },
@@ -189,7 +199,7 @@ const mbtiVersionName = computed(() => {
 
 // 语音识别不支持提示
 const voiceNotSupportedMsg = computed(() => {
-  const lang = languageStore.currentLanguage.value
+  const lang = getCurrentLang()
   const messages = {
     'zh-CN': '您的浏览器不支持语音识别功能',
     'en': 'Your browser does not support voice recognition',
@@ -213,7 +223,7 @@ const currentModule = computed(() => {
 
 const introMessage = computed(() => {
   const profile = profileStore.currentProfile
-  const lang = languageStore.currentLanguage.value
+  const lang = getCurrentLang()
   const currentModule = chatStore.currentModule
 
   // 使用对应语言的开场白
@@ -271,7 +281,7 @@ watch(() => route.params.module, (newModule) => {
 })
 
 // 监听语言变化，更新欢迎语
-watch(() => languageStore.currentLanguage.value, () => {
+watch(() => getCurrentLang(), () => {
   if (chatStore.messages.length > 0 && chatStore.messages[0].role === 'assistant') {
     chatStore.messages[0] = {
       ...chatStore.messages[0],
@@ -352,7 +362,7 @@ function scrollToBottom() {
 function handleSuggestionClick(suggestion) {
   // MBTI 模块：点击建议时开始测试
   if (chatStore.currentModule === 'mbti') {
-    const lang = languageStore.currentLanguage.value
+    const lang = getCurrentLang()
     const mbtiBtn = mbtiTestButtonTranslations[lang] || mbtiTestButtonTranslations['en']
     if (suggestion === mbtiBtn.simple) {
       startMbtiTest('simple')
@@ -460,11 +470,11 @@ function openImageUpload() {
         <button class="header-btn" @click="openImageUpload" title="上传图片">
           <span class="btn-icon">📷</span>
         </button>
-        <button class="header-btn" @click="openProfileSelector" :title="t('chat.selectProfile', languageStore.currentLanguage.value)">
+        <button class="header-btn" @click="openProfileSelector" :title="t('chat.selectProfile', getCurrentLang())">
           <span class="btn-icon">👤</span>
-          <span class="btn-text">{{ profileStore.currentProfile?.name || t('chat.profile', languageStore.currentLanguage.value) }}</span>
+          <span class="btn-text">{{ profileStore.currentProfile?.name || t('chat.profile', getCurrentLang()) }}</span>
         </button>
-        <button class="clear-btn" @click="chatStore.clearChat()">{{ t('chat.newChat', languageStore.currentLanguage.value) }}</button>
+        <button class="clear-btn" @click="chatStore.clearChat()">{{ t('chat.newChat', getCurrentLang()) }}</button>
       </div>
     </div>
     
@@ -477,7 +487,7 @@ function openImageUpload() {
       >
         <div class="message-avatar" :class="msg.role">
           <!-- 用户消息显示头像 -->
-          <span v-if="msg.role === 'user'">{{ profileStore.currentProfile?.avatar || t('chat.you', languageStore.currentLanguage.value) || '你' }}</span>
+          <span v-if="msg.role === 'user'">{{ profileStore.currentProfile?.avatar || t('chat.you', getCurrentLang()) || '你' }}</span>
           <span v-else>✨</span>
         </div>
         
@@ -539,7 +549,7 @@ function openImageUpload() {
     <div class="guess-section" v-if="!chatStore.isLoading && chatStore.messages.length > 0">
       <div class="guess-header">
         <span class="guess-icon">🔮</span>
-        <span class="guess-title">{{ t('chat.guessYouWant', languageStore.currentLanguage.value) }}</span>
+        <span class="guess-title">{{ t('chat.guessYouWant', getCurrentLang()) }}</span>
       </div>
       <div class="guess-questions">
         <button 
@@ -555,7 +565,7 @@ function openImageUpload() {
     
     <!-- 快捷问题建议 -->
     <div class="suggestions" v-if="!chatStore.isLoading && chatStore.messages.length < 3">
-      <span class="suggestions-label">{{ t('chat.tryAsking', languageStore.currentLanguage.value) }}</span>
+      <span class="suggestions-label">{{ t('chat.tryAsking', getCurrentLang()) }}</span>
       <div class="suggestions-list">
         <button 
           v-for="suggestion in inputSuggestions" 
@@ -637,7 +647,7 @@ function openImageUpload() {
                 <span class="version-desc">200题 · 约30分钟</span>
               </button>
             </div>
-            <button class="mbti-what-is" @click="sendMessage(mbtiTestButtonTranslations[languageStore.currentLanguage.value]?.whatIs || mbtiTestButtonTranslations['en'].whatIs)">{{ mbtiTestButtonTranslations[languageStore.currentLanguage.value]?.whatIs || mbtiTestButtonTranslations['en'].whatIs }}</button>
+            <button class="mbti-what-is" @click="sendMessage(mbtiTestButtonTranslations[getCurrentLang()]?.whatIs || mbtiTestButtonTranslations['en'].whatIs)">{{ mbtiTestButtonTranslations[getCurrentLang()]?.whatIs || mbtiTestButtonTranslations['en'].whatIs }}</button>
           </div>
           
           <!-- 测试结果 -->
