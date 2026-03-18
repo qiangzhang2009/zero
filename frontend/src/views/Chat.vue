@@ -3,12 +3,12 @@ import { ref, computed, onMounted, nextTick, watch, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useChatStore } from '../stores/chat'
 import { useProfileStore } from '../stores/profile'
-import { useLanguageStore } from '../i18n'
+import { useLanguageStore, t } from '../i18n'
 import { soundManager } from '../utils/sound'
 import { voiceInput } from '../utils/voice'
 import ProfileSelector from '../components/ProfileSelector.vue'
 import ImageUpload from '../components/ImageUpload.vue'
-import { questionTranslations, greetingTranslations, namePrefixTranslations, suggestionsTranslations } from '../i18n/translations'
+import { questionTranslations, greetingTranslations, namePrefixTranslations, suggestionsTranslations, mbtiTestButtonTranslations } from '../i18n/translations'
 import { marked } from 'marked'
 import { mbtiQuestions, mbtiDescriptions, calculateMBTI } from '../data/mbti'
 
@@ -87,7 +87,9 @@ const finishMbtiTest = () => {
     answers_count: mbtiAnswers.value.length,
   })
   // 发送结果给 AI 分析
-  const resultText = `我完成了MBTI测试，测试版本：${mbtiTestVersion.value === 'simple' ? '简易版' : mbtiTestVersion.value === 'standard' ? '标准版' : '完整版'}。我的MBTI类型是：${type}（${mbtiTestResult.value.name}）。`
+  const versionNames = { simple: mbtiVersionName.value.simple, standard: mbtiVersionName.value.standard, full: mbtiVersionName.value.full }
+  const versionName = versionNames[mbtiTestVersion.value] || versionNames.full
+  const resultText = `我完成了MBTI测试，测试版本：${versionName}。我的MBTI类型是：${type}（${mbtiTestResult.value.name}）。`
   sendMessage(resultText)
   showMbtiTest.value = false
 }
@@ -155,10 +157,51 @@ const inputSuggestions = computed(() => {
   
   // MBTI 模块特殊处理：显示测试版本按钮
   if (module === 'mbti') {
-    return ['开始简易版测试', '开始标准版测试']
+    const mbtiButtons = mbtiTestButtonTranslations[lang] || mbtiTestButtonTranslations['en']
+    return [mbtiButtons.simple, mbtiButtons.standard]
   }
   
   return translations[module] || translations.default
+})
+
+// MBTI版本名称（多语言）
+const mbtiVersionName = computed(() => {
+  const lang = languageStore.currentLanguage.value
+  const versions = {
+    'zh-CN': { simple: '简易版', standard: '标准版', full: '完整版' },
+    'en': { simple: 'Simple', standard: 'Standard', full: 'Full' },
+    'ja': { simple: 'シンプル版', standard: '標準版', full: '完全版' },
+    'ko': { simple: '심플', standard: '표준', full: '전체' },
+    'es': { simple: 'Simple', standard: 'Estándar', full: 'Completa' },
+    'it': { simple: 'Semplice', standard: 'Standard', full: 'Completo' },
+    'fr': { simple: 'Simple', standard: 'Standard', full: 'Complet' },
+    'de': { simple: 'Einfach', standard: 'Standard', full: 'Vollständig' },
+    'pt': { simple: 'Simples', standard: 'Padrão', full: 'Completo' },
+    'ar': { simple: 'بسيط', standard: 'قياسي', full: 'كامل' },
+    'id': { simple: 'Sederhana', standard: 'Standar', full: 'Lengkap' },
+    'ms': { simple: 'Simple', standard: 'Standard', full: 'Lengkap' }
+  }
+  return versions[lang] || versions['zh-CN']
+})
+
+// 语音识别不支持提示
+const voiceNotSupportedMsg = computed(() => {
+  const lang = languageStore.currentLanguage.value
+  const messages = {
+    'zh-CN': '您的浏览器不支持语音识别功能',
+    'en': 'Your browser does not support voice recognition',
+    'ja': '音声認識に対応していないブラウザです',
+    'ko': '음성 인식을 지원하지 않는 브라우저입니다',
+    'es': 'Su navegador no admite el reconocimiento de voz',
+    'it': 'Il tuo browser non supporta il riconoscimento vocale',
+    'fr': 'Votre navigateur ne prend pas en charge la reconnaissance vocale',
+    'de': 'Ihr Browser unterstützt keine Spracherkennung',
+    'pt': 'Seu navegador não suporta reconhecimento de voz',
+    'ar': 'متصفحك لا يدعم التعرف على الصوت',
+    'id': 'Browser Anda tidak mendukung pengenalan suara',
+    'ms': 'Penyemak imbas anda tidak menyokong pengecaman suara'
+  }
+  return messages[lang] || messages['en']
 })
 
 const currentModule = computed(() => {
@@ -306,9 +349,11 @@ function scrollToBottom() {
 function handleSuggestionClick(suggestion) {
   // MBTI 模块：点击建议时开始测试
   if (chatStore.currentModule === 'mbti') {
-    if (suggestion.includes('简易版')) {
+    const lang = languageStore.currentLanguage.value
+    const mbtiBtn = mbtiTestButtonTranslations[lang] || mbtiTestButtonTranslations['en']
+    if (suggestion === mbtiBtn.simple) {
       startMbtiTest('simple')
-    } else if (suggestion.includes('标准版')) {
+    } else if (suggestion === mbtiBtn.standard) {
       startMbtiTest('standard')
     } else {
       startMbtiTest('simple')
@@ -355,19 +400,6 @@ async function regenerate() {
   }
 }
 
-const quickQuestions = [
-  '最近运气如何？',
-  '本月运势怎么样？',
-  '适合做什么工作？',
-  '我的桃花运如何？',
-  '需要注意什么？'
-]
-
-async function askQuickQuestion(question) {
-  inputMessage.value = question
-  await sendMessage()
-}
-
 // 格式化时间
 function formatTime(timestamp) {
   const date = new Date(timestamp)
@@ -390,7 +422,7 @@ function toggleVoiceInput() {
       console.error('语音识别错误:', error)
       isVoiceListening.value = false
       if (error === 'browser-not-supported') {
-        alert('您的浏览器不支持语音识别功能')
+        alert(voiceNotSupportedMsg.value)
       }
     }
     
@@ -425,11 +457,11 @@ function openImageUpload() {
         <button class="header-btn" @click="openImageUpload" title="上传图片">
           <span class="btn-icon">📷</span>
         </button>
-        <button class="header-btn" @click="openProfileSelector" title="选择档案">
+        <button class="header-btn" @click="openProfileSelector" :title="t('chat.selectProfile', languageStore.currentLanguage.value)">
           <span class="btn-icon">👤</span>
-          <span class="btn-text">{{ profileStore.currentProfile?.name || '档案' }}</span>
+          <span class="btn-text">{{ profileStore.currentProfile?.name || t('chat.profile', languageStore.currentLanguage.value) }}</span>
         </button>
-        <button class="clear-btn" @click="chatStore.clearChat()">新对话</button>
+        <button class="clear-btn" @click="chatStore.clearChat()">{{ t('chat.newChat', languageStore.currentLanguage.value) }}</button>
       </div>
     </div>
     
@@ -442,7 +474,7 @@ function openImageUpload() {
       >
         <div class="message-avatar" :class="msg.role">
           <!-- 用户消息显示头像 -->
-          <span v-if="msg.role === 'user'">{{ profileStore.currentProfile?.avatar || '你' }}</span>
+          <span v-if="msg.role === 'user'">{{ profileStore.currentProfile?.avatar || t('chat.you', languageStore.currentLanguage.value) || '你' }}</span>
           <span v-else>✨</span>
         </div>
         
@@ -578,7 +610,7 @@ function openImageUpload() {
     <div v-if="showMbtiTest" class="mbti-modal-overlay" @click.self="closeMbtiTest">
       <div class="mbti-modal">
         <div class="mbti-modal-header">
-          <h3>MBTI性格测试 · {{ mbtiTestVersion === 'simple' ? '简易版' : mbtiTestVersion === 'standard' ? '标准版' : '完整版' }}</h3>
+          <h3>MBTI性格测试 · {{ mbtiVersionName[mbtiTestVersion] }}</h3>
           <button class="close-btn" @click="closeMbtiTest">×</button>
         </div>
         
@@ -602,7 +634,7 @@ function openImageUpload() {
                 <span class="version-desc">200题 · 约30分钟</span>
               </button>
             </div>
-            <button class="mbti-what-is" @click="sendMessage('MBTI是什么？')">什么是MBTI？</button>
+            <button class="mbti-what-is" @click="sendMessage(mbtiTestButtonTranslations[languageStore.currentLanguage.value]?.whatIs || mbtiTestButtonTranslations['en'].whatIs)">{{ mbtiTestButtonTranslations[languageStore.currentLanguage.value]?.whatIs || mbtiTestButtonTranslations['en'].whatIs }}</button>
           </div>
           
           <!-- 测试结果 -->

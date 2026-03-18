@@ -310,6 +310,23 @@ export const namePrefixTranslations = {
   'id': ', ',
   'ms': ', '
 };
+
+// MBTI测试按钮翻译
+export const mbtiTestButtonTranslations = {
+  'zh-CN': { simple: '开始简易版测试', standard: '开始标准版测试', full: '开始完整版测试', whatIs: 'MBTI是什么？' },
+  'en': { simple: 'Start Simple Test', standard: 'Start Standard Test', full: 'Start Full Test', whatIs: 'What is MBTI?' },
+  'ja': { simple: 'シンプル版テストを開始', standard: '標準版テストを開始', full: '完全版テストを開始', whatIs: 'MBTIとは何か？' },
+  'ko': { simple: '심플 테스트 시작', standard: '표준 테스트 시작', full: '전체 테스트 시작', whatIs: 'MBTI란?' },
+  'es': { simple: 'Iniciar Prueba Simple', standard: 'Iniciar Prueba Estándar', full: 'Iniciar Prueba Completa', whatIs: '¿Qué es MBTI?' },
+  'it': { simple: 'Inizia Test Semplice', standard: 'Inizia Test Standard', full: 'Inizia Test Completo', whatIs: 'Cos\'è MBTI?' },
+  'fr': { simple: 'Commencer Test Simple', standard: 'Commencer Test Standard', full: 'Commencer Test Complet', whatIs: 'Qu\'est-ce que MBTI?' },
+  'de': { simple: 'Einfachen Test starten', standard: 'Standardtest starten', full: 'Vollständigen Test starten', whatIs: 'Was ist MBTI?' },
+  'pt': { simple: 'Iniciar Teste Simples', standard: 'Iniciar Teste Padrão', full: 'Iniciar Teste Completo', whatIs: 'O que é MBTI?' },
+  'ar': { simple: 'بدء الاختبار البسيط', standard: 'بدء الاختبار القياسي', full: 'بدء الاختبار الكامل', whatIs: 'ما هو MBTI؟' },
+  'id': { simple: 'Mulai Tes Sederhana', standard: 'Mulai Tes Standar', full: 'Mulai Tes Lengkap', whatIs: 'Apa itu MBTI?' },
+  'ms': { simple: 'Mula Ujian Simple', standard: 'Mula Ujian Standard', full: 'Mula Ujian Lengkap', whatIs: 'Apa itu MBTI?' }
+};
+
 // 快捷输入建议翻译
 export const suggestionsTranslations = {
   'zh-CN': {

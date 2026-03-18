@@ -16,7 +16,7 @@
       // 直接内联追踪代码，避免跨域和缓存问题
       (function() {
         var tenantSlug = 'zero';
-        var trackingUrl = 'https://websites-admin.zxqconsulting.com/api/tracking';
+        var trackingUrl = 'https://website-backend-admin-eoej9w4dy-johnzhangs-projects-50e83ec4.vercel.app/api/tracking';
         var visitorId = localStorage.getItem('zt_visitor_id') || 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         if (!localStorage.getItem('zt_visitor_id')) localStorage.setItem('zt_visitor_id', visitorId);
 
