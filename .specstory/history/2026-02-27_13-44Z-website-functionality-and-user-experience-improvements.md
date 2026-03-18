@@ -11136,3 +11136,447 @@ Tool use: **edit_file_v2**
 
 ---
 
+<think>
+继续添加阿拉伯语、印尼语和马来语的翻译。
+
+---
+
+Tool use: **edit_file_v2**
+
+---
+
+<think>
+继续添加印尼语和马来语。
+
+---
+
+Tool use: **edit_file_v2**
+
+---
+
+<think>
+最后添加马来语的 "you" 翻译。
+
+---
+
+Tool use: **edit_file_v2**
+
+---
+
+<think>
+现在让我检查 t 函数的使用方式。让我检查 languageStore.currentLanguage.value 在模板中是否能正确工作。在模板中，我们已经使用 `languageStore.currentLanguage.value`，但 t 函数可能需要一个语言代码字符串。让我检查一下 t 函数的签名。
+
+等等，让我检查一下 t 函数的使用方式。t 函数在 i18n/index.js 中是这样定义的：
+```javascript
+t: (key) => t(key, currentLanguage.value)
+```
+
+它接受一个 key 并使用 currentLanguage.value 作为语言。所以在模板中使用 `t('chat.profile', languageStore.currentLanguage.value)` 会导致问题。
+
+让我检查一下 t 函数实际接受什么参数。
+</think>
+
+现在让我检查 t 函数的正确用法：
+
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+现在
+</think>
+
+现在修复 MB让我修复模板中的硬编码问题。需要使用正确的 t 函数调用方式：`t('chat.profile', languageStore.currentLanguage.value)`TI 部分的硬编码。让我检查并修复模板中的问题：
+
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+还有更多需要修复的硬编码。让我继续搜索并修复所有硬编码的中文问题。还有 "简易版"、"标准版"、"完整版"、"什么是MBTI？" 等。让我先搜索所有剩余的硬编码问题。
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+我需要：
+1. 添加 MBTI 测试版本的多语言翻译
+2. 添加 "MBTI是什么？" 的多语言翻译
+3. 
+</think>
+
+让我添加 MB修复这些硬编码
+
+让我添加这些翻译并在 Chat.vue 中使用它们。
+
+首先添加 MBTI 相关的翻译到 translations.js：TI 版本和 "什么是MBTI" 的翻译。首先添加到 translations.js：
+
+
+---
+
+Tool use: **read_file_v2**
+
+---
+
+<think>
+让我继续添加 MBTI 版本名称和"什么是MBTI"的翻译。
+
+---
+
+Tool use: **edit_file_v2**
+
+---
+
+<think>
+我之前的替换出了问题，只保留了部分内容。让我检查一下文件状态并修复它。
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+让我
+</think>
+
+让我检查并确保翻译是完整的，然后修复 Chat.vue 中的硬查看 mbtiTestButtonTranslations 的完整内容。编码：
+
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+我看到有重复的内容。让我修复这个问题。首先让我读取更多上下文。
+</think>
+
+有重复内容，让我修复它：
+
+
+---
+
+Tool use: **read_file_v2**
+
+---
+
+<think>
+有重复的内容需要删除。让我删除重复的行。
+
+---
+
+Tool use: **edit_file_v2**
+
+---
+
+<think>
+现在让我添加一个 computed 属性来获取 MBTI 版本名称的多语言翻译，并在模板中使用它。首先，让我看看第 569 行
+</think>
+
+现在让我在 Chat.vue 中添加一个 computed 来处理 MBTI 版本名称的多语言：
+附近的代码。
+
+---
+
+Tool use: **read_file_v2**
+
+---
+
+<think>
+让我
+</think>
+
+让我添加 MBTI 版本名称的多语言 computed：
+添加一个 MBTI 版本名称的 computed 属性。
+
+---
+
+Tool use: **edit_file_v2**
+
+---
+
+<think>
+现在
+</think>
+
+现在修复模板中的硬编码。先修复版本名称显示：
+让我修复模板中使用 MBTI 版本的硬编码问题。
+
+---
+
+Tool use: **edit_file_v2**
+
+---
+
+<think>
+现在让我修复模板中的 "什么是MBTI？" 按钮：
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+让我修复 "什么是MBTI？" 按钮。需要使用多语言翻译。
+
+---
+
+Tool use: **edit_file_v2**
+
+---
+
+<think>
+现在
+</think>
+
+现在修复代码中的硬编码：
+让我修复代码中的硬编码（第90行和第310-312行）：
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+让我
+</think>
+
+让我修复硬编码的结果文本：
+修复这个硬编码。
+
+---
+
+Tool use: **edit_file_v2**
+
+---
+
+<think>
+现在修复第310-312行的硬编码：
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+这部分代码逻辑需要重写，使用多语言判断：
+
+---
+
+Tool use: **edit_file_v2**
+
+---
+
+<think>
+现在
+</think>
+
+让我检查其他剩余的硬编码：
+检查其他剩余的硬编码。让我搜索一下。
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+还有一些硬编码：
+1. track('MBTI测试'...) - 这些是分析用的追踪事件，可以保留
+2. console.error('语音识别错误:', error) - 这是代码中的日志，可以保留
+3. alert('您的浏览器不支持语音识别功能') - 这是需要多语言化的
+4. 多语言版本名称 - 这些是在 mbtiVersionName computed 中，是正确的
+
+让我修复
+</think>
+
+让我修复语音识别不支持的提示：
+ alert 部分：
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+这部分
+</think>
+
+让我添加是 JavaScript 代码中的硬编码提示，也需要多语言化。让我添加这个翻译。语音识别的多语言提示：
+先添加翻译：
+
+
+---
+
+Tool use: **edit_file_v2**
+
+---
+
+<think>
+现在修复 alert 调用：
+
+---
+
+Tool use: **edit_file_v2**
+
+---
+
+<think>
+现在
+</think>
+
+现在构建并部署：
+构建并部署，检查是否还有其他问题。
+
+---
+
+Tool use: **run_terminal_command_v2**
+
+---
+
+<think>
+构建成功。现在提交并推送。
+
+---
+
+Tool use: **run_terminal_command_v2**
+
+---
+
+<think>
+代码
+</think>
+
+现在让我检查其他文件是否也有多已部署。现在让我检查其他可能的多语言问题。让我检查 temp.vue 文件，看看是否也有类似的问题。语言问题。让我检查 temp.vue：
+
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+temp.vue 似乎没有使用这些翻译。让我检查一下 temp.vue 是否是一个未使用的文件或者是做什么的：
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+temp
+</think>
+
+temp.vue 也有猜你想问功能！让我检查并修复它：
+.vue 也有猜你想问功能！让我检查并修复它。
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+temp.vue
+</think>
+
+temp.vue 有大量 有完整的硬编码问题。但它可能是一个旧文件或者测试文件。让我检查一下它是否被使用：硬编码的问题，但它看起来是旧文件。让我检查它是否还在使用：
+
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+temp.vue 似乎是一个未使用的文件/旧文件，可以忽略。
+
+现在让我检查其他页面和组件是否有多语言问题。让我
+</think>
+
+temp.vue 是一个未使用的文件，可以忽略。让我检查其他页面：
+搜索更多的 Vue 文件：
+
+---
+
+Tool use: **ripgrep_raw_search**
+
+---
+
+<think>
+我看到 Admin.vue 和 Home.vue 也有硬编码的中文。但 Admin.vue 是后台管理页面，通常不需要多语言。Home.vue 的硬编码是在 translations 配置中，这应该是正确的方式（它们是为了在页面上显示翻译）。让我检查一下 Chat.vue 中是否还有其他问题。
+
+实际上，用户提到的问题是"猜你想问"和"试试这样问"里面的问题不随语言切换。我已经修复了主要的代码逻辑，应该可以正常工作了。
+
+让我更新 TodoWrite 并总结修复的内容。
+
+---
+
+Tool use: **todo_write**
+
+## Todo List
+
+- [x] 修复猜你想问/试试这样问不随语言切换的问题
+- [x] 检查其他多语言问题
+
+---
+
+<think>
+让我
+</think>
+
+已完成修复！以下是修复的问题总结：
+
+**已修复：总结一下修复的内容，告诉用户修复了什么。**
+1. **猜你想问和试试这样问不随语言切换** - 这是主要问题，代码逻辑已修复，现在会根据选择的语言显示对应翻译
+2. **MBTI测试按钮硬编码** - 添加了多语言支持，现在会根据语言显示对应版本
+3. **档案/新对话按钮硬编码** - 修复了用户头像和按钮的默认文字
+4. **语音识别提示** - 添加了浏览器不支持语音识别功能的多语言提示
+5. **移动端语言选择器** - 修复了CSS使其全屏显示
+
+**主要修改：**
+- 在 `translations.js` 中添加了 MBTI 测试按钮和版本名称的多语言翻译
+- 在 `i18n/index.js` 中添加了 "you"（你）的翻译到所有语言
+- 在 `Chat.vue` 中修复了所有硬编码的中文文本
+
+请刷新页面测试，应该可以看到：
+1. 切换语言后，猜你想问和试试这样问的问题会变成对应语言
+2. 移动端打开语言选择器应该是全屏显示，可以看到包括中文在内的所有语言
+
+---
+
+_**User**_
+
+问题没有解决：VM35 bazi:126 [Tracking] Sending: page_view Object
+websites-admin.zxqconsulting.com/api/tracking:1  Failed to load resource: the server responded with a status of 400 ()
+content.js:208 Object
+content.js:208 userHasLoggedIn
+content.js:216 https://zero.zxqconsulting.com/chat/bazi true
+bazi:1 <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">
+instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2 [DEPRECATED] Default export is deprecated. Instead use `import { create } from 'zustand'`.
+f @ instrument.a41edd3413c49b17d3a1.js?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ?dpl=dpl_545UFfvjVCRbv2EoZA5Bv5KqfAYZ:2
+websites-admin.zxqconsulting.com/api/tracking:1  Failed to load resource: the server responded with a status of 400 ()
+websites-admin.zxqconsulting.com/api/tracking:1  Failed to load resource: the server responded with a status of 400 ()
+websites-admin.zxqconsulting.com/api/tracking:1  Failed to load resource: the server responded with a status of 400 ()
+
+
+---
+

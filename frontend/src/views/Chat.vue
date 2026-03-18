@@ -536,7 +536,7 @@ function openImageUpload() {
     <div class="guess-section" v-if="!chatStore.isLoading && chatStore.messages.length > 0">
       <div class="guess-header">
         <span class="guess-icon">🔮</span>
-        <span class="guess-title">猜你想问</span>
+        <span class="guess-title">{{ t('chat.guessYouWant', languageStore.currentLanguage.value) }}</span>
       </div>
       <div class="guess-questions">
         <button 
@@ -552,7 +552,7 @@ function openImageUpload() {
     
     <!-- 快捷问题建议 -->
     <div class="suggestions" v-if="!chatStore.isLoading && chatStore.messages.length < 3">
-      <span class="suggestions-label">试试这样问：</span>
+      <span class="suggestions-label">{{ t('chat.tryAsking', languageStore.currentLanguage.value) }}</span>
       <div class="suggestions-list">
         <button 
           v-for="suggestion in inputSuggestions" 
