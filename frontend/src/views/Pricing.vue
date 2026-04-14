@@ -210,7 +210,7 @@ function isCurrentPlan(key) {
           <div class="plan-daily">
             <span class="daily-label">{{ t('dailyLimit') }}</span>
             <span class="daily-value">
-              {{ plan.key === 'pro' ? t('unlimited') : (plan.key === 'free' ? '20' : '100') + t('times') }}
+              {{ plan.key === 'pro' ? t('unlimited') : (plan.key === 'free' ? '10' : '100') + t('times') }}
             </span>
           </div>
 

@@ -708,7 +708,7 @@ function openImageUpload() {
         <div class="limit-modal-icon">📊</div>
         <h3 class="limit-modal-title">今日对话次数已用完</h3>
         <p class="limit-modal-desc">
-          免费用户每日 20 次对话已用完。
+          免费用户每日 10 次对话已用完。
           <br />
           <span style="color: #fbbf24; font-size: 13px;">扫码联系客服付费充值，不限日期使用</span>
         </p>

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-const DAILY_LIMIT = 20
+const DAILY_LIMIT = 10
 const STORAGE_KEY = 'zhiJi_usage'
 const ADMIN_KEY = 'zhiJi_is_admin'
 const PAID_CREDITS_KEY = 'zhiJi_paid_credits'
