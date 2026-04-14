@@ -1,12 +1,18 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLanguageStore } from '../i18n'
+import { useUsageStore } from '../stores/usage'
 import LanguageSelector from './LanguageSelector.vue'
 
 const router = useRouter()
 const languageStore = useLanguageStore()
+const usageStore = useUsageStore()
 const isMenuOpen = ref(false)
+
+onMounted(() => {
+  usageStore.loadUsage()
+})
 </script>
 
 <template>
@@ -17,6 +23,12 @@ const isMenuOpen = ref(false)
         <span class="logo-text">{{ languageStore.t('appName') }}</span>
       </div>
       <div class="right">
+        <!-- 用量显示 -->
+        <div v-if="!usageStore.isAdmin" class="usage-badge" :class="{ 'usage-low': usageStore.getRemaining() <= 5 }">
+          <span class="usage-icon">💬</span>
+          <span class="usage-text">{{ usageStore.isAdmin ? '管理员' : usageStore.getRemaining() + '/' + usageStore.dailyLimit }}</span>
+        </div>
+
         <!-- 语言选择器 -->
         <LanguageSelector />
         
@@ -88,6 +100,44 @@ const isMenuOpen = ref(false)
 .menu-btn {
   font-size: 20px;
   color: #fff;
+}
+
+.usage-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.usage-badge:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.usage-icon {
+  font-size: 14px;
+}
+
+.usage-text {
+  font-weight: 500;
+}
+
+.usage-low {
+  background: rgba(251, 191, 36, 0.15);
+  border-color: rgba(251, 191, 36, 0.4);
+  color: #fbbf24;
+}
+
+.usage-low .usage-text {
+  color: #fbbf24;
 }
 
 @media (max-width: 768px) {

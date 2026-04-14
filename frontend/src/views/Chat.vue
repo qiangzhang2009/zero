@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { useChatStore } from '../stores/chat'
 import { useProfileStore } from '../stores/profile'
 import { useLanguageStore, t } from '../i18n'
+import { useUsageStore } from '../stores/usage'
 import { soundManager } from '../utils/sound'
 import { voiceInput } from '../utils/voice'
 import ProfileSelector from '../components/ProfileSelector.vue'
@@ -16,6 +17,7 @@ const route = useRoute()
 const chatStore = useChatStore()
 const profileStore = useProfileStore()
 const languageStore = useLanguageStore()
+const usageStore = useUsageStore()
 
 // 获取当前语言，处理可能的 undefined 情况
 const getCurrentLang = () => {
@@ -27,6 +29,7 @@ const inputMessage = ref('')
 const messagesContainer = ref(null)
 const isStreaming = ref(false)
 const inputRef = ref(null)
+const showLimitModal = ref(false)
 
 // 追踪工具埋点辅助函数
 const track = (toolName, action, params = {}) => {
@@ -321,7 +324,14 @@ async function typeText(text, messageIndex) {
 
 async function sendMessage() {
   if (!inputMessage.value.trim() || chatStore.isLoading) return
-  
+
+  // 用量限制检查
+  usageStore.loadUsage()
+  if (usageStore.isLimited()) {
+    showLimitModal.value = true
+    return
+  }
+
   const message = inputMessage.value
   inputMessage.value = ''
   isStreaming.value = true
@@ -337,7 +347,8 @@ async function sendMessage() {
   
   // 发送消息
   await chatStore.sendMessage(message)
-  
+  usageStore.recordUse()
+
   isStreaming.value = false
   
   // 对最新AI回复应用打字机效果
@@ -690,6 +701,19 @@ function openImageUpload() {
       :visible="showImageUpload" 
       @close="showImageUpload = false" 
     />
+
+    <!-- 用量限制提示弹窗 -->
+    <div v-if="showLimitModal" class="limit-modal-overlay" @click.self="showLimitModal = false">
+      <div class="limit-modal">
+        <div class="limit-modal-icon">📊</div>
+        <h3 class="limit-modal-title">今日对话次数已用完</h3>
+        <p class="limit-modal-desc">您今日已使用 {{ usageStore.todayUsage }} 次对话（免费用户每日 20 次）</p>
+        <div class="limit-modal-actions">
+          <router-link to="/pricing" class="limit-upgrade-btn">查看升级方案</router-link>
+          <button class="limit-close-btn" @click="showLimitModal = false">稍后再说</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -1433,5 +1457,102 @@ function openImageUpload() {
 
 .mbti-what-is:hover {
   color: #fbbf24;
+}
+
+/* 用量限制弹窗 */
+.limit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.limit-modal {
+  background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 24px;
+  padding: 40px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.4s ease;
+}
+
+.limit-modal-icon {
+  font-size: 56px;
+  margin-bottom: 20px;
+}
+
+.limit-modal-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.limit-modal-desc {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 15px;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.limit-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.limit-upgrade-btn {
+  display: block;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border: none;
+  border-radius: 14px;
+  color: #1a1a2e;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.limit-upgrade-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+}
+
+.limit-close-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 12px;
+  transition: color 0.2s;
+}
+
+.limit-close-btn:hover {
+  color: rgba(255, 255, 255, 0.8);
 }
 </style>

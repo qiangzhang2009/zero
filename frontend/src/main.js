@@ -3,10 +3,18 @@ import { createPinia } from 'pinia'
 import router from './router'
 import App from './App.vue'
 import './style.css'
+import { useUsageStore } from './stores/usage'
 
 const app = createApp(App)
-app.use(createPinia())
+const pinia = createPinia()
+app.use(pinia)
 app.use(router)
+
+// 初始化用量追踪 store（延迟确保 Pinia 已就绪）
+setTimeout(() => {
+  const usageStore = useUsageStore()
+  usageStore.loadUsage()
+}, 0)
 
 // 初始化数据追踪
 const TENANT_SLUG = 'zero' // 知几网站
