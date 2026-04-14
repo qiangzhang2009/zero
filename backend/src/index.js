@@ -688,17 +688,6 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// 调试端点 - 检查环境变量
-app.get('/api/debug', (req, res) => {
-  const apiKey = process.env.DEEPSEEK_API_KEY;
-  res.json({
-    hasApiKey: !!apiKey,
-    apiKeyPrefix: apiKey ? apiKey.substring(0, 8) + '...' : null,
-    nodeEnv: process.env.NODE_ENV,
-    port: process.env.PORT
-  });
-});
-
 // 获取所有模块列表
 app.get('/api/modules', (req, res) => {
   const modules = Object.entries(modulePrompts).map(([id, config]) => ({
