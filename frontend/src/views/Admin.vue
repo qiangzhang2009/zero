@@ -98,8 +98,8 @@ async function submitRecharge() {
 }
 
 // 常量 - 直接硬编码正确的 API 地址
-const RAILWAY_API = 'https://zero-production-4a85.up.railway.app/api'
-const ADMIN_API = RAILWAY_API
+const RENDER_API = 'https://zero-backend-jrvz.onrender.com/api'
+const ADMIN_API = RENDER_API
 
 // 调试用
 console.log('[Admin] ADMIN_API:', ADMIN_API)

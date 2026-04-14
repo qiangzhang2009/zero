@@ -10,7 +10,7 @@ const USER_ID_KEY = 'zhiJi_user_id'
 function getAPIUrl() {
   let apiBase = import.meta.env.VITE_API_URL || ''
   if (!apiBase || apiBase === '/api') {
-    apiBase = 'https://zero-production-4a85.up.railway.app/api'
+    apiBase = 'https://zero-backend-jrvz.onrender.com/api'
   }
   return apiBase
 }

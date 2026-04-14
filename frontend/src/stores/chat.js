@@ -8,7 +8,7 @@ import { useLanguageStore } from '../i18n'
 let apiBase = import.meta.env.VITE_API_URL || ''
 // 如果是 Vercel 部署（相对路径），使用 Railway API
 if (!apiBase || apiBase === '/api') {
-  apiBase = 'https://zero-production-4a85.up.railway.app/api'
+  apiBase = 'https://zero-backend-jrvz.onrender.com/api'
 }
 const API_URL = apiBase
 

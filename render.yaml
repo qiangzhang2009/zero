@@ -1,0 +1,16 @@
+# Render Blueprint - Zero Backend
+# Deploy with: render blueprint apply render.yaml
+
+services:
+  - name: zero-backend
+    region: oregon
+    plan: free
+    runtime: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
