@@ -1238,6 +1238,78 @@ app.get('/api/admin/analytics', (req, res) => {
   }
 });
 
+// 充值积分（手动充值）
+app.post('/api/admin/recharge', (req, res) => {
+  const { adminKey } = req.query;
+  const { userId, credits } = req.body;
+
+  if (adminKey !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, error: '未授权' });
+  }
+
+  if (!userId || credits === undefined) {
+    return res.status(400).json({ success: false, error: '缺少必要参数' });
+  }
+
+  const creditsNum = parseInt(credits, 10);
+  if (isNaN(creditsNum) || creditsNum <= 0) {
+    return res.status(400).json({ success: false, error: '积分必须为正整数' });
+  }
+
+  try {
+    // 加载积分数据
+    const RECHARGE_FILE = path.join(process.cwd(), 'recharges.json');
+    let rechargeStore = {};
+    try {
+      if (fs.existsSync(RECHARGE_FILE)) {
+        rechargeStore = JSON.parse(fs.readFileSync(RECHARGE_FILE, 'utf-8'));
+      }
+    } catch (e) {
+      rechargeStore = {};
+    }
+
+    // 更新积分（追加）
+    const currentCredits = rechargeStore[userId] || 0;
+    rechargeStore[userId] = currentCredits + creditsNum;
+
+    // 保存
+    fs.writeFileSync(RECHARGE_FILE, JSON.stringify(rechargeStore, null, 2));
+
+    console.log(`[ADMIN] 为用户 ${userId} 充值 ${creditsNum} 积分，总计 ${rechargeStore[userId]} 积分`);
+
+    res.json({
+      success: true,
+      message: `充值成功，用户 ${userId} 现有 ${rechargeStore[userId]} 积分`,
+      data: { userId, credits: rechargeStore[userId] }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 获取用户积分
+app.get('/api/credits/:userId', (req, res) => {
+  try {
+    const { userId } = req.params;
+    const RECHARGE_FILE = path.join(process.cwd(), 'recharges.json');
+    let rechargeStore = {};
+    try {
+      if (fs.existsSync(RECHARGE_FILE)) {
+        rechargeStore = JSON.parse(fs.readFileSync(RECHARGE_FILE, 'utf-8'));
+      }
+    } catch (e) {
+      rechargeStore = {};
+    }
+
+    res.json({
+      success: true,
+      data: { userId, credits: rechargeStore[userId] || 0 }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // 启动服务器
 app.listen(PORT, () => {
   console.log(`知几智慧服务运行在 http://localhost:${PORT}`);

@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-const API_KEY = process.env.API_KEY;
+const API_KEY = process.env.DEEPSEEK_API_KEY;
 const BASE_URL = process.env.AI_API_URL || 'https://api.deepseek.com';
 
 // 检查 API_KEY 是否配置
 if (!API_KEY) {
-  console.error('错误: API_KEY 环境变量未设置。请在 Vercel 项目设置中添加 API_KEY 环境变量。');
+  console.error('错误: DEEPSEEK_API_KEY 环境变量未设置。请在 Vercel 项目设置中添加 DEEPSEEK_API_KEY 环境变量。');
 }
 
 // 功能模块的Prompt配置

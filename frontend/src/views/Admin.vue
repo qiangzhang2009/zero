@@ -36,6 +36,12 @@ const newMember = ref({
   amount: 0
 })
 
+// 新增：充值表单数据
+const rechargeForm = ref({
+  userId: '',
+  credits: ''
+})
+
 // 计划名称映射
 function getPlanName(plan) {
   const names = {
@@ -65,6 +71,29 @@ async function deleteMembership(userId) {
   })
   if (data.success) {
     loadMemberships()
+  }
+}
+
+// 充值积分
+async function submitRecharge() {
+  if (!rechargeForm.value.userId) {
+    alert('请输入用户ID')
+    return
+  }
+  const credits = parseInt(rechargeForm.value.credits, 10)
+  if (!credits || credits <= 0) {
+    alert('请输入有效的积分数量')
+    return
+  }
+  const data = await adminFetch(`${ADMIN_API}/admin/recharge?adminKey=${getToken()}`, {
+    method: 'POST',
+    body: JSON.stringify({ userId: rechargeForm.value.userId, credits })
+  })
+  if (data.success) {
+    alert(`充值成功！${data.message}`)
+    rechargeForm.value = { userId: '', credits: '' }
+  } else {
+    alert('充值失败：' + (data.error || '未知错误'))
   }
 }
 
@@ -327,11 +356,17 @@ onMounted(() => {
         >
           📋 用户档案
         </button>
-        <button 
-          :class="{ active: currentTab === 'memberships' }" 
+        <button
+          :class="{ active: currentTab === 'memberships' }"
           @click="currentTab = 'memberships'; loadMemberships()"
         >
           💎 会员管理
+        </button>
+        <button
+          :class="{ active: currentTab === 'recharge' }"
+          @click="currentTab = 'recharge'"
+        >
+          💰 充值积分
         </button>
         <button 
           :class="{ active: currentTab === 'analytics' }" 
@@ -641,6 +676,38 @@ onMounted(() => {
                 </tr>
               </tbody>
             </table>
+          </div>
+        </div>
+
+        <!-- 充值积分 -->
+        <div v-if="currentTab === 'recharge'" class="tab-content">
+          <h3>充值积分</h3>
+          <p class="tab-desc">为用户手动充值积分（用户联系客服付款后在此充值）</p>
+
+          <div class="add-membership-form">
+            <h4>积分充值</h4>
+            <input v-model="rechargeForm.userId" placeholder="用户ID" />
+            <input v-model="rechargeForm.credits" type="number" placeholder="积分数量（如：100）" />
+            <button @click="submitRecharge" class="submit-btn">确认充值</button>
+          </div>
+
+          <div class="recharge-guide">
+            <h4>充值说明</h4>
+            <ul>
+              <li>用户联系客服微信 <strong>3740977</strong> 付款</li>
+              <li>付款时用户需告知其 User ID（可在对话页面底部查看）</li>
+              <li>客服确认收款后在此输入用户 ID 和积分数量进行充值</li>
+              <li>充值完成后用户刷新页面即可使用积分</li>
+            </ul>
+          </div>
+
+          <div class="recharge-guide">
+            <h4>积分规则</h4>
+            <ul>
+              <li>付费积分与每日免费次数独立计算</li>
+              <li>付费积分优先扣除，不限日期用完为止</li>
+              <li>管理员（is_admin=true）享有无限次数，不受积分限制</li>
+            </ul>
           </div>
         </div>
         
@@ -1304,6 +1371,31 @@ onMounted(() => {
   color: #000;
   font-weight: 600;
   cursor: pointer;
+}
+
+.recharge-guide {
+  background: #1a1a2e;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  border-left: 3px solid #fbbf24;
+}
+
+.recharge-guide h4 {
+  color: #fbbf24;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.recharge-guide ul {
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+  padding-left: 18px;
+  line-height: 1.8;
+}
+
+.recharge-guide ul strong {
+  color: #fbbf24;
 }
 
 .analytics-grid {

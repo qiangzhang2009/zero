@@ -42,7 +42,10 @@ const t = (key) => {
       consultTitle: '升级咨询',
       consultDesc: '扫码添加客服微信，获取专属优惠',
       wechatNote: '转账备注您的账号即可开通',
-      backHome: '返回首页'
+      backHome: '返回首页',
+      wechatTitle: '添加客服微信',
+      wechatDesc: '扫码联系客服，转账后为您充值',
+      copyWechat: '复制微信号'
     },
     'en': {
       title: 'Choose Your Plan',
@@ -116,6 +119,7 @@ const t = (key) => {
 }
 
 const showContact = ref(false)
+const WECHAT_ID = '3740977'
 
 function openContact() {
   showContact.value = true
@@ -282,8 +286,8 @@ function isCurrentPlan(key) {
         <div class="qr-placeholder">
           <div class="qr-box">
             <div class="qr-icon">📱</div>
-            <p class="qr-text">WeChat QR Code</p>
-            <p class="qr-hint">zxq_consulting</p>
+            <p class="qr-text">微信号</p>
+            <p class="qr-hint">{{ WECHAT_ID }}</p>
           </div>
         </div>
         <p class="modal-note">{{ t('wechatNote') }}</p>
