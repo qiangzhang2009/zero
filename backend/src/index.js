@@ -179,13 +179,28 @@ function detectMessageLanguage(text) {
   return null;
 }
 
+// 共享语言映射表（顶部定义供 resolveLanguage 使用）
+const LANGUAGE_MAP = {
+  'zh-CN': { name: '中文', prompt: '请用中文回复' },
+  'en': { name: 'English', prompt: 'Please reply in English' },
+  'ja': { name: '日本語', prompt: '日本語で返信してください' },
+  'ko': { name: '한국어', prompt: '한국어로 답변해 주세요' },
+  'es': { name: 'Español', prompt: 'Responde en español' },
+  'it': { name: 'Italiano', prompt: 'Rispondi in italiano' },
+  'fr': { name: 'Français', prompt: 'Répondez en français' },
+  'de': { name: 'Deutsch', prompt: 'Bitte auf Deutsch antworten' },
+  'pt': { name: 'Português', prompt: 'Responda em português' },
+  'ar': { name: 'العربية', prompt: 'الرجاء الرد بالعربية' },
+  'id': { name: 'Bahasa Indonesia', prompt: 'Harap ответить dalam Bahasa Indonesia' }
+};
+
 // 根据用户消息和选择器语言，计算最终回复语言与提示词
 // 优先用用户消息的语言；其次用选择器；最后中文
 function resolveLanguage(message, selectorLang) {
   const detected = detectMessageLanguage(message);
-  const fallback = (selectorLang && languageMap[selectorLang]) ? selectorLang : 'zh-CN';
+  const fallback = (selectorLang && LANGUAGE_MAP[selectorLang]) ? selectorLang : 'zh-CN';
   const finalLang = detected || fallback;
-  const config = languageMap[finalLang] || languageMap['zh-CN'];
+  const config = LANGUAGE_MAP[finalLang] || LANGUAGE_MAP['zh-CN'];
   return { detected, fallback, finalLang, config };
 }
 
@@ -262,23 +277,6 @@ function filterSensitiveWords(message) {
 async function chatHandler(req, res) {
   try {
     const { message, history = [], userTime, language = 'zh-CN' } = req.body;
-    
-    // 语言映射表
-    const languageMap = {
-      'zh-CN': { name: '中文', prompt: '请用中文回复' },
-      'en': { name: 'English', prompt: 'Please reply in English' },
-      'ja': { name: '日本語', prompt: '日本語で返信してください' },
-      'ko': { name: '한국어', prompt: '한국어로 답변해 주세요' },
-      'es': { name: 'Español', prompt: 'Responde en español' },
-      'it': { name: 'Italiano', prompt: 'Rispondi in italiano' },
-      'fr': { name: 'Français', prompt: 'Répondez en français' },
-      'de': { name: 'Deutsch', prompt: 'Bitte auf Deutsch antworten' },
-      'pt': { name: 'Português', prompt: 'Responda em português' },
-      'ar': { name: 'العربية', prompt: 'الرجاء الرد بالعربية' },
-      'id': { name: 'Bahasa Indonesia', prompt: 'Harap ответить dalam Bahasa Indonesia' }
-    };
-    
-    const langConfig = languageMap[language] || languageMap['zh-CN'];
 
     // 根据用户消息的实际语言决定回复语言（用户用什么语言提问，就用什么语言回复）
     const resolved = resolveLanguage(message, language);
@@ -368,23 +366,6 @@ async function chatWithContextHandler(req, res) {
   try {
     const { module } = req.params;
     const { message, history = [], image, profile, userTime, language = 'zh-CN' } = req.body;
-    
-    // 语言映射表
-    const languageMap = {
-      'zh-CN': { name: '中文', prompt: '请用中文回复' },
-      'en': { name: 'English', prompt: 'Please reply in English' },
-      'ja': { name: '日本語', prompt: '日本語で返信してください' },
-      'ko': { name: '한국어', prompt: '한국어로 답변해 주세요' },
-      'es': { name: 'Español', prompt: 'Responde en español' },
-      'it': { name: 'Italiano', prompt: 'Rispondi in italiano' },
-      'fr': { name: 'Français', prompt: 'Répondez en français' },
-      'de': { name: 'Deutsch', prompt: 'Bitte auf Deutsch antworten' },
-      'pt': { name: 'Português', prompt: 'Responda em português' },
-      'ar': { name: 'العربية', prompt: 'الرجاء الرد بالعربية' },
-      'id': { name: 'Bahasa Indonesia', prompt: 'Harap ответить dalam Bahasa Indonesia' }
-    };
-    
-    const langConfig = languageMap[language] || languageMap['zh-CN'];
 
     // 根据用户消息的实际语言决定回复语言（用户用什么语言提问，就用什么语言回复）
     const resolved = resolveLanguage(message, language);
