@@ -5,6 +5,7 @@
     <link rel="icon" type="image/png" href="/logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>知几 - AI命理咨询 © ZXQ</title>
     <meta name="description" content="知几(ZhiJi) - 结合古老智慧与现代AI技术的命理咨询平台。提供八字算命、风水布局、紫微斗数、梅花易数等玄学服务。">
@@ -16,7 +17,8 @@
       // 直接内联追踪代码，避免跨域和缓存问题
       (function() {
         var tenantSlug = 'zero';
-        var trackingUrl = 'https://website-backend-admin-eoej9w4dy-johnzhangs-projects-50e83ec4.vercel.app/api/tracking';
+        // 跟踪端点已下线（Vercel deployment not found），禁用网络调用以避免控制台 404 噪音
+        var trackingUrl = null;
         var visitorId = localStorage.getItem('zt_visitor_id') || 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         if (!localStorage.getItem('zt_visitor_id')) localStorage.setItem('zt_visitor_id', visitorId);
 
@@ -93,19 +95,20 @@
           }
         }
 
-        // 获取地理信息（异步）
+        // 获取地理信息（已禁用：ipapi.co 不支持 CORS，会导致控制台报错
+        // 如需地理位置，改用服务端代理或移除此功能
         var geoInfo = {};
-        fetch('https://ipapi.co/json/')
-          .then(function(response) { return response.json(); })
-          .then(function(data) {
-            geoInfo = {
-              country: data.country_name || data.country || '',
-              region: data.region || '',
-              city: data.city || '',
-              isp: data.org || ''
-            };
-          })
-          .catch(function() {});
+        // fetch('https://ipapi.co/json/')
+        //   .then(function(response) { return response.json(); })
+        //   .then(function(data) {
+        //     geoInfo = {
+        //       country: data.country_name || data.country || '',
+        //       region: data.region || '',
+        //       city: data.city || '',
+        //       isp: data.org || ''
+        //     };
+        //   })
+        //   .catch(function() {});
 
         var deviceInfo = getDeviceInfo();
 
@@ -138,14 +141,8 @@
             event_data: eventData
           };
           console.log('[Tracking] Sending:', eventType, eventData);
-          navigator.sendBeacon
-            ? navigator.sendBeacon(trackingUrl, JSON.stringify(data))
-            : fetch(trackingUrl, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data),
-                keepalive: true
-              }).catch(function() {});
+          // 跟踪端点已下线，停止网络调用以避免控制台 404 噪音
+          if (!trackingUrl) return;
         }
         
         // 页面浏览

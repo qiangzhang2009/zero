@@ -282,16 +282,6 @@ async function chatHandler(req, res) {
     const resolved = resolveLanguage(message, language);
     const finalLangConfig = resolved.config;
 
-    // #region agent log
-    console.log('[LANG DEBUG] ===== LANG RESOLUTION =====');
-    console.log('[LANG DEBUG] message preview:', String(message).substring(0, 100));
-    console.log('[LANG DEBUG] selectorLang:', language);
-    console.log('[LANG DEBUG] detectedLang:', resolved.detected);
-    console.log('[LANG DEBUG] fallbackLang:', resolved.fallback);
-    console.log('[LANG DEBUG] finalLang:', resolved.finalLang);
-    console.log('[LANG DEBUG] finalPrompt:', finalLangConfig.prompt);
-    // #endregion agent log
-
     // 获取用户时间或使用服务器时间
     const userDateTime = getUserDateTime(userTime);
     
@@ -370,17 +360,6 @@ async function chatWithContextHandler(req, res) {
     // 根据用户消息的实际语言决定回复语言（用户用什么语言提问，就用什么语言回复）
     const resolved = resolveLanguage(message, language);
     const finalLangConfig = resolved.config;
-
-    // #region agent log
-    console.log('[LANG DEBUG] ===== LANG RESOLUTION (chatWithContext) =====');
-    console.log('[LANG DEBUG] module:', module);
-    console.log('[LANG DEBUG] message preview:', String(message).substring(0, 100));
-    console.log('[LANG DEBUG] selectorLang:', language);
-    console.log('[LANG DEBUG] detectedLang:', resolved.detected);
-    console.log('[LANG DEBUG] fallbackLang:', resolved.fallback);
-    console.log('[LANG DEBUG] finalLang:', resolved.finalLang);
-    console.log('[LANG DEBUG] finalPrompt:', finalLangConfig.prompt);
-    // #endregion agent log
 
     // 获取用户时间信息
     const userDateTime = getUserDateTime(userTime);

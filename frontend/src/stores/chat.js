@@ -6,7 +6,7 @@ import { useLanguageStore } from '../i18n'
 
 // 处理可能的 /api 后缀，避免路径重复
 let apiBase = import.meta.env.VITE_API_URL || ''
-// 如果是 Vercel 部署（相对路径），使用 Railway API
+// 如果是 Vercel 部署（相对路径），使用 Render API
 if (!apiBase || apiBase === '/api') {
   apiBase = 'https://zero-backend-jrvz.onrender.com/api'
 }
@@ -599,7 +599,7 @@ export const useChatStore = defineStore('chat', () => {
     const userLocalTime = new Date().toISOString();
     const languageStore = useLanguageStore();
     const currentLanguage = languageStore.currentLanguage;
-    
+
     try {
       const response = await axios.post(`${API_URL}/chat/${currentModule.value}`, {
         message: content,
@@ -614,9 +614,9 @@ export const useChatStore = defineStore('chat', () => {
         userTime: userLocalTime,
         language: currentLanguage
       })
-      
+
       const aiMessage = response.data.data.message
-      
+
       // 前端过滤敏感词（额外保障）
       const filteredMessage = filterClientSensitiveWords(aiMessage)
       
@@ -738,9 +738,9 @@ export const useChatStore = defineStore('chat', () => {
         userTime: userLocalTime,
         language: currentLanguage
       })
-      
+
       const aiMessage = response.data.data.message
-      
+
       // 前端过滤敏感词（额外保障）
       const filteredMessage = filterClientSensitiveWords(aiMessage)
       
