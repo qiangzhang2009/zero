@@ -600,6 +600,10 @@ export const useChatStore = defineStore('chat', () => {
     const languageStore = useLanguageStore();
     const currentLanguage = languageStore.currentLanguage;
 
+    // #region agent log
+    fetch('http://127.0.0.1:7580/ingest/2ad12cc7-849a-4f26-a563-140aaee13148',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'3ff5c4'},body:JSON.stringify({sessionId:'3ff5c4',runId:'lang-debug-v2',location:'chat.js:sendMessage',message:'request about to be sent',data:{sentMessage:content,sentMessageLang:content.substring(0,50),sentSelectorLanguage:currentLanguage,module:currentModule.value,storedLang:localStorage.getItem('zhiJi_language'),browserLang:navigator.language},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion agent log
+
     try {
       const response = await axios.post(`${API_URL}/chat/${currentModule.value}`, {
         message: content,
@@ -616,6 +620,10 @@ export const useChatStore = defineStore('chat', () => {
       })
 
       const aiMessage = response.data.data.message
+
+      // #region agent log
+      fetch('http://127.0.0.1:7580/ingest/2ad12cc7-849a-4f26-a563-140aaee13148',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'3ff5c4'},body:JSON.stringify({sessionId:'3ff5c4',runId:'lang-debug-v2',location:'chat.js:afterResponse',message:'response received',data:{responsePreview:aiMessage.substring(0,200),containsChinese:/[\u4E00-\u9FFF]/.test(aiMessage),containsJapanese:/[\u3040-\u309F\u30A0-\u30FF]/.test(aiMessage),containsKorean:/[\uAC00-\uD7AF]/.test(aiMessage),containsEnglish:/[a-zA-Z]/.test(aiMessage),selectorSent:currentLanguage,module:currentModule.value},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion agent log
 
       // 前端过滤敏感词（额外保障）
       const filteredMessage = filterClientSensitiveWords(aiMessage)
@@ -723,6 +731,10 @@ export const useChatStore = defineStore('chat', () => {
     const languageStore = useLanguageStore();
     const currentLanguage = languageStore.currentLanguage;
 
+    // #region agent log
+    fetch('http://127.0.0.1:7580/ingest/2ad12cc7-849a-4f26-a563-140aaee13148',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'3ff5c4'},body:JSON.stringify({sessionId:'3ff5c4',runId:'lang-debug-v2',location:'chat.js:sendMessage',message:'request about to be sent',data:{sentMessage:content,sentMessageLang:content.substring(0,50),sentSelectorLanguage:currentLanguage,module:currentModule.value,storedLang:localStorage.getItem('zhiJi_language'),browserLang:navigator.language},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion agent log
+
     try {
       const response = await axios.post(`${API_URL}/chat/${currentModule.value}`, {
         message: content,
@@ -740,6 +752,10 @@ export const useChatStore = defineStore('chat', () => {
       })
 
       const aiMessage = response.data.data.message
+
+      // #region agent log
+      fetch('http://127.0.0.1:7580/ingest/2ad12cc7-849a-4f26-a563-140aaee13148',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'3ff5c4'},body:JSON.stringify({sessionId:'3ff5c4',runId:'lang-debug-v2',location:'chat.js:afterResponse',message:'response received',data:{responsePreview:aiMessage.substring(0,200),containsChinese:/[\u4E00-\u9FFF]/.test(aiMessage),containsJapanese:/[\u3040-\u309F\u30A0-\u30FF]/.test(aiMessage),containsKorean:/[\uAC00-\uD7AF]/.test(aiMessage),containsEnglish:/[a-zA-Z]/.test(aiMessage),selectorSent:currentLanguage,module:currentModule.value},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion agent log
 
       // 前端过滤敏感词（额外保障）
       const filteredMessage = filterClientSensitiveWords(aiMessage)
