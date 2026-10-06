@@ -361,6 +361,25 @@ async function chatWithContextHandler(req, res) {
     const resolved = resolveLanguage(message, language);
     const finalLangConfig = resolved.config;
 
+    // #region agent log
+    console.log('[LANG DEBUG] ===== LANG RESOLUTION (chatWithContext) =====');
+    console.log('[LANG DEBUG] module:', module);
+    console.log('[LANG DEBUG] message preview:', String(message).substring(0, 100));
+    console.log('[LANG DEBUG] selectorLang:', language);
+    console.log('[LANG DEBUG] detectedLang:', resolved.detected);
+    console.log('[LANG DEBUG] fallbackLang:', resolved.fallback);
+    console.log('[LANG DEBUG] finalLang:', resolved.finalLang);
+    console.log('[LANG DEBUG] finalPrompt:', finalLangConfig.prompt);
+    console.log('[LANG DEBUG] history length:', Array.isArray(history) ? history.length : 0);
+    if (Array.isArray(history) && history.length > 0) {
+      history.forEach((h, i) => {
+        if (h && h.content && typeof h.content === 'string') {
+          console.log(`[LANG DEBUG] history[${i}] (${h.role}):`, h.content.substring(0, 150));
+        }
+      });
+    }
+    // #endregion agent log
+
     // 获取用户时间信息
     const userDateTime = getUserDateTime(userTime);
     
@@ -436,8 +455,13 @@ async function chatWithContextHandler(req, res) {
       { role: 'system', content: systemPrompt },
       ...validHistory
     ];
-    
+
     console.log('[DEBUG] Final messages:', messages.length);
+    // #region agent log
+    console.log('[LANG DEBUG] ===== FULL SYSTEM PROMPT (last 400 chars) =====');
+    console.log(systemPrompt.substring(systemPrompt.length - 400));
+    console.log('[LANG DEBUG] ===== END SYSTEM PROMPT =====');
+    // #endregion agent log
     
     let response;
     
