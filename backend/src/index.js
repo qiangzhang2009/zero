@@ -4,9 +4,11 @@ import dotenv from 'dotenv';
 import { modulePrompts, callAPI } from './services/aiService.js';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -131,6 +133,62 @@ function saveMemberships(memberships) {
   }
 }
 
+// 从用户消息中检测语言（基于 Unicode 字符范围）
+// 优先级：日文 > 韩文 > 中文 > 阿拉伯文 > 拉丁文（英文/西/法/德/意/葡/印尼/马来）
+// 返回 'zh-CN' | 'en' | 'ja' | 'ko' | 'ar' 等
+function detectMessageLanguage(text) {
+  if (!text || typeof text !== 'string') return null;
+  // 去掉空白和标点
+  const sample = text.replace(/[\s\d\p{P}]/gu, '');
+  if (!sample) return null;
+
+  let hasHiragana = false;  // \u3040-\u309F 平假名
+  let hasKatakana = false;  // \u30A0-\u30FF 片假名
+  let hasHangul = false;    // \uAC00-\uD7AF 韩文
+  let hasCjk = false;       // \u4E00-\u9FFF CJK 统一表意
+  let hasArabic = false;    // \u0600-\u06FF 阿拉伯文
+  let latinCount = 0;
+  let cjkCount = 0;
+  let kanaCount = 0;
+  let hangulCount = 0;
+  let arabicCount = 0;
+
+  for (const ch of sample) {
+    const code = ch.codePointAt(0);
+    if (code >= 0x3040 && code <= 0x309F) { hasHiragana = true; kanaCount++; }
+    else if (code >= 0x30A0 && code <= 0x30FF) { hasKatakana = true; kanaCount++; }
+    else if (code >= 0xAC00 && code <= 0xD7AF) { hasHangul = true; hangulCount++; }
+    else if (code >= 0x4E00 && code <= 0x9FFF) { hasCjk = true; cjkCount++; }
+    else if (code >= 0x0600 && code <= 0x06FF) { hasArabic = true; arabicCount++; }
+    else if ((code >= 0x41 && code <= 0x5A) || (code >= 0x61 && code <= 0x7A) || (code >= 0xC0 && code <= 0x024F)) {
+      latinCount++;
+    }
+  }
+
+  // 日文判定：有平假名或片假名
+  if (hasHiragana || hasKatakana) return 'ja';
+  // 韩文判定
+  if (hasHangul && hangulCount > 0) return 'ko';
+  // 阿拉伯文判定
+  if (hasArabic && arabicCount > 0) return 'ar';
+  // 中日韩统一表意文字：优先中文字符多于其他（这里仅 CJK，认为是中文）
+  if (hasCjk && cjkCount > 0) return 'zh-CN';
+  // 拉丁字母：默认英文
+  if (latinCount > 0) return 'en';
+
+  return null;
+}
+
+// 根据用户消息和选择器语言，计算最终回复语言与提示词
+// 优先用用户消息的语言；其次用选择器；最后中文
+function resolveLanguage(message, selectorLang) {
+  const detected = detectMessageLanguage(message);
+  const fallback = (selectorLang && languageMap[selectorLang]) ? selectorLang : 'zh-CN';
+  const finalLang = detected || fallback;
+  const config = languageMap[finalLang] || languageMap['zh-CN'];
+  return { detected, fallback, finalLang, config };
+}
+
 // 内存中的用户档案和会员数据
 let userProfilesStore = loadUserProfiles();
 let membershipsStore = loadMemberships();
@@ -162,10 +220,20 @@ let chatHistoryStore = loadChatHistory();
 
 // 中间件
 app.use(cors({
-  origin: ['https://zero.zxqconsulting.com', 'https://zero-production-4a85.up.railway.app'],
+  origin: ['https://zero.zxqconsulting.com', 'https://zhi.ji', 'https://www.zhi.ji', 'https://zhi-ji.zxqconsulting.com', 'http://localhost:3003'],
   credentials: true
 }));
 app.use(express.json({ limit: '50mb' })); // 增加限制以支持图片
+
+// 静态文件服务
+app.use(express.static(path.join(__dirname, '../../frontend/dist')));
+app.get('*', (req, res, next) => {
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
+  } else {
+    next();
+  }
+});
 
 // 过滤回复中的敏感词
 function filterSensitiveWords(message) {
@@ -212,6 +280,20 @@ async function chatHandler(req, res) {
     
     const langConfig = languageMap[language] || languageMap['zh-CN'];
 
+    // 根据用户消息的实际语言决定回复语言（用户用什么语言提问，就用什么语言回复）
+    const resolved = resolveLanguage(message, language);
+    const finalLangConfig = resolved.config;
+
+    // #region agent log
+    console.log('[LANG DEBUG] ===== LANG RESOLUTION =====');
+    console.log('[LANG DEBUG] message preview:', String(message).substring(0, 100));
+    console.log('[LANG DEBUG] selectorLang:', language);
+    console.log('[LANG DEBUG] detectedLang:', resolved.detected);
+    console.log('[LANG DEBUG] fallbackLang:', resolved.fallback);
+    console.log('[LANG DEBUG] finalLang:', resolved.finalLang);
+    console.log('[LANG DEBUG] finalPrompt:', finalLangConfig.prompt);
+    // #endregion agent log
+
     // 获取用户时间或使用服务器时间
     const userDateTime = getUserDateTime(userTime);
     
@@ -241,7 +323,7 @@ async function chatHandler(req, res) {
     console.log('[YEAR DEBUG] userDateTime:', userDateTime);
     
     const messages = [
-      { role: 'system', content: `${yearReminder} 你是知几的AI助手，一个古老智慧与现代科技结合的命理咨询师。请用温暖，专业的方式回答用户的问题。绝对不要在回复中提及任何AI模型、技术细节或DeepSeek相关信息。【语言要求】${langConfig.prompt} ${userDateTime}` },
+      { role: 'system', content: `${yearReminder} 你是知几的AI助手，一个古老智慧与现代科技结合的命理咨询师。请用温暖，专业的方式回答用户的问题。绝对不要在回复中提及任何AI模型、技术细节或DeepSeek相关信息。【语言要求】${finalLangConfig.prompt} 无论用户使用何种语言提问，你都必须用相同的语言回复。${userDateTime}` },
       ...validHistory,
       { role: 'user', content: message }
     ];
@@ -303,7 +385,22 @@ async function chatWithContextHandler(req, res) {
     };
     
     const langConfig = languageMap[language] || languageMap['zh-CN'];
-    
+
+    // 根据用户消息的实际语言决定回复语言（用户用什么语言提问，就用什么语言回复）
+    const resolved = resolveLanguage(message, language);
+    const finalLangConfig = resolved.config;
+
+    // #region agent log
+    console.log('[LANG DEBUG] ===== LANG RESOLUTION (chatWithContext) =====');
+    console.log('[LANG DEBUG] module:', module);
+    console.log('[LANG DEBUG] message preview:', String(message).substring(0, 100));
+    console.log('[LANG DEBUG] selectorLang:', language);
+    console.log('[LANG DEBUG] detectedLang:', resolved.detected);
+    console.log('[LANG DEBUG] fallbackLang:', resolved.fallback);
+    console.log('[LANG DEBUG] finalLang:', resolved.finalLang);
+    console.log('[LANG DEBUG] finalPrompt:', finalLangConfig.prompt);
+    // #endregion agent log
+
     // 获取用户时间信息
     const userDateTime = getUserDateTime(userTime);
     
@@ -317,10 +414,10 @@ async function chatWithContextHandler(req, res) {
     
     // 直接使用系统提示，让AI用用户选择的语言回复
     let systemPrompt = yearReminder + '\n\n' + moduleConfig.systemPrompt;
-    
+
     // 添加语言要求
-    systemPrompt += `\n\n【语言要求】${langConfig.prompt}`;
-    
+    systemPrompt += `\n\n【语言要求】${finalLangConfig.prompt} 无论用户使用何种语言提问，你都必须用相同的语言回复。`;
+
     // 添加当前日期时间信息
     systemPrompt += `\n\n${userDateTime}`;
     
