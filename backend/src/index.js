@@ -361,30 +361,6 @@ async function chatWithContextHandler(req, res) {
     const resolved = resolveLanguage(message, language);
     const finalLangConfig = resolved.config;
 
-    // #region agent log
-    console.log('[LANG DEBUG] ===== LANG RESOLUTION (chatWithContext) =====');
-    console.log('[LANG DEBUG] module:', module);
-    console.log('[LANG DEBUG] message preview:', String(message).substring(0, 100));
-    console.log('[LANG DEBUG] selectorLang:', language);
-    console.log('[LANG DEBUG] detectedLang:', resolved.detected);
-    console.log('[LANG DEBUG] fallbackLang:', resolved.fallback);
-    console.log('[LANG DEBUG] finalLang:', resolved.finalLang);
-    console.log('[LANG DEBUG] finalPrompt:', finalLangConfig.prompt);
-    console.log('[LANG DEBUG] hasProfile:', !!profile);
-    if (profile) {
-      console.log('[LANG DEBUG] profile.name:', profile.name);
-      console.log('[LANG DEBUG] profile.birthday:', profile.birthday);
-    }
-    console.log('[LANG DEBUG] history length:', Array.isArray(history) ? history.length : 0);
-    if (Array.isArray(history) && history.length > 0) {
-      history.forEach((h, i) => {
-        if (h && h.content && typeof h.content === 'string') {
-          console.log(`[LANG DEBUG] history[${i}] (${h.role}):`, h.content.substring(0, 200));
-        }
-      });
-    }
-    // #endregion agent log
-
     // 获取用户时间信息
     const userDateTime = getUserDateTime(userTime);
     
@@ -462,12 +438,7 @@ async function chatWithContextHandler(req, res) {
     ];
 
     console.log('[DEBUG] Final messages:', messages.length);
-    // #region agent log
-    console.log('[LANG DEBUG] ===== FULL SYSTEM PROMPT (last 400 chars) =====');
-    console.log(systemPrompt.substring(systemPrompt.length - 400));
-    console.log('[LANG DEBUG] ===== END SYSTEM PROMPT =====');
-    // #endregion agent log
-    
+
     let response;
     
     // 如果有图片，构建多模态消息
@@ -496,27 +467,6 @@ async function chatWithContextHandler(req, res) {
     // 过滤回复中的敏感词
     const rawMessage = response.data.choices[0].message.content;
     const filteredMessage = filterSensitiveWords(rawMessage);
-
-    // #region agent log
-    if (req.headers['x-debug-lang']) {
-      const sysMsg = messages[0] && messages[0].content;
-      const lastFew = sysMsg ? sysMsg.substring(sysMsg.length - 500) : '';
-      return res.json({
-        success: true,
-        data: {
-          message: filteredMessage,
-          module: moduleConfig.name,
-          __debug: {
-            detectedLang: resolved.detected,
-            finalLang: resolved.finalLang,
-            finalPrompt: finalLangConfig.prompt,
-            systemPromptTail: lastFew,
-            historyLength: Array.isArray(history) ? history.length : 0
-          }
-        }
-      });
-    }
-    // #endregion agent log
 
     res.json({
       success: true,
