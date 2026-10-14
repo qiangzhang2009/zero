@@ -10,10 +10,10 @@ function getApiUrl() {
   if (import.meta.env.DEV) {
     return envUrl || 'http://localhost:3000/api'
   }
-  // 生产环境必须配置
+  // 生产环境：优先用环境变量，否则用生产环境默认后端
   if (!envUrl) {
-    console.error('⚠️ VITE_API_URL 环境变量未配置！')
-    return ''
+    console.warn('⚠️ VITE_API_URL 环境变量未配置，使用生产环境默认值')
+    return 'https://zero-backend-jrvz.onrender.com/api'
   }
   return envUrl
 }
