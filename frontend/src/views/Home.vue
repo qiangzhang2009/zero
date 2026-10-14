@@ -119,8 +119,7 @@ function getModuleId(index) {
           <span class="btn-icon">→</span>
         </button>
       </div>
-      </div>
-      
+
       <div class="hero-features">
         <div class="feature-item">
           <span class="feature-icon">⏰</span>
