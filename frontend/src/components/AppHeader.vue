@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLanguageStore } from '../i18n'
 import { useUsageStore } from '../stores/usage'
+import { getWechatId } from '../config'
 import LanguageSelector from './LanguageSelector.vue'
 
 const router = useRouter()
@@ -10,6 +11,9 @@ const languageStore = useLanguageStore()
 const usageStore = useUsageStore()
 const isMenuOpen = ref(false)
 const showWechatModal = ref(false)
+const wechatId = ref(getWechatId())
+
+const emit = defineEmits(['toggle-sidebar'])
 
 onMounted(() => {
   usageStore.loadUsage()
@@ -17,11 +21,31 @@ onMounted(() => {
 })
 
 function openWechat() {
+  if (!wechatId.value) {
+    alert('客服微信未配置，请联系管理员')
+    return
+  }
   showWechatModal.value = true
 }
 
 function closeWechat() {
   showWechatModal.value = false
+}
+
+function copyWechat() {
+  if (!wechatId.value) return
+  navigator.clipboard?.writeText(wechatId.value).then(() => {
+    alert('微信号已复制')
+  }).catch(() => {
+    // 降级方案
+    const input = document.createElement('input')
+    input.value = wechatId.value
+    document.body.appendChild(input)
+    input.select()
+    document.execCommand('copy')
+    document.body.removeChild(input)
+    alert('微信号已复制')
+  })
 }
 </script>
 
@@ -48,7 +72,13 @@ function closeWechat() {
         <!-- 语言选择器 -->
         <LanguageSelector />
 
-        <div class="func-icon" @click="isMenuOpen = !isMenuOpen">
+        <!-- 移动端菜单按钮 - 打开侧边栏 -->
+        <div class="func-icon mobile-only" @click="emit('toggle-sidebar')">
+          <span class="menu-btn">☰</span>
+        </div>
+
+        <!-- 桌面端菜单按钮 -->
+        <div class="func-icon desktop-only" @click="isMenuOpen = !isMenuOpen">
           <span class="menu-btn">☰</span>
         </div>
       </div>
@@ -61,15 +91,22 @@ function closeWechat() {
         <div class="wechat-icon">💬</div>
         <h3 class="wechat-title">添加客服微信</h3>
         <p class="wechat-desc">扫码联系客服，转账后为您充值</p>
-        <div class="wechat-qr">
+        <div v-if="wechatId" class="wechat-qr">
           <div class="qr-placeholder">
             <div class="qr-icon">📱</div>
             <p class="qr-label">微信号</p>
-            <p class="qr-value">3740977</p>
+            <p class="qr-value">{{ wechatId }}</p>
+          </div>
+        </div>
+        <div v-else class="wechat-qr">
+          <div class="qr-placeholder">
+            <div class="qr-icon">⚙️</div>
+            <p class="qr-label">客服微信</p>
+            <p class="qr-value" style="color: rgba(255,255,255,0.5);">未配置</p>
           </div>
         </div>
         <p class="wechat-note">转账时备注您的账号即可开通</p>
-        <button class="wechat-copy" @click="() => { navigator.clipboard?.writeText('3740977'); alert('微信号已复制') }">
+        <button v-if="wechatId" class="wechat-copy" @click="copyWechat">
           复制微信号
         </button>
       </div>
@@ -78,6 +115,15 @@ function closeWechat() {
 </template>
 
 <style scoped>
+/* 移动/桌面端元素默认隐藏状态 */
+.mobile-only {
+  display: none !important;
+}
+
+.desktop-only {
+  display: flex !important;
+}
+
 .header-box {
   background: rgba(26, 26, 46, 0.95);
   backdrop-filter: blur(10px);
@@ -180,6 +226,14 @@ function closeWechat() {
 @media (max-width: 768px) {
   .header {
     padding: 10px 12px;
+  }
+  
+  .mobile-only {
+    display: flex !important;
+  }
+  
+  .desktop-only {
+    display: none !important;
   }
 
   .logo {

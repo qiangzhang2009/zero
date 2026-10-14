@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { getApiUrl } from '../config'
 
 const DAILY_LIMIT = 10
 const STORAGE_KEY = 'zhiJi_usage'
@@ -8,11 +9,11 @@ const PAID_CREDITS_KEY = 'zhiJi_paid_credits'
 const USER_ID_KEY = 'zhiJi_user_id'
 
 function getAPIUrl() {
-  let apiBase = import.meta.env.VITE_API_URL || ''
+  const apiBase = import.meta.env.VITE_API_URL || ''
   if (!apiBase || apiBase === '/api') {
-    apiBase = 'https://zero-backend-jrvz.onrender.com/api'
+    return getApiUrl()
   }
-  return apiBase
+  return apiBase.endsWith('/api') ? apiBase : `${apiBase}/api`
 }
 
 function getUserId() {
@@ -21,7 +22,41 @@ function getUserId() {
 
 export const useUsageStore = defineStore('usage', () => {
   const todayUsage = ref(0)
-  const isAdmin = ref(false)
+  // 注意：isAdmin 已不再通过 localStorage 设置
+// 管理员权限必须通过后端认证（login 后台管理）
+// 保留 isAdmin 字段是为了向后兼容和显示，但实际上权限由后端校验
+const isAdmin = ref(false)
+const isAdminAuthenticated = ref(false)
+
+// 验证管理员状态（通过调用后端 API）
+async function verifyAdminStatus() {
+  const token = localStorage.getItem('admin_token')
+  if (!token) {
+    isAdminAuthenticated.value = false
+    isAdmin.value = false
+    return false
+  }
+  
+  try {
+    // 调用后端验证 token 是否有效
+    const apiUrl = getAPIUrl()
+    const res = await fetch(`${apiUrl}/admin/stats?adminKey=${token}`)
+    if (res.ok) {
+      isAdminAuthenticated.value = true
+      isAdmin.value = true
+      return true
+    } else {
+      // Token 无效，清除
+      localStorage.removeItem('admin_token')
+      isAdminAuthenticated.value = false
+      isAdmin.value = false
+      return false
+    }
+  } catch (e) {
+    console.warn('Failed to verify admin status:', e)
+    return false
+  }
+}
   const dailyLimit = ref(DAILY_LIMIT)
   const paidCredits = ref(0)
 
@@ -43,7 +78,8 @@ export const useUsageStore = defineStore('usage', () => {
       todayUsage.value = 0
       saveUsage()
     }
-    isAdmin.value = localStorage.getItem(ADMIN_KEY) === 'true'
+    // 不再从 localStorage 读取 is_admin
+    // 管理员权限通过后端验证
     paidCredits.value = parseInt(localStorage.getItem(PAID_CREDITS_KEY) || '0', 10)
   }
 
@@ -115,9 +151,9 @@ export const useUsageStore = defineStore('usage', () => {
     saveUsage()
   }
 
+  // setAdmin 已废弃 - 管理员权限必须通过后端验证
   function setAdmin(value) {
-    isAdmin.value = value
-    localStorage.setItem(ADMIN_KEY, value ? 'true' : 'false')
+    console.warn('setAdmin is deprecated. Admin status is managed by backend.')
   }
 
   function setPaidCredits(credits) {
@@ -136,17 +172,19 @@ export const useUsageStore = defineStore('usage', () => {
   return {
     todayUsage,
     isAdmin,
+    isAdminAuthenticated,
     dailyLimit,
     paidCredits,
     loadUsage,
     syncPaidCreditsFromServer,
+    verifyAdminStatus,
     canUse,
     recordUse,
     saveUsage,
     getRemaining,
     isLimited,
     resetUsage,
-    setAdmin,
+    setAdmin,  // 保留为 deprecated，调用时会发出警告
     setPaidCredits,
     getPaidCredits,
     hasPaidCredits

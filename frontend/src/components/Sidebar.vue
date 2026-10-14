@@ -11,6 +11,18 @@ const languageStore = useLanguageStore()
 const searchQuery = ref('')
 const hoveredModule = ref(null)
 
+// 检测是否为移动端
+const isMobile = ref(false)
+
+function checkMobile() {
+  isMobile.value = window.innerWidth <= 768
+}
+
+if (typeof window !== 'undefined') {
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
+}
+
 const filteredModules = computed(() => {
   if (!searchQuery.value) return chatStore.modules
   return chatStore.modules.filter(m => 
@@ -22,11 +34,18 @@ const filteredModules = computed(() => {
 function selectModule(moduleId) {
   chatStore.setModule(moduleId)
   router.push(`/chat/${moduleId}`)
+  // 在移动端选择后关闭抽屉
+  if (isMobile.value) {
+    emit('close')
+  }
 }
+
+const emit = defineEmits(['close'])
 </script>
 
 <template>
-  <aside class="sidebar" :class="{ 'sidebar-open': true }">
+  <aside class="sidebar" :class="{ 'sidebar-open': true, 'sidebar-mobile': isMobile }">
+    <button v-if="isMobile" class="sidebar-close" @click="emit('close')" aria-label="关闭菜单">×</button>
     <div class="sidebar-header">
       <h2 class="sidebar-title">
         <span class="title-icon">✦</span>
@@ -224,7 +243,42 @@ function selectModule(moduleId) {
 
 @media (max-width: 768px) {
   .sidebar {
-    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .sidebar.sidebar-mobile {
+    transform: translateX(0);
+  }
+  
+  .sidebar-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 1;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  
+  .sidebar-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
   }
 }
 </style>

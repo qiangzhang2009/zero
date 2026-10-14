@@ -119,7 +119,8 @@ const t = (key) => {
 }
 
 const showContact = ref(false)
-const WECHAT_ID = '3740977'
+import { getWechatId } from '../config'
+const WECHAT_ID = getWechatId()
 
 function openContact() {
   showContact.value = true

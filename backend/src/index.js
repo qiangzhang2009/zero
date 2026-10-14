@@ -1,12 +1,73 @@
+// ===========================================
+// 应用配置
+// ===========================================
+
+// 必须在任何其他 import 之前加载 .env
+import dotenv from 'dotenv';
+dotenv.config();
+
+// 版本标记
+const VERSION = process.env.APP_VERSION || 'v2.2026.10.14';
+
+// 数据存储配置
+const DATA_CONFIG = {
+  // 聊天记录最大保存数量
+  MAX_CHAT_HISTORY: parseInt(process.env.MAX_CHAT_HISTORY) || 10000,
+  // 聊天记录保留天数（超过此天数的记录将被清理）
+  CHAT_RETENTION_DAYS: parseInt(process.env.CHAT_RETENTION_DAYS) || 90,
+  // 用户档案最大数量
+  MAX_USER_PROFILES: parseInt(process.env.MAX_USER_PROFILES) || 50000,
+};
+
+// 数据清理函数
+function cleanupOldData() {
+  console.log(`[${VERSION}] Starting data cleanup...`);
+  
+  const now = new Date();
+  const retentionMs = DATA_CONFIG.CHAT_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+  const cutoffDate = new Date(now.getTime() - retentionMs);
+  
+  // 清理过期的聊天记录
+  const oldCount = chatHistoryStore.length;
+  chatHistoryStore = chatHistoryStore.filter(record => {
+    if (!record.createdAt) return false;
+    const recordDate = new Date(record.createdAt);
+    return recordDate >= cutoffDate;
+  });
+  const removedCount = oldCount - chatHistoryStore.length;
+  
+  if (removedCount > 0) {
+    console.log(`[${VERSION}] Cleaned up ${removedCount} old chat records`);
+    saveChatHistory(chatHistoryStore);
+  }
+  
+  // 如果数据量超过限制，删除最早的记录
+  if (chatHistoryStore.length > DATA_CONFIG.MAX_CHAT_HISTORY) {
+    const excess = chatHistoryStore.length - DATA_CONFIG.MAX_CHAT_HISTORY;
+    chatHistoryStore = chatHistoryStore.slice(excess);
+    console.log(`[${VERSION}] Trimmed ${excess} oldest records to meet size limit`);
+    saveChatHistory(chatHistoryStore);
+  }
+  
+  console.log(`[${VERSION}] Data cleanup complete. Total records: ${chatHistoryStore.length}`);
+}
+
+// 启动定时清理任务（每小时执行一次）
+function startCleanupScheduler() {
+  // 启动时先清理一次
+  cleanupOldData();
+  
+  // 每小时执行一次清理
+  setInterval(cleanupOldData, 60 * 60 * 1000);
+  console.log(`[${VERSION}] Cleanup scheduler started (runs every hour)`);
+}
+
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import { modulePrompts, callAPI } from './services/aiService.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
-dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -27,27 +88,18 @@ const currentDateTimeInfo = `当前日期：${currentYear}年${currentMonth}月$
 
 // 辅助函数：获取用户时间信息
 function getUserDateTime(userTime) {
-  // 版本标记 - 确认新代码已部署
-  const VERSION = 'v2.2026.03.01';
-  
-  console.log(`[${VERSION}] getUserDateTime called with userTime:`, userTime);
-  
   let date;
   if (userTime) {
     // 使用用户传来的时间
     try {
       date = new Date(userTime);
-      console.log(`[${VERSION}] Parsed date:`, date.toISOString());
       if (isNaN(date.getTime())) {
-        console.log(`[${VERSION}] Invalid date, using server time`);
         date = new Date();
       }
     } catch (e) {
-      console.log(`[${VERSION}] Date parse error:`, e);
       date = new Date();
     }
   } else {
-    console.log(`[${VERSION}] No userTime provided, using server time`);
     date = new Date();
   }
   
@@ -80,8 +132,15 @@ function getPlatformInfo(userAgent) {
 // 聊天记录存储文件路径
 const CHAT_HISTORY_FILE = path.join(process.cwd(), 'chat_history.json');
 
-// 简单的管理员密码配置
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'zhiJi_admin_2026';
+// 简单的管理员密码配置 - 必须通过环境变量配置
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+// 验证管理员密码是否已配置
+if (!ADMIN_PASSWORD) {
+  console.error('❌ 错误: ADMIN_PASSWORD 环境变量未设置！');
+  console.error('   请在部署环境中设置 ADMIN_PASSWORD 环境变量。');
+  console.error('   示例: ADMIN_PASSWORD=your_secure_password npm start');
+}
 
 // 用户档案存储文件路径
 const USER_PROFILES_FILE = path.join(process.cwd(), 'user_profiles.json');
@@ -233,6 +292,33 @@ function saveChatHistory(history) {
 // 内存中的聊天历史记录 (用于快速访问)
 let chatHistoryStore = loadChatHistory();
 
+// ===========================================
+// 管理员认证中间件
+// ===========================================
+
+// 验证管理员请求的中间件
+function requireAdmin(req, res, next) {
+  // 检查密码是否已配置
+  if (!ADMIN_PASSWORD) {
+    console.error('管理员 API 访问被拒绝: ADMIN_PASSWORD 未配置');
+    return res.status(503).json({ 
+      success: false, 
+      error: { message: '管理员功能暂不可用', type: 'SERVER_ERROR' } 
+    });
+  }
+  
+  const adminKey = req.query.adminKey || req.headers['x-admin-key'] || (req.body && req.body.adminKey);
+  
+  if (!adminKey || adminKey !== ADMIN_PASSWORD) {
+    return res.status(401).json({ 
+      success: false, 
+      error: { message: '未授权', type: 'AUTH_ERROR' } 
+    });
+  }
+  
+  next();
+}
+
 // 中间件
 app.use(cors({
   origin: ['https://zero.zxqconsulting.com', 'https://zhi.ji', 'https://www.zhi.ji', 'https://zhi-ji.zxqconsulting.com', 'http://localhost:3003'],
@@ -240,14 +326,32 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '50mb' })); // 增加限制以支持图片
 
-// 静态文件服务
-app.use(express.static(path.join(__dirname, '../../frontend/dist')));
-app.get('*', (req, res, next) => {
-  if (!req.path.startsWith('/api')) {
-    res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
-  } else {
-    next();
+// 统一错误处理中间件
+app.use((err, req, res, next) => {
+  console.error(`[ERROR] ${err.name || 'Error'}: ${err.message}`);
+  if (err.stack && process.env.NODE_ENV !== 'production') {
+    console.error(err.stack);
   }
+
+  // 处理 JSON 解析错误
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return res.status(400).json({
+      success: false,
+      error: {
+        message: '请求体格式错误，请检查 JSON 格式',
+        type: 'VALIDATION_ERROR'
+      }
+    });
+  }
+
+  // 默认错误响应
+  res.status(err.status || 500).json({
+    success: false,
+    error: {
+      message: err.message || '服务器内部错误，请稍后再试',
+      type: err.type || 'SERVER_ERROR'
+    }
+  });
 });
 
 // 过滤回复中的敏感词
@@ -758,8 +862,18 @@ app.get('/api/modules', (req, res) => {
 
 // 管理员登录验证
 app.post('/api/admin/login', (req, res) => {
+  // 检查密码是否已配置
+  if (!ADMIN_PASSWORD) {
+    console.error('管理员登录尝试失败: ADMIN_PASSWORD 未配置');
+    return res.status(503).json({ 
+      success: false, 
+      error: '管理员功能暂不可用，请联系系统管理员配置 ADMIN_PASSWORD 环境变量' 
+    });
+  }
+  
   const { password } = req.body;
   if (password === ADMIN_PASSWORD) {
+    // token 就是密码本身（与原行为兼容）
     res.json({ success: true, token: ADMIN_PASSWORD, message: '登录成功' });
   } else {
     res.status(401).json({ success: false, error: '密码错误' });
@@ -1369,5 +1483,36 @@ app.get('/api/credits/:userId', (req, res) => {
 
 // 启动服务器
 app.listen(PORT, () => {
+  // 启动数据清理定时任务
+  startCleanupScheduler();
   console.log(`知几智慧服务运行在 http://localhost:${PORT}`);
+  console.log(`[${VERSION}] 版本: ${VERSION}`);
+  console.log(`[${VERSION}] 数据保留策略: 保留最近 ${DATA_CONFIG.CHAT_RETENTION_DAYS} 天, 最多 ${DATA_CONFIG.MAX_CHAT_HISTORY} 条记录`);
 });
+
+// ===========================================
+// 全局 404 和错误处理 - 必须放在所有路由之后
+// ===========================================
+
+// 404 处理 - 在所有 API 路由之后
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({
+      success: false,
+      error: {
+        message: `路由 ${req.method} ${req.path} 不存在`,
+        type: 'NOT_FOUND'
+      }
+    });
+  }
+  next();
+});
+
+// 前端静态文件服务（仅在生产环境有 dist 目录时）
+const FRONTEND_DIST = path.join(__dirname, '../../frontend/dist');
+if (fs.existsSync(FRONTEND_DIST)) {
+  app.use(express.static(FRONTEND_DIST));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(FRONTEND_DIST, 'index.html'));
+  });
+}

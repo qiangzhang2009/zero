@@ -14,6 +14,8 @@ build/
 # IDE
 .vscode/
 .idea/
+.cursor/
+.codegraph/
 *.swp
 *.swo
 
@@ -34,3 +36,12 @@ coverage/
 *.tmp
 *.temp
 .vercel
+
+# 数据备份
+backups/
+
+# 用户数据和聊天历史（生产环境使用 Render 文件系统，不应提交）
+backend/chat_history.json
+backend/user_profiles.json
+backend/memberships.json
+backend/recharges.json

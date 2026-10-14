@@ -5,10 +5,11 @@ import { useProfileStore } from './profile'
 import { useLanguageStore } from '../i18n'
 
 // 处理可能的 /api 后缀，避免路径重复
+import { getApiUrl } from '../config'
+
 let apiBase = import.meta.env.VITE_API_URL || ''
-// 如果是 Vercel 部署（相对路径），使用 Render API
 if (!apiBase || apiBase === '/api') {
-  apiBase = 'https://zero-backend-jrvz.onrender.com/api'
+  apiBase = getApiUrl()
 }
 const API_URL = apiBase
 
@@ -271,8 +272,6 @@ export const useChatStore = defineStore('chat', () => {
                   
                   lastSavedChatId.value = latestChat.id
                   saveToStorage('last_saved_chat_id', latestChat.id)
-                  
-                  console.log('成功从服务器加载聊天记录')
                 }
               }
             } catch (detailError) {

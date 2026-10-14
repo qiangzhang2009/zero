@@ -29,8 +29,8 @@ const currentModuleSupportsImage = computed(() => {
 })
 
 // 监听visible prop变化
-watch(() => props.visible, (newVal) => {
-  console.log('ImageUpload visible:', newVal)
+watch(() => props.visible, () => {
+  // 可以在这里添加显示/隐藏的副作用逻辑
 })
 
 // 处理拖拽

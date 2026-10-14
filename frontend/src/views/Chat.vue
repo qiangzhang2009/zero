@@ -158,11 +158,8 @@ const guessYouWantQuestions = computed(() => {
   if (!lang) {
     lang = languageStore.currentLanguage || 'zh-CN'
   }
-  console.log('guessYouWantQuestions:', { module, lang, currentLanguage: languageStore.currentLanguage })
   const translations = questionTranslations[lang] || questionTranslations['en'] || questionTranslations['zh-CN']
-  const result = translations[module] || translations.default
-  console.log('guessYouWantQuestions result:', result)
-  return result
+  return translations[module] || translations.default
 })
 
 // 快捷输入建议（多语言版本）

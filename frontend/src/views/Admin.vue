@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { getApiUrl } from '../config'
 
 const router = useRouter()
 
@@ -97,12 +98,18 @@ async function submitRecharge() {
   }
 }
 
-// 常量 - 直接硬编码正确的 API 地址
-const RENDER_API = 'https://zero-backend-jrvz.onrender.com/api'
+// API 地址 - 从环境变量读取
+const RENDER_API = getApiUrl()
 const ADMIN_API = RENDER_API
 
-// 调试用
-console.log('[Admin] ADMIN_API:', ADMIN_API)
+// 微信 ID - 从环境变量读取
+import { getWechatId } from '../config'
+const wechatId = getWechatId()
+
+// 调试用 - 仅在开发环境显示
+if (import.meta.env.DEV) {
+  console.log('[Admin] ADMIN_API:', ADMIN_API)
+}
 
 // 登录
 async function login() {
@@ -152,14 +159,30 @@ function getToken() {
 // API请求封装
 async function adminFetch(url, options = {}) {
   const token = getToken()
-  const res = await fetch(url, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers
+  try {
+    const res = await fetch(url, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Key': token,
+        ...options.headers
+      }
+    })
+    
+    // 检查 HTTP 状态码
+    if (res.status === 401) {
+      // 认证失败 - 自动登出
+      isLoggedIn.value = false
+      localStorage.removeItem('admin_token')
+      error.value = '登录已过期，请重新登录'
+      return { success: false, error: '未授权' }
     }
-  })
-  return res.json()
+    
+    return res.json()
+  } catch (err) {
+    console.error('API 请求失败:', err)
+    return { success: false, error: '网络错误' }
+  }
 }
 
 // 加载统计数据
@@ -694,7 +717,7 @@ onMounted(() => {
           <div class="recharge-guide">
             <h4>充值说明</h4>
             <ul>
-              <li>用户联系客服微信 <strong>3740977</strong> 付款</li>
+              <li>用户联系客服微信 <strong>{{ wechatId }}</strong> 付款</li>
               <li>付款时用户需告知其 User ID（可在对话页面底部查看）</li>
               <li>客服确认收款后在此输入用户 ID 和积分数量进行充值</li>
               <li>充值完成后用户刷新页面即可使用积分</li>
