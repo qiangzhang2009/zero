@@ -46,7 +46,28 @@ const translations = {
   'zh-CN': {
     appName: '知几', appDesc: '古老智慧的低语，指引你的未来',
     features: '功能', contact: '联系我们', login: '登录', start: '开始',
-    chat: { inputPlaceholder: '输入您的问题...', send: '发送', newChat: '新对话', guessYouWant: '猜你想问', tryAsking: '试试这样问：', loading: '倾听天机中...', selectModule: '选择功能', profile: '档案', uploadImage: '上传图片', voiceInput: '语音输入', copy: '复制', retry: '重试', copied: '已复制', you: '你' },
+    ageVerify: {
+      title: '年龄确认',
+      message: '本服务涉及传统文化解读与人生建议。为保护未成年人，请您确认您已年满 18 周岁。',
+      confirm: '我已满 18 岁',
+      reject: '未满 18 岁',
+      terms: '继续即表示您同意我们的服务条款与隐私政策'
+    },
+    account: {
+      title: '账户中心', subtitle: '管理您的会员与订单',
+      currentTier: '当前等级', status: '状态', expires: '到期时间', dailyLimit: '每日额度', unlimited: '无限制',
+      active: '生效中', expiring: '即将到期', expired: '已过期', renewReminder: '请及时续费以免影响使用',
+      noMembership: '您还未订阅会员', viewPlans: '查看套餐',
+      creditsBalance: '点数余额', credits: '点数', creditsDesc: '点数用于支付单次AI解读费用',
+      orderHistory: '订单记录', noOrders: '暂无订单',
+      amount: '金额', date: '日期',
+      statusPaid: '已支付', statusPending: '待支付', statusRefunded: '已退款',
+      requestRefund: '申请退款', confirmRefund: '确定要申请退款吗？', refundFailed: '退款失败',
+      managePlan: '管理套餐', backHome: '返回首页'
+    },
+    contact: { title: '联系我们', subtitle: '多种方式与我们取得联系', backHome: '返回首页', wechatTitle: '微信客服', wechatDesc: '扫描二维码或搜索微信号', scanQR: '扫描二维码添加', wechatId: '微信号', copy: '复制', copied: '已复制', emailTitle: '邮箱咨询', emailDesc: '发送邮件给我们', otherMethods: '其他联系方式', faq: '常见问题', faq1Q: '如何升级会员？', faq1A: '在定价页面选择套餐，使用支付宝或微信完成支付即可立即生效。', faq2Q: '点数如何使用？', faq2A: '点数用于支付单次AI解读。点数永不过期，可随时使用。', faq3Q: '如何申请退款？', faq3A: '在账户中心查看订单，7天内未使用的套餐可申请退款。', faq4Q: '支持哪些语言？', faq4A: '我们支持12种语言，包括中文、英语、日语、韩语、西班牙语等，AI会自动用您提问的语言回复。', businessHours: '服务时间', hoursDetail: '周一至周日 9:00 - 22:00 (UTC+8)' },
+    chat: { inputPlaceholder: '输入您的问题...', send: '发送', newChat: '新对话', guessYouWant: '猜你想问', tryAsking: '试试这样问：', loading: '倾听天机中...', selectModule: '选择功能', profile: '档案', uploadImage: '上传图片', voiceInput: '语音输入', copy: '复制', retry: '重试', copied: '已复制', you: '你', aiDisclaimer: '以上内容由 AI 生成，仅供娱乐参考，不构成专业建议。重大决策请咨询专业人士。', usageReminderTitle: '休息一下', usageReminderText: '您已使用多次对话，建议稍作休息，让心情平静后再继续。', remainingChats: '今日剩余', upgradeNow: '升级会员', continueUsing: '继续使用' },
+    account: { title: '账户中心', subtitle: '管理您的会员与订单', currentTier: '当前等级', status: '状态', expires: '到期时间', dailyLimit: '每日额度', unlimited: '无限次', active: '生效中', expiring: '即将到期', expired: '已过期', renewReminder: '请及时续费以免影响使用', noMembership: '您还未订阅会员', viewPlans: '查看套餐', creditsBalance: '点数余额', credits: '点数', creditsDesc: '点数用于支付单次AI解读', orderHistory: '订单记录', noOrders: '暂无订单', amount: '金额', date: '日期', statusPaid: '已支付', statusPending: '待支付', statusRefunded: '已退款', requestRefund: '申请退款', confirmRefund: '确定要申请退款吗？', refundFailed: '退款失败', managePlan: '管理套餐', backHome: '返回首页' },
     profile: { selectProfile: '选择档案', createProfile: '新建档案', editProfile: '修改档案', name: '姓名', birthday: '出生日期', birthTime: '出生时辰', gender: '性别', male: '男', female: '女', save: '保存', cancel: '取消', delete: '删除', confirmDelete: '确定要删除这个档案吗？', create: '创建', selectAvatar: '选择头像', required: '*', timePlaceholder: '请选择时辰' },
     imageUpload: { title: '📸 上传图片', invalidType: '请上传图片文件 (JPG, PNG, GIF, WebP)', fileTooLarge: '图片大小不能超过5MB', notSupported: '当前模块暂不支持图片上传', supportedModules: '支持模块：手相、塔罗、梦境、风水、星座', dropText: '点击或拖拽图片到这里', dropHint: '支持 JPG, PNG, GIF, WebP (最大5MB)', tipPalm: '💡 建议：上传清晰的手掌照片，掌心朝上，光线均匀', tipTarot: '💡 建议：确保塔罗牌图像清晰完整', tipDream: '💡 建议：可以上传与梦境相关的图片或符号', tipGeneral: '💡 建议：上传清晰的图片以获得更准确的解读', uploading: '上传中...', analyze: '开始解读' },
     home: { 
@@ -67,8 +88,23 @@ const translations = {
   },
   'en': {
     appName: 'ZhiJi', appDesc: 'Whispers of ancient wisdom, guiding your future',
+    ageVerify: { title: 'Age Verification', message: 'This service involves traditional cultural interpretation and life advice. To protect minors, please confirm you are 18 or older.', confirm: 'I am 18 or older', reject: 'Under 18', terms: 'By continuing, you agree to our Terms of Service and Privacy Policy' },
+    account: {
+      title: 'Account', subtitle: 'Manage your membership and orders',
+      currentTier: 'Current Tier', status: 'Status', expires: 'Expires', dailyLimit: 'Daily Limit', unlimited: 'Unlimited',
+      active: 'Active', expiring: 'Expiring Soon', expired: 'Expired', renewReminder: 'Please renew to avoid service interruption',
+      noMembership: 'No active membership', viewPlans: 'View Plans',
+      creditsBalance: 'Credits Balance', credits: 'Credits', creditsDesc: 'Credits are used to pay for individual AI readings',
+      orderHistory: 'Order History', noOrders: 'No orders yet',
+      amount: 'Amount', date: 'Date',
+      statusPaid: 'Paid', statusPending: 'Pending', statusRefunded: 'Refunded',
+      requestRefund: 'Request Refund', confirmRefund: 'Are you sure you want to refund this order?', refundFailed: 'Refund failed',
+      managePlan: 'Manage Plan', backHome: 'Back to Home'
+    },
     features: 'Features', contact: 'Contact', login: 'Login', start: 'Start',
-    chat: { inputPlaceholder: 'Ask your question...', send: 'Send', newChat: 'New Chat', guessYouWant: 'You Might Ask', tryAsking: 'Try asking:', loading: 'Consulting the spirits...', selectModule: 'Select Feature', profile: 'Profile', uploadImage: 'Upload Image', voiceInput: 'Voice Input', copy: 'Copy', retry: 'Retry', copied: 'Copied', you: 'You' },
+    chat: { inputPlaceholder: 'Ask your question...', send: 'Send', newChat: 'New Chat', guessYouWant: 'You Might Ask', tryAsking: 'Try asking:', loading: 'Consulting the spirits...', selectModule: 'Select Feature', profile: 'Profile', uploadImage: 'Upload Image', voiceInput: 'Voice Input', copy: 'Copy', retry: 'Retry', copied: 'Copied', you: 'You', aiDisclaimer: 'Above content is AI-generated for entertainment only, not professional advice. For major decisions, consult a qualified professional.', usageReminderTitle: 'Take a Break', usageReminderText: 'You have used multiple readings. Consider taking a short break to refresh your mind.', remainingChats: 'Today remaining', upgradeNow: 'Upgrade', continueUsing: 'Continue' },
+    account: { title: 'Account Center', subtitle: 'Manage your membership and orders', currentTier: 'Current Tier', status: 'Status', expires: 'Expires', dailyLimit: 'Daily Limit', unlimited: 'Unlimited', active: 'Active', expiring: 'Expiring Soon', expired: 'Expired', renewReminder: 'Please renew to avoid interruption', noMembership: 'No active subscription', viewPlans: 'View Plans', creditsBalance: 'Credits Balance', credits: 'credits', creditsDesc: 'Credits are used for one-time readings', orderHistory: 'Order History', noOrders: 'No orders yet', amount: 'Amount', date: 'Date', statusPaid: 'Paid', statusPending: 'Pending', statusRefunded: 'Refunded', requestRefund: 'Request Refund', confirmRefund: 'Confirm refund request?', refundFailed: 'Refund failed', managePlan: 'Manage Plan', backHome: 'Back to Home' },
+    contact: { title: 'Contact Us', subtitle: 'Multiple ways to reach us', backHome: 'Back to Home', wechatTitle: 'WeChat Support', wechatDesc: 'Scan QR or search ID', scanQR: 'Scan QR to add', wechatId: 'WeChat ID', copy: 'Copy', copied: 'Copied', emailTitle: 'Email', emailDesc: 'Send us an email', otherMethods: 'Other Methods', faq: 'FAQ', faq1Q: 'How to upgrade?', faq1A: 'Choose a plan on the pricing page and pay via Alipay, WeChat or card to activate instantly.', faq2Q: 'How do credits work?', faq2A: 'Credits are used for one-time readings. They never expire.', faq3Q: 'How to refund?', faq3A: 'Visit Account Center, unused plans within 7 days are refundable.', faq4Q: 'Supported languages?', faq4A: 'We support 12 languages including Chinese, English, Japanese, Korean, Spanish, etc. AI auto-responds in your language.', businessHours: 'Business Hours', hoursDetail: 'Mon-Sun 9:00 - 22:00 (UTC+8)' },
     profile: { selectProfile: 'Select Profile', createProfile: 'Create Profile', editProfile: 'Edit Profile', name: 'Name', birthday: 'Birthday', birthTime: 'Birth Time', gender: 'Gender', male: 'Male', female: 'Female', save: 'Save', cancel: 'Cancel', delete: 'Delete', confirmDelete: 'Are you sure you want to delete this profile?', create: 'Create', selectAvatar: 'Select Avatar', required: '*', timePlaceholder: 'Select Birth Time' },
     imageUpload: { title: '📸 Upload Image', invalidType: 'Please upload an image file (JPG, PNG, GIF, WebP)', fileTooLarge: 'Image size cannot exceed 5MB', notSupported: 'Current module does not support image upload', supportedModules: 'Supported: Palmistry, Tarot, Dreams, Feng Shui, Zodiac', dropText: 'Click or drag image here', dropHint: 'Supports JPG, PNG, GIF, WebP (max 5MB)', tipPalm: '💡 Tip: Upload a clear photo of your palm, facing up, with even lighting', tipTarot: '💡 Tip: Ensure the Tarot card image is clear and complete', tipDream: '💡 Tip: You can upload images or symbols related to your dream', tipGeneral: '💡 Tip: Upload clear images for more accurate readings', uploading: 'Uploading...', analyze: 'Start Reading' },
     home: { 
@@ -89,8 +125,11 @@ const translations = {
   },
   'ja': {
     appName: '知幾', appDesc: '古からの知恵があなたの未来を導く',
+    ageVerify: { title: '年齢確認', message: '本サービスには伝統的な文化解読と人生アドバイスが含まれます。未成年者を保護するため、18歳以上であることをご確認ください。', confirm: '18歳以上です', reject: '18歳未満です', terms: '続行することで、利用規約とプライバシーポリシーに同意したものとみなされます' },
     features: '機能', contact: 'お問い合わせ', login: 'ログイン', start: '始める',
-    chat: { inputPlaceholder: '質問を入力...', send: '送信', newChat: '新規チャット', guessYouWant: 'おすすめの質問', tryAsking: '聞いてみる:', loading: '天機を開いています...', selectModule: '機能を選択', profile: 'プロフィール', uploadImage: '画像をアップロード', voiceInput: '音声入力', copy: 'コピー', retry: '再試行', copied: 'コピーしました', you: 'あなた' },
+    chat: { inputPlaceholder: '質問を入力...', send: '送信', newChat: '新規チャット', guessYouWant: 'おすすめの質問', tryAsking: '聞いてみる:', loading: '天機を開いています...', selectModule: '機能を選択', profile: 'プロフィール', uploadImage: '画像をアップロード', voiceInput: '音声入力', copy: 'コピー', retry: '再試行', copied: 'コピーしました', you: 'あなた', aiDisclaimer: '上記は AI が生成したコンテンツであり、娱乐のみを目的としています。専門家の助言ではありません。重要な決定は専門家にご相談ください。', usageReminderTitle: '休憩しましょう', usageReminderText: '複数回の鑑定をご利用いただきました。少し休憩して心を落ち着けてから続けてください。', remainingChats: '本日残り', upgradeNow: 'アップグレード', continueUsing: '続ける' },
+    account: { title: 'アカウント', subtitle: 'メンバーシップと注文を管理', currentTier: '現在のランク', status: 'ステータス', expires: '有効期限', dailyLimit: '日次制限', unlimited: '無制限', active: '有効', expiring: 'まもなく期限切れ', expired: '期限切れ', renewReminder: '中断を避けるため更新してください', noMembership: '有効なサブスクリプションがありません', viewPlans: 'プランを見る', creditsBalance: 'クレジット残高', credits: 'クレジット', creditsDesc: 'クレジットは単発鑑定に使用されます', orderHistory: '注文履歴', noOrders: '注文がありません', amount: '金額', date: '日付', statusPaid: '支払済み', statusPending: '保留中', statusRefunded: '返金済み', requestRefund: '返金申請', confirmRefund: '返金申請を確認しますか？', refundFailed: '返金失敗', managePlan: 'プラン管理', backHome: 'ホームへ' },
+    contact: { title: 'お問い合わせ', subtitle: 'お問い合わせ方法', backHome: 'ホームへ', wechatTitle: 'WeChat サポート', wechatDesc: 'QRスキャンまたは ID 検索', scanQR: 'QRをスキャン', wechatId: 'WeChat ID', copy: 'コピー', copied: 'コピーしました', emailTitle: 'メール', emailDesc: 'メールをお送りください', otherMethods: 'その他の方法', faq: 'よくある質問', faq1Q: 'アップグレード方法は？', faq1A: '料金ページでプランを選び、Alipay、WeChat、カードで支払うとすぐに有効になります。', faq2Q: 'クレジットの仕組みは？', faq2A: 'クレジットは単発鑑定に使用されます。期限切れはありません。', faq3Q: '返金方法は？', faq3A: 'アカウントセンターで注文を確認、7日以内の未使用プランは返金可能です。', faq4Q: '対応言語は？', faq4A: '中国語、英語、日本語、韓国語、スペイン語など12言語に対応。AIが自動であなたの言語で返答します。', businessHours: '営業時間', hoursDetail: '月-日 9:00 - 22:00 (UTC+8)' },
     profile: { selectProfile: 'プロフィールを選択', createProfile: '新規作成', editProfile: '編集', name: '名前', birthday: '生年月日', birthTime: '生まれの時間', gender: '性別', male: '男', female: '女', save: '保存', cancel: 'キャンセル', delete: '削除', confirmDelete: 'このプロフィールを削除しますか？', create: '作成', selectAvatar: 'アバターを選択', required: '*', timePlaceholder: '生まれの時間を選択' },
     imageUpload: { title: '📸 画像をアップロード', invalidType: '画像ファイルをアップロードしてください (JPG, PNG, GIF, WebP)', fileTooLarge: '画像サイズは5MBを超えることはできません', notSupported: '現在のモジュールは画像アップロードをサポートしていません', supportedModules: '対応：手相、タロット、夢、風水、星座', dropText: 'クリックまたは画像をここにドラッグ', dropHint: 'JPG, PNG, GIF, WebP対応 (最大5MB)', tipPalm: '💡 ヒント：清晰んな手の写真をアップロードしてください', tipTarot: '💡 ヒント：タロットカードの画像が清晰んで完全であることを確認してください', tipDream: '💡 ヒント：夢に関連する画像や記号をアップロードできます', tipGeneral: '💡 ヒント：清晰んな画像をアップロードすると、より正確な解釈が得られます', uploading: 'アップロード中...', analyze: '解釈を開始' },
     home: { 
@@ -111,8 +150,10 @@ const translations = {
   },
   'ko': {
     appName: '지기', appDesc: '고대의 지혜가 당신의 미래를 이끕니다',
-    features: '기능', contact: '문의하기', login: '로그인', start: '시작',
-    chat: { inputPlaceholder: '질문을 입력하세요...', send: '보내기', newChat: '새 채팅', guessYouWant: '추천 질문', tryAsking: '다양한 질문:', loading: '천기를 듣고 있습니다...', selectModule: '기능 선택', profile: '프로필', uploadImage: '이미지 업로드', voiceInput: '음성 입력', copy: '복사', retry: '다시 시도', copied: '복사됨', you: '당신' },
+    ageVerify: { title: '나이 확인', message: '이 서비스는 전통 문화 해석과 인생 조언을 포함합니다. 미성년자를 보호하기 위해 18세 이상인지 확인해 주세요.', confirm: '18세 이상입니다', reject: '18세 미만', terms: '계속 진행하면 서비스 약관 및 개인정보 처리방침에 동의하는 것으로 간주됩니다' },    features: '기능', contact: '문의하기', login: '로그인', start: '시작',
+    chat: { inputPlaceholder: '질문을 입력하세요...', send: '보내기', newChat: '새 채팅', guessYouWant: '추천 질문', tryAsking: '다양한 질문:', loading: '천기를 듣고 있습니다...', selectModule: '기능 선택', profile: '프로필', uploadImage: '이미지 업로드', voiceInput: '음성 입력', copy: '복사', retry: '다시 시도', copied: '복사됨', you: '당신', aiDisclaimer: '위 내용은 AI가 생성한娱乐 콘텐츠이며 전문적인 조언이 아닙니다. 중요한 결정은 전문가와 상의하세요.', usageReminderTitle: '잠시 쉬어가세요', usageReminderText: '여러 번의 상담을 이용하셨습니다. 잠시 휴식을 취하신 후 계속해 주세요.', remainingChats: '오늘 남은 횟수', upgradeNow: '업그레이드', continueUsing: '계속' },
+    account: { title: '계정 센터', subtitle: '멤버십과 주문 관리', currentTier: '현재 등급', status: '상태', expires: '만료일', dailyLimit: '일일 한도', unlimited: '무제한', active: '활성', expiring: '곧 만료', expired: '만료됨', renewReminder: '중단을 피하려면 갱신하세요', noMembership: '활성 구독 없음', viewPlans: '플랜 보기', creditsBalance: '크레딧 잔액', credits: '크레딧', creditsDesc: '크레딧은 일회성 상담에 사용됩니다', orderHistory: '주문 내역', noOrders: '주문 없음', amount: '금액', date: '날짜', statusPaid: '결제됨', statusPending: '대기 중', statusRefunded: '환불됨', requestRefund: '환불 신청', confirmRefund: '환불 신청을 확인하시겠습니까?', refundFailed: '환불 실패', managePlan: '플랜 관리', backHome: '홈으로' },
+    contact: { title: '문의하기', subtitle: '다양한 방법으로 연락', backHome: '홈으로', wechatTitle: 'WeChat 지원', wechatDesc: 'QR 스캔 또는 ID 검색', scanQR: 'QR 스캔하여 추가', wechatId: 'WeChat ID', copy: '복사', copied: '복사됨', emailTitle: '이메일', emailDesc: '이메일을 보내주세요', otherMethods: '다른 방법', faq: '자주 묻는 질문', faq1Q: '업그레이드 방법?', faq1A: '가격 페이지에서 플랜을 선택하고 Alipay, WeChat, 카드로 결제하면 즉시 활성화됩니다.', faq2Q: '크레딧 사용법?', faq2A: '크레딧은 일회성 상담에 사용되며 만료되지 않습니다.', faq3Q: '환불 방법?', faq3A: '계정 센터에서 주문 확인, 7일 이내 미사용 플랜은 환불 가능.', faq4Q: '지원 언어?', faq4A: '중국어, 영어, 일본어, 한국어, 스페인어 등 12개 언어 지원. AI가 자동으로 사용자의 언어로 응답합니다.', businessHours: '영업 시간', hoursDetail: '월-일 9:00 - 22:00 (UTC+8)' },
     profile: { selectProfile: '프로필 선택', createProfile: '새 프로필', editProfile: '프로필 수정', name: '이름', birthday: '생년월일', birthTime: '태어난 시간', gender: '성별', male: '남', female: '여', save: '저장', cancel: '취소', delete: '삭제', confirmDelete: '이 프로필을 삭제하시겠습니까?', create: '만들기', selectAvatar: '아바타 선택', required: '*', timePlaceholder: '태어난 시간 선택' },
     imageUpload: { title: '📸 이미지 업로드', invalidType: '이미지 파일을 업로드하세요 (JPG, PNG, GIF, WebP)', fileTooLarge: '이미지 크기는 5MB를 초과할 수 없습니다', notSupported: '현재 모듈은 이미지 업로드를 지원하지 않습니다', supportedModules: '지원: 손금, 타로, 꿈, 풍수, 별자리', dropText: '클릭하거나 이미지를 여기로 드래그', dropHint: 'JPG, PNG, GIF, WebP 지원 (최대 5MB)', tipPalm: '💡 팁: 명확한 손바닥 사진을アップロードしてください', tipTarot: '💡 팁: 타로 카드 이미지가清晰하고完整한지 확인하세요', tipDream: '💡 팁: 꿈과 관련된 이미지를 업로드할 수 있습니다', tipGeneral: '💡 팁: 더 정확한 해석을 위해清晰的 이미지를 업로드하세요', uploading: '업로드 중...', analyze: '해석 시작' },
     home: { 

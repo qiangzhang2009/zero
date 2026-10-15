@@ -104,6 +104,37 @@ async function verifyAdminStatus() {
     return todayUsage.value < dailyLimit.value
   }
 
+  // 防沉迷提醒 - 当单日使用达到一定次数时提醒
+  const REMINDER_THRESHOLDS = [5, 8, 10]
+  function shouldShowReminder() {
+    if (isAdmin.value) return false
+    return REMINDER_THRESHOLDS.includes(todayUsage.value)
+  }
+
+  function getRemainingChats() {
+    if (isAdmin.value) return Infinity
+    if (paidCredits.value > 0) return paidCredits.value
+    return Math.max(0, dailyLimit.value - todayUsage.value)
+  }
+
+  // 防沉迷提示 - 长时间连续使用时提示休息
+  let lastUsedTimestamp = 0
+  const SESSION_CONTINUOUS_LIMIT = 5 // 连续 5 次后提醒
+  const SESSION_REMINDER_COOLDOWN = 5 * 60 * 1000 // 5 分钟冷却
+
+  function shouldShowSessionReminder() {
+    if (isAdmin.value) return false
+    const now = Date.now()
+    // 刚使用过 + 短时间内
+    if (todayUsage.value > 0 && todayUsage.value % SESSION_CONTINUOUS_LIMIT === 0) {
+      if (now - lastUsedTimestamp < SESSION_REMINDER_COOLDOWN) {
+        return true
+      }
+    }
+    lastUsedTimestamp = now
+    return false
+  }
+
   function recordUse() {
     if (isAdmin.value) return
     if (paidCredits.value > 0) {
@@ -187,6 +218,9 @@ async function verifyAdminStatus() {
     setAdmin,  // 保留为 deprecated，调用时会发出警告
     setPaidCredits,
     getPaidCredits,
-    hasPaidCredits
+    hasPaidCredits,
+    shouldShowReminder,
+    getRemainingChats,
+    shouldShowSessionReminder
   }
 })

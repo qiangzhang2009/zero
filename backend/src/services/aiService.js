@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { generateMockResponse, isMockMode, getMockModeSetting } from './mockService.js';
 
 const API_KEY = process.env.DEEPSEEK_API_KEY;
 const BASE_URL = process.env.AI_API_URL || 'https://api.deepseek.com';
@@ -340,7 +341,45 @@ export const modulePrompts = {
 };
 
 // 智慧API调用
-async function callAPI(messages, stream = false) {
+async function callAPI(messages, stream = false, options = {}) {
+  const { language = 'zh-CN', module = 'default' } = options;
+
+  // 检查是否强制启用 Mock 模式
+  if (isMockMode()) {
+    console.log('[AI] Mock mode forced by env');
+    const lastUserMsg = messages.filter(m => m.role === 'user').pop();
+    const userText = lastUserMsg?.content || '';
+    return {
+      data: {
+        choices: [{
+          message: {
+            role: 'assistant',
+            content: generateMockResponse(module, typeof userText === 'string' ? userText : '', language)
+          }
+        }]
+      },
+      mock: true
+    };
+  }
+
+  // 检查 API_KEY 是否配置
+  if (!API_KEY) {
+    console.warn('[AI] DEEPSEEK_API_KEY 未设置，自动 fallback 到 Mock 模式');
+    const lastUserMsg = messages.filter(m => m.role === 'user').pop();
+    const userText = lastUserMsg?.content || '';
+    return {
+      data: {
+        choices: [{
+          message: {
+            role: 'assistant',
+            content: generateMockResponse(module, typeof userText === 'string' ? userText : '', language)
+          }
+        }]
+      },
+      mock: true
+    };
+  }
+
   try {
     // 检查消息中是否包含图片
     let hasImage = false
@@ -374,11 +413,33 @@ async function callAPI(messages, stream = false) {
           'Authorization': `Bearer ${API_KEY}`,
           'Content-Type': 'application/json'
         },
-        responseType: stream ? 'stream' : 'json'
+        responseType: stream ? 'stream' : 'json',
+        timeout: 60000
       }
     );
     return response;
   } catch (error) {
+    // API 失败时自动 fallback 到 Mock 模式（仅当 AI_MOCK_MODE 不是 'false'）
+    const mockMode = getMockModeSetting();
+    if (mockMode !== 'false') {
+      console.warn('[AI] API 调用失败，fallback 到 Mock 模式:', error.response?.data?.error?.message || error.message);
+      const lastUserMsg = messages.filter(m => m.role === 'user').pop();
+      const userText = lastUserMsg?.content || '';
+      return {
+        data: {
+          choices: [{
+            message: {
+              role: 'assistant',
+              content: generateMockResponse(module, typeof userText === 'string' ? userText : '', language)
+            }
+          }]
+        },
+        mock: true,
+        fallbackReason: error.response?.data?.error?.message || error.message
+      };
+    }
+
+    // 如果明确禁用 Mock，抛出原始错误
     console.error('智慧解读服务暂不可用:', error.response?.data || error.message);
     throw error;
   }

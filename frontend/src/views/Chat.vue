@@ -135,6 +135,15 @@ const mbtiTestVersion = ref('simple') // simple, standard, full
 const mbtiCurrentQuestion = ref(0)
 const mbtiAnswers = ref([])
 const mbtiTestResult = ref(null)
+
+// 防沉迷提醒
+const showUsageReminderModal = ref(false)
+function showUsageReminder() {
+  showUsageReminderModal.value = true
+}
+function closeUsageReminder() {
+  showUsageReminderModal.value = false
+}
 const mbtiShowVersionSelect = ref(false)
 
 // 新增：语音输入状态
@@ -346,6 +355,13 @@ async function sendMessage() {
   await chatStore.sendMessage(message)
   usageStore.recordUse()
 
+  // 防沉迷检查
+  if (usageStore.shouldShowReminder()) {
+    setTimeout(() => {
+      showUsageReminder()
+    }, 1000)
+  }
+
   isStreaming.value = false
   
   // 对最新AI回复应用打字机效果
@@ -514,7 +530,13 @@ function openImageUpload() {
             <span v-if="isTyping && currentMessageIndex === index">{{ displayText }}</span>
             <span v-else v-html="formatContent(msg.content)"></span>
           </div>
-          
+
+          <!-- AI 回复标准免责脚注 -->
+          <div v-if="msg.role === 'assistant' && !isTyping" class="ai-disclaimer">
+            <span class="disclaimer-icon">ℹ️</span>
+            <span class="disclaimer-text">{{ t('chat.aiDisclaimer', getCurrentLang()) }}</span>
+          </div>
+
           <!-- 消息操作按钮 -->
           <div v-if="msg.role === 'assistant' && msg.typed" class="message-actions">
             <button @click="copyMessage(msg.content)" title="复制">
@@ -627,6 +649,26 @@ function openImageUpload() {
       @close="showProfileSelector = false" 
     />
     
+    <!-- 防沉迷提醒 -->
+    <div v-if="showUsageReminderModal" class="usage-reminder-overlay" @click.self="closeUsageReminder">
+      <div class="usage-reminder-modal">
+        <div class="reminder-icon">⏰</div>
+        <h3 class="reminder-title">{{ t('chat.usageReminderTitle', getCurrentLang()) }}</h3>
+        <p class="reminder-text">{{ t('chat.usageReminderText', getCurrentLang()) }}</p>
+        <p class="reminder-detail" v-if="usageStore.getRemainingChats() !== Infinity">
+          {{ t('chat.remainingChats', getCurrentLang()) }}: <strong>{{ usageStore.getRemainingChats() }}</strong>
+        </p>
+        <div class="reminder-actions">
+          <button class="reminder-btn reminder-btn-secondary" @click="router.push('/pricing')">
+            💎 {{ t('chat.upgradeNow', getCurrentLang()) }}
+          </button>
+          <button class="reminder-btn reminder-btn-primary" @click="closeUsageReminder">
+            ✓ {{ t('chat.continueUsing', getCurrentLang()) }}
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- MBTI 测试弹窗 -->
     <div v-if="showMbtiTest" class="mbti-modal-overlay" @click.self="closeMbtiTest">
       <div class="mbti-modal">
@@ -1072,6 +1114,23 @@ function openImageUpload() {
   border: 1px solid rgba(102,126,234,0.2);
 }
 
+/* AI 标准免责脚注 */
+.ai-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: rgba(251,191,36,0.06);
+  border-left: 2px solid rgba(251,191,36,0.3);
+  border-radius: 6px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.5;
+}
+.disclaimer-icon { flex-shrink: 0; font-size: 12px; }
+.disclaimer-text { flex: 1; }
+
 /* 消息操作按钮 */
 .message-actions {
   display: flex;
@@ -1315,6 +1374,81 @@ function openImageUpload() {
   .guess-section { padding: 12px 16px; }
   .input-tools { display: none; }
 }
+
+/* 防沉迷提醒弹窗 */
+.usage-reminder-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1500;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease;
+}
+.usage-reminder-modal {
+  background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 380px;
+  width: 90%;
+  text-align: center;
+  border: 1px solid rgba(251,191,36,0.3);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  animation: slideUp 0.4s ease;
+}
+.reminder-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 4px 12px rgba(251,191,36,0.4));
+}
+.reminder-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.reminder-text {
+  color: rgba(255,255,255,0.75);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.reminder-detail {
+  color: rgba(255,255,255,0.6);
+  font-size: 13px;
+  margin-bottom: 20px;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+}
+.reminder-detail strong { color: #fbbf24; font-size: 16px; }
+.reminder-actions {
+  display: flex;
+  gap: 10px;
+}
+.reminder-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.reminder-btn-secondary {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.8);
+}
+.reminder-btn-secondary:hover { background: rgba(255,255,255,0.1); }
+.reminder-btn-primary {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border: none;
+  color: #1a1a2e;
+}
+.reminder-btn-primary:hover { box-shadow: 0 6px 16px rgba(251,191,36,0.4); }
 
 /* MBTI 测试弹窗样式 */
 .mbti-modal-overlay {

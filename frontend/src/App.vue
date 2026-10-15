@@ -5,6 +5,8 @@ import AppHeader from './components/AppHeader.vue'
 import Sidebar from './components/Sidebar.vue'
 import MobileNav from './components/MobileNav.vue'
 import CookieConsent from './components/CookieConsent.vue'
+import AgeVerification from './components/AgeVerification.vue'
+import { useLanguageStore, t } from './i18n'
 import { useChatStore } from './stores/chat'
 
 const chatStore = useChatStore()
@@ -36,10 +38,27 @@ function toggleMobileSidebar() {
 function closeMobileSidebar() {
   showMobileSidebar.value = false
 }
+
+const showApp = ref(false)
+
+function onAgeConfirmed() {
+  showApp.value = true
+}
+
+function onAgeRejected() {
+  // 拒绝：可以选择清除数据并提示
+  alert(t('ageVerify.rejectedMessage', 'zh-CN') || '感谢您的理解。')
+  showApp.value = false
+  // 不渲染内容
+}
 </script>
 
 <template>
   <div class="app-container">
+    <!-- 年龄验证（全屏遮罩） -->
+    <AgeVerification @confirmed="onAgeConfirmed" @rejected="onAgeRejected" />
+    <!-- 主内容（验证后显示） -->
+    <template v-if="showApp">
     <AppHeader @toggle-sidebar="toggleMobileSidebar" />
     <div class="main-wrapper">
       <!-- 移动端遮罩层 -->
@@ -47,8 +66,8 @@ function closeMobileSidebar() {
         <div v-if="isMobile && showMobileSidebar" class="sidebar-overlay" @click="closeMobileSidebar"></div>
       </Transition>
       <!-- 侧边栏（桌面端常显，移动端受控） -->
-      <Sidebar 
-        v-if="!isMobile || showMobileSidebar" 
+      <Sidebar
+        v-if="!isMobile || showMobileSidebar"
         @close="closeMobileSidebar"
       />
       <main class="content-area">
@@ -62,6 +81,7 @@ function closeMobileSidebar() {
     <MobileNav />
     <!-- 全站 Cookie 同意横幅 (GDPR 合规) -->
     <CookieConsent />
+    </template>
   </div>
 </template>
 

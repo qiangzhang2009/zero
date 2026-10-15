@@ -1,0 +1,18 @@
+[
+  {
+    "id": "mem_1792060813780",
+    "userId": "happy",
+    "tier": "premium",
+    "orderId": "ord_1792060813680_29d4aa22",
+    "startDate": "2026-10-15T10:40:13.780Z",
+    "expiresAt": "2026-11-14T10:40:13.780Z",
+    "status": "active",
+    "dailyCredits": 100,
+    "features": [
+      "all_modules",
+      "cloud_history",
+      "priority_ai",
+      "email_24_7"
+    ]
+  }
+]

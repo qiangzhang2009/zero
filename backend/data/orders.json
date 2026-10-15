@@ -1,0 +1,873 @@
+[
+  {
+    "id": "ord_1792060183440_10ebc78a",
+    "userId": "test_user_001",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:29:43.440Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060183440_10ebc78a",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060183490_217298fa",
+    "userId": "test_user_001",
+    "planId": "premium_monthly",
+    "planName": "Premium Monthly",
+    "type": "subscription",
+    "amount": 29.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 0,
+    "dailyCredits": 100,
+    "tier": "premium",
+    "durationDays": 30,
+    "createdAt": "2026-10-15T10:29:43.490Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": [
+        "all_modules",
+        "cloud_history",
+        "priority_ai",
+        "email_24_7"
+      ]
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060183490_217298fa",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060189104_93f99482",
+    "userId": "test_user_001",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:29:49.104Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060189104_93f99482",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060207030_52a595a4",
+    "userId": "test_002",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:30:07.030Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060207030_52a595a4",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060218110_5a0b14ba",
+    "userId": "test_dbg",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:30:18.110Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060218110_5a0b14ba",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060239487_6b4f1b90",
+    "userId": "test_005",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:30:39.487Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060239487_6b4f1b90",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060245811_dedafe72",
+    "userId": "dbg",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:30:45.811Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060245811_dedafe72",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060278917_09d5cfb4",
+    "userId": "test_007",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:31:18.923Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060278917_09d5cfb4",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060372321_72c069b9",
+    "userId": "final_test",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:32:52.321Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060372321_72c069b9",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060392730_a2fbbac5",
+    "userId": "sanity",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:33:12.730Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060392730_a2fbbac5",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060406517_c62f60aa",
+    "userId": "inline",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:33:26.517Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060406517_c62f60aa",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060497825_6a5200ec",
+    "userId": "sanity2",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:34:57.825Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060497825_6a5200ec",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060569647_9d833408",
+    "userId": "dbg3",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:36:09.647Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060569647_9d833408",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060603735_3c021ebe",
+    "userId": "test_final",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:36:43.735Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060603735_3c021ebe",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060616796_1ca38b94",
+    "userId": "after_restart",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:36:56.796Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060616796_1ca38b94",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060630488_19f86220",
+    "userId": "hardcoded",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:37:10.489Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060630488_19f86220",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060665266_38279e30",
+    "userId": "real_test",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:37:45.267Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060665266_38279e30",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060680763_56b54d9f",
+    "userId": "debug",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:38:00.763Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060680763_56b54d9f",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060702342_244f2a97",
+    "userId": "final",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:38:22.344Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060702342_244f2a97",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060719008_857acd6f",
+    "userId": "v2",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:38:39.008Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060719008_857acd6f",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060733716_ce16d7c0",
+    "userId": "v3",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:38:53.717Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060733716_ce16d7c0",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060751308_064c2eb1",
+    "userId": "v4",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:39:11.308Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060751308_064c2eb1",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060804819_df7cca33",
+    "userId": "happy",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "pending",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:40:04.820Z",
+    "paidAt": null,
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060804819_df7cca33",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    }
+  },
+  {
+    "id": "ord_1792060813492_7353ca46",
+    "userId": "happy",
+    "planId": "master",
+    "planName": "Master",
+    "type": "credit",
+    "amount": 34.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "paid",
+    "credits": 300,
+    "dailyCredits": 0,
+    "tier": null,
+    "durationDays": 0,
+    "createdAt": "2026-10-15T10:40:13.492Z",
+    "paidAt": "2026-10-15T10:40:13.595Z",
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": []
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060813492_7353ca46",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    },
+    "paymentData": {
+      "method": "mock",
+      "transactionId": "mock_1792060813595",
+      "paidAt": "2026-10-15T10:40:13.595Z"
+    }
+  },
+  {
+    "id": "ord_1792060813680_29d4aa22",
+    "userId": "happy",
+    "planId": "premium_monthly",
+    "planName": "Premium Monthly",
+    "type": "subscription",
+    "amount": 29.99,
+    "currency": "USD",
+    "paymentMethod": "mock",
+    "status": "paid",
+    "credits": 0,
+    "dailyCredits": 100,
+    "tier": "premium",
+    "durationDays": 30,
+    "createdAt": "2026-10-15T10:40:13.680Z",
+    "paidAt": "2026-10-15T10:40:13.780Z",
+    "expiresAt": null,
+    "metadata": {
+      "popular": true,
+      "saveText": null,
+      "features": [
+        "all_modules",
+        "cloud_history",
+        "priority_ai",
+        "email_24_7"
+      ]
+    },
+    "paymentInfo": {
+      "type": "mock",
+      "payUrl": "/api/payment/mock-pay?orderId=ord_1792060813680_29d4aa22",
+      "qrCode": null,
+      "instructions": {
+        "zh-CN": "【演示模式】点击下方按钮直接完成支付（无需真实交易）",
+        "en": "[Demo Mode] Click the button below to complete payment (no real transaction)",
+        "ja": "[デモモード] 下のボタンをクリックして支払いを完了してください（実際の取引なし）",
+        "ko": "[데모 모드] 아래 버튼을 클릭하여 결제를 완료하세요 (실제 거래 없음)"
+      }
+    },
+    "paymentData": {
+      "method": "mock",
+      "transactionId": "mock_1792060813780",
+      "paidAt": "2026-10-15T10:40:13.780Z"
+    },
+    "membershipId": "mem_1792060813780"
+  }
+]

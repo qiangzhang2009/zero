@@ -65,6 +65,7 @@ function startCleanupScheduler() {
 import express from 'express';
 import cors from 'cors';
 import { modulePrompts, callAPI } from './services/aiService.js';
+import paymentService from './services/paymentService.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -427,12 +428,12 @@ async function chatHandler(req, res) {
     
     let response;
     try {
-      response = await callAPI(messages);
+      response = await callAPI(messages, false, { language: finalLangConfig.code || language, module: 'default' });
     } catch (apiError) {
       console.error('[DEBUG] API call failed:', apiError.message);
       console.error('[DEBUG] API error response:', JSON.stringify(apiError.response?.data || {}).substring(0, 500));
-      return res.status(500).json({ 
-        success: false, 
+      return res.status(500).json({
+        success: false,
         error: 'API call failed: ' + apiError.message
       });
     }
@@ -556,16 +557,16 @@ async function chatWithContextHandler(req, res) {
             { type: 'image_url', image_url: { url: image } }
           ]
         });
-        response = await callAPI(messages);
+        response = await callAPI(messages, false, { language: finalLangConfig.code || language, module });
       } catch (imgError) {
         // 如果图片发送失败，尝试只用文字
         console.log('图片识别暂不可用，使用文字模式:', imgError.message);
         messages.push({ role: 'user', content: message });
-        response = await callAPI(messages);
+        response = await callAPI(messages, false, { language: finalLangConfig.code || language, module });
       }
     } else {
       messages.push({ role: 'user', content: message });
-      response = await callAPI(messages);
+      response = await callAPI(messages, false, { language: finalLangConfig.code || language, module });
     }
     
     // 过滤回复中的敏感词
@@ -856,6 +857,104 @@ app.get('/api/modules', (req, res) => {
     name: config.name
   }));
   res.json({ success: true, data: modules });
+});
+
+// ==================== 支付 & 会员 API ====================
+
+// 获取所有套餐
+app.get('/api/payment/plans', (req, res) => {
+  try {
+    const plans = paymentService.getAllPlans();
+    res.json({ success: true, data: plans });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 获取可用的支付方式
+app.get('/api/payment/methods', (req, res) => {
+  try {
+    const methods = paymentService.getAvailablePaymentMethods();
+    res.json({ success: true, data: methods });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 创建订单
+app.post('/api/payment/create', (req, res) => {
+  try {
+    const { userId, planId, paymentMethod = 'mock', type = 'credit' } = req.body;
+    if (!userId || !planId) {
+      return res.status(400).json({ success: false, error: 'Missing userId or planId' });
+    }
+    const result = paymentService.createOrder({ userId, planId, paymentMethod, type });
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error('[Payment] Create order failed:', error.message);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// Mock 支付完成 - 仅用于演示
+app.post('/api/payment/mock-pay', (req, res) => {
+  try {
+    const { orderId } = req.body;
+    if (!orderId) {
+      return res.status(400).json({ success: false, error: 'Missing orderId' });
+    }
+    const result = paymentService.markOrderPaid(orderId, {
+      method: 'mock',
+      transactionId: 'mock_' + Date.now(),
+      paidAt: new Date().toISOString()
+    });
+    res.json({ success: true, data: result });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// 查询订单状态
+app.get('/api/payment/order/:orderId', (req, res) => {
+  try {
+    const order = paymentService.getOrder(req.params.orderId);
+    if (!order) return res.status(404).json({ success: false, error: 'Order not found' });
+    res.json({ success: true, data: order });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 获取用户订单列表
+app.get('/api/payment/orders/:userId', (req, res) => {
+  try {
+    const orders = paymentService.getUserOrders(req.params.userId);
+    res.json({ success: true, data: orders });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 获取用户当前会员
+app.get('/api/payment/membership/:userId', (req, res) => {
+  try {
+    const membership = paymentService.getUserMembership(req.params.userId);
+    res.json({ success: true, data: membership });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 申请退款
+app.post('/api/payment/refund', (req, res) => {
+  try {
+    const { orderId } = req.body;
+    if (!orderId) return res.status(400).json({ success: false, error: 'Missing orderId' });
+    const result = paymentService.refundOrder(orderId);
+    res.json({ success: true, data: result });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
 });
 
 // ==================== 运营管理后台 API ====================
@@ -1485,9 +1584,14 @@ app.get('/api/credits/:userId', (req, res) => {
 app.listen(PORT, () => {
   // 启动数据清理定时任务
   startCleanupScheduler();
-  console.log(`知几智慧服务运行在 http://localhost:${PORT}`);
-  console.log(`[${VERSION}] 版本: ${VERSION}`);
-  console.log(`[${VERSION}] 数据保留策略: 保留最近 ${DATA_CONFIG.CHAT_RETENTION_DAYS} 天, 最多 ${DATA_CONFIG.MAX_CHAT_HISTORY} 条记录`);
+  // 写入 process title 便于调试
+  process.title = `zhi-ji-backend-${PORT}-${new Date().toISOString().substring(11, 19)}`;
+  // 同时尝试多种 log 输出方式
+  const logMsg = `[${new Date().toISOString()}] 启动成功 PORT=${PORT} VERSION=${VERSION}\n`;
+  try { require('fs').appendFileSync('/Users/john/zero2/backend/run.log', logMsg); } catch(e) {}
+  try { require('fs').appendFileSync(process.cwd() + '/run.log', logMsg); } catch(e) {}
+  process.stderr.write(logMsg);
+  process.stdout.write(logMsg);
 });
 
 // ===========================================

@@ -34,6 +34,12 @@ export const APP_CONFIG = {
   // 微信客服 ID（联系升级用）
   WECHAT_ID: import.meta.env.VITE_WECHAT_ID || '',
 
+  // 微信二维码图片（base64 或 URL）
+  WECHAT_QR: import.meta.env.VITE_WECHAT_QR || '',
+
+  // 客服邮箱
+  SUPPORT_EMAIL: import.meta.env.VITE_SUPPORT_EMAIL || '',
+
   // 管理员密码环境变量名
   ADMIN_PASSWORD_ENV: 'ADMIN_PASSWORD',
 }
@@ -47,6 +53,10 @@ export {
 
 export function getWechatId() {
   return APP_CONFIG.WECHAT_ID
+}
+
+export function getWechatQR() {
+  return APP_CONFIG.WECHAT_QR
 }
 
 export default APP_CONFIG

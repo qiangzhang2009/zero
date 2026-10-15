@@ -27,6 +27,16 @@ const routes = [
     component: Privacy
   },
   {
+    path: '/account',
+    name: 'Account',
+    component: () => import('../views/Account.vue')
+  },
+  {
+    path: '/contact',
+    name: 'Contact',
+    component: () => import('../views/Contact.vue')
+  },
+  {
     path: '/admin',
     name: 'Admin',
     component: Admin
