@@ -880,81 +880,186 @@ function openImageUpload() {
 }
 
 /* Markdown 渲染样式 - 乔布斯风格简洁优雅 */
+/* 段落：紧凑留白，首尾无多余 margin */
 .message-content p {
-  margin: 0 0 12px 0;
+  margin: 0 0 10px 0;
+  line-height: 1.75;
 }
 .message-content p:last-child {
   margin-bottom: 0;
 }
+.message-content p:first-child {
+  margin-top: 0;
+}
+
+/* 标题层次：左边竖线 + 不同颜色/字号 */
 .message-content h1,
 .message-content h2,
 .message-content h3,
 .message-content h4 {
-  margin: 16px 0 8px 0;
+  margin: 18px 0 10px 0;
   font-weight: 600;
-  color: #fbf2d4;
   line-height: 1.4;
+  color: #fde68a;
+  position: relative;
+  padding-left: 10px;
+  border-left: 3px solid rgba(251, 191, 36, 0.6);
+  border-radius: 0;
 }
-.message-content h1 { font-size: 20px; }
-.message-content h2 { font-size: 18px; }
-.message-content h3 { font-size: 16px; }
-.message-content h4 { font-size: 15px; }
+/* 第一个标题紧贴段首 */
+.message-content h1:first-child,
+.message-content h2:first-child,
+.message-content h3:first-child,
+.message-content h4:first-child {
+  margin-top: 0;
+}
+/* 标题后紧跟段落时压缩 */
+.message-content h1 + p,
+.message-content h2 + p,
+.message-content h3 + p,
+.message-content h4 + p {
+  margin-top: 0;
+}
+
+.message-content h1 { font-size: 18px; }
+.message-content h2 { font-size: 16px; }
+.message-content h3 {
+  font-size: 15px;
+  color: #fef3c7;
+  border-left-color: rgba(251, 191, 36, 0.4);
+  padding-left: 8px;
+}
+.message-content h4 {
+  font-size: 14px;
+  color: #fef3c7;
+  border-left: none;
+  padding-left: 0;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+/* 列表：紧凑留白 + 优雅项目符号 */
 .message-content ul,
 .message-content ol {
   margin: 8px 0;
-  padding-left: 20px;
+  padding-left: 22px;
 }
 .message-content li {
   margin: 4px 0;
-  line-height: 1.6;
+  line-height: 1.7;
 }
+.message-content li::marker {
+  color: rgba(251, 191, 36, 0.7);
+}
+.message-content li > p {
+  margin: 0;
+}
+
+/* 粗体：浅色高亮底（视觉区分于正文） */
 .message-content strong {
-  color: #fbf2d4;
+  color: #fef3c7;
   font-weight: 600;
+  background: linear-gradient(transparent 60%, rgba(251, 191, 36, 0.18) 60%);
+  padding: 0 2px;
+  border-radius: 2px;
 }
+
+/* 斜体：柔和金色 */
 .message-content em {
   font-style: italic;
-  color: rgba(251, 191, 36, 0.9);
+  color: rgba(252, 211, 77, 0.95);
 }
+
+/* 行内代码：等宽字体 + 深色底 */
 .message-content code {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.35);
   padding: 2px 6px;
   border-radius: 4px;
   font-family: 'SF Mono', Monaco, 'Courier New', monospace;
   font-size: 13px;
+  color: #fde68a;
+  border: 1px solid rgba(251, 191, 36, 0.1);
 }
+
+/* 代码块：深色卡片 + 横向滚动 */
 .message-content pre {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
   padding: 12px 16px;
   border-radius: 8px;
   overflow-x: auto;
   margin: 12px 0;
+  border: 1px solid rgba(251, 191, 36, 0.1);
 }
 .message-content pre code {
   background: none;
   padding: 0;
+  border: none;
+  color: #fef3c7;
 }
+
+/* 引用块：左侧金色边 */
 .message-content blockquote {
-  border-left: 3px solid rgba(251, 191, 36, 0.5);
-  margin: 12px 0;
-  padding: 8px 16px;
-  color: rgba(255, 255, 255, 0.8);
-  background: rgba(251, 191, 36, 0.05);
-  border-radius: 0 8px 8px 0;
+  border-left: 3px solid rgba(251, 191, 36, 0.6);
+  margin: 10px 0;
+  padding: 6px 14px;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(251, 191, 36, 0.06);
+  border-radius: 0 6px 6px 0;
+  font-style: italic;
 }
+.message-content blockquote p {
+  margin: 0;
+}
+
+/* 分隔线：渐变消失 */
 .message-content hr {
   border: none;
-  border-top: 1px solid rgba(251, 191, 36, 0.2);
-  margin: 16px 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(251, 191, 36, 0.3), transparent);
+  margin: 14px 0;
 }
+
+/* 链接：金黄色下划线 */
 .message-content a {
   color: #fbbf24;
   text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s;
+  border-bottom: 1px solid rgba(251, 191, 36, 0.4);
+  transition: all 0.2s;
 }
 .message-content a:hover {
   border-bottom-color: #fbbf24;
+  color: #fde68a;
+}
+
+/* 表格：紧凑 + 斑马纹 + 横向滚动（窄屏不破版） */
+.message-content table {
+  border-collapse: collapse;
+  margin: 10px 0;
+  width: 100%;
+  font-size: 13.5px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
+.message-content table thead {
+  background: rgba(251, 191, 36, 0.15);
+}
+.message-content table th,
+.message-content table td {
+  padding: 6px 10px;
+  border: 1px solid rgba(251, 191, 36, 0.15);
+  text-align: left;
+  line-height: 1.5;
+}
+.message-content table th {
+  font-weight: 600;
+  color: #fde68a;
+}
+.message-content table tbody tr:nth-child(even) {
+  background: rgba(251, 191, 36, 0.04);
 }
 .message-content.assistant {
   border-top-left-radius: 4px;
