@@ -4,6 +4,7 @@ import { RouterView } from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
 import Sidebar from './components/Sidebar.vue'
 import MobileNav from './components/MobileNav.vue'
+import CookieConsent from './components/CookieConsent.vue'
 import { useChatStore } from './stores/chat'
 
 const chatStore = useChatStore()
@@ -59,6 +60,8 @@ function closeMobileSidebar() {
       </main>
     </div>
     <MobileNav />
+    <!-- 全站 Cookie 同意横幅 (GDPR 合规) -->
+    <CookieConsent />
   </div>
 </template>
 

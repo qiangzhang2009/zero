@@ -3,26 +3,45 @@ import { useRouter } from 'vue-router'
 import { useChatStore } from '../stores/chat'
 import { useLanguageStore } from '../i18n'
 import { computed, ref, onMounted } from 'vue'
+import Disclaimer from '../components/Disclaimer.vue'
 
 const router = useRouter()
 const chatStore = useChatStore()
 const languageStore = useLanguageStore()
 
-// MBTI弹窗控制
+// 免责声明控制
+const showAgeConfirm = ref(false)
+// MBTI 弹窗
 const showMbtiPopup = ref(false)
-const hasSeenMbtiPopup = ref(true)
 
 onMounted(() => {
-  // 检查用户是否已经看过MBTI弹窗
-  const seen = localStorage.getItem('has_seen_mbti_popup')
-  if (!seen) {
-    hasSeenMbtiPopup.value = false
-    // 延迟1秒显示弹窗，让页面先加载完成
+  // 1. 首次访问显示免责弹窗（仅在未确认时）
+  const agreed = localStorage.getItem('zhiJi_disclaimer_agreed')
+  if (!agreed) {
     setTimeout(() => {
-      showMbtiPopup.value = true
-    }, 1000)
+      showAgeConfirm.value = true
+    }, 500)
+  } else {
+    // 2. 已确认免责的用户，可以看 MBTI 弹窗
+    const seen = localStorage.getItem('has_seen_mbti_popup')
+    if (!seen) {
+      setTimeout(() => {
+        showMbtiPopup.value = true
+      }, 1200)
+    }
   }
 })
+
+function onDisclaimerAccept() {
+  showAgeConfirm.value = false
+  // 确认后显示 MBTI 弹窗
+  const seen = localStorage.getItem('has_seen_mbti_popup')
+  if (!seen) {
+    setTimeout(() => {
+      showMbtiPopup.value = true
+    }, 600)
+  }
+}
 
 function closeMbtiPopup() {
   showMbtiPopup.value = false
@@ -33,6 +52,10 @@ function startMbtiTest() {
   closeMbtiPopup()
   chatStore.setModule('mbti')
   router.push('/chat/mbti')
+}
+
+function goPrivacy() {
+  router.push('/privacy')
 }
 
 // 直接使用 languageStore.currentLanguage 来获取当前语言
@@ -188,7 +211,37 @@ function getModuleId(index) {
     <!-- Footer -->
     <footer class="footer">
       <p>{{ footer }}</p>
+      <div class="footer-links">
+        <Disclaimer variant="inline" />
+        <span class="footer-divider">•</span>
+        <button class="footer-link-btn" @click="goPrivacy">{{ currentLang === 'zh-CN' ? '隐私政策' : currentLang === 'ja' ? 'プライバシー' : currentLang === 'ko' ? '개인정보' : 'Privacy Policy' }}</button>
+      </div>
     </footer>
+
+    <!-- 免责声明弹窗 (首次访问) -->
+    <Disclaimer
+      variant="modal"
+      :show-on-mount="false"
+      v-model:show="showAgeConfirm"
+      @accept="onDisclaimerAccept"
+    />
+
+    <!-- MBTI测试弹窗 -->
+    <div v-if="showMbtiPopup" class="mbti-popup-overlay" @click.self="closeMbtiPopup">
+      <div class="mbti-popup">
+        <button class="mbti-popup-close" @click="closeMbtiPopup">×</button>
+        <div class="mbti-popup-icon">🎯</div>
+        <h2 class="mbti-popup-title">{{ currentLang === 'zh-CN' ? '发现真实的自己' : currentLang === 'ja' ? '本当の自分を発見する' : currentLang === 'ko' ? '진정한 나를 발견하다' : 'Discover Your True Self' }}</h2>
+        <p class="mbti-popup-desc">{{ currentLang === 'zh-CN' ? 'MBTI职业性格测试，帮助您深入了解性格特点，发现潜在优势' : currentLang === 'ja' ? 'MBTI職業性格テストで、あなたの性格特性と潜在的な強みを発見しましょう' : currentLang === 'ko' ? 'MBTI 직업 성격 테스트로 성격 특성과 잠재력을 발견하세요' : 'MBTI personality test to help you understand your traits and discover hidden strengths' }}</p>
+        <div class="mbti-popup-versions">
+          <button class="mbti-version-btn" @click="startMbtiTest">
+            <span class="version-name">{{ currentLang === 'zh-CN' ? '立即测试' : currentLang === 'ja' ? '今すぐテスト' : currentLang === 'ko' ? '지금 테스트' : 'Take Test Now' }}</span>
+            <span class="version-arrow">→</span>
+          </button>
+        </div>
+        <button class="mbti-popup-skip" @click="closeMbtiPopup">{{ currentLang === 'zh-CN' ? '暂不测试' : currentLang === 'ja' ? '後で' : currentLang === 'ko' ? '나중에' : 'Maybe Later' }}</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -584,6 +637,34 @@ function getModuleId(index) {
   padding: 30px 20px;
   color: rgba(255, 255, 255, 0.3);
   font-size: 13px;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.footer-divider {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.footer-link-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.footer-link-btn:hover {
+  color: #fbbf24;
 }
 
 /* 响应式 */

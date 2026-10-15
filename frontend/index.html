@@ -10,6 +10,43 @@
     <title>知几 - AI命理咨询 © ZXQ</title>
     <meta name="description" content="知几(ZhiJi) - 结合古老智慧与现代AI技术的命理咨询平台。提供八字算命、风水布局、紫微斗数、梅花易数等玄学服务。">
     <meta name="keywords" content="八字算命,风水布局,紫微斗数,梅花易数,命理咨询,AI算命,玄学,周易,塔罗占卜,黄帝内经">
+
+    <!-- 多语言 hreflang 标记 - 帮助搜索引擎识别各语言版本 -->
+    <link rel="alternate" hreflang="zh-CN" href="https://zero.zxqconsulting.com/?lang=zh-CN" />
+    <link rel="alternate" hreflang="en" href="https://zero.zxqconsulting.com/?lang=en" />
+    <link rel="alternate" hreflang="ja" href="https://zero.zxqconsulting.com/?lang=ja" />
+    <link rel="alternate" hreflang="ko" href="https://zero.zxqconsulting.com/?lang=ko" />
+    <link rel="alternate" hreflang="es" href="https://zero.zxqconsulting.com/?lang=es" />
+    <link rel="alternate" hreflang="fr" href="https://zero.zxqconsulting.com/?lang=fr" />
+    <link rel="alternate" hreflang="de" href="https://zero.zxqconsulting.com/?lang=de" />
+    <link rel="alternate" hreflang="x-default" href="https://zero.zxqconsulting.com/" />
+
+    <!-- 动态语言初始化：在 Vue 挂载前先按系统语言调整 <html lang>，避免 FOUC -->
+    <script>
+      (function() {
+        try {
+          var stored = localStorage.getItem('zhiJi_language');
+          var lang = stored ? JSON.parse(stored) : null;
+          if (!lang) {
+            var browserLang = (navigator.language || 'zh-CN').split('-')[0].toLowerCase();
+            var map = { 'zh': 'zh-CN', 'en': 'en', 'ja': 'ja', 'ko': 'ko', 'es': 'es', 'fr': 'fr', 'de': 'de', 'it': 'it', 'pt': 'pt', 'ar': 'ar', 'id': 'id', 'ms': 'ms' };
+            lang = map[browserLang] || 'zh-CN';
+          }
+          document.documentElement.lang = lang;
+          // RTL 支持
+          if (lang === 'ar') document.documentElement.dir = 'rtl';
+          // 动态更新 title 和 meta 以匹配系统语言
+          var titles = {
+            'zh-CN': '知几 - AI命理咨询 © ZXQ',
+            'en': 'ZhiJi - AI Fortune-Telling Service © ZXQ',
+            'ja': '知幾 - AI占いサービス © ZXQ',
+            'ko': '지기 - AI 운세 서비스 © ZXQ'
+          };
+          if (titles[lang]) document.title = titles[lang];
+        } catch (e) { /* noop */ }
+      })();
+    </script>
+
     <link rel="manifest" href="/manifest.json">
 
     <!-- 数据追踪 SDK - 使用绝对路径 -->
@@ -285,7 +322,7 @@
       })();
     </script>
 
-    <!-- GEO: Schema.org 结构化数据 -->
+    <!-- GEO: Schema.org 结构化数据 - 多语言版本 -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -293,9 +330,13 @@
         {
           "@type": "Organization",
           "@id": "https://zero.zxqconsulting.com/#organization",
-          "name": "知几",
+          "name": "知几 / ZhiJi",
+          "alternateName": ["ZhiJi", "知几", "知幾", "지기"],
           "url": "https://zero.zxqconsulting.com",
-          "description": "结合古老智慧与现代AI技术的命理咨询平台",
+          "description": "AI-powered fortune-telling service combining ancient Eastern wisdom with modern AI technology. Available in 12+ languages globally.",
+          "foundingDate": "2026",
+          "areaServed": "Worldwide",
+          "availableLanguage": ["zh-CN", "en", "ja", "ko", "es", "it", "fr", "de", "pt", "ar", "id", "ms"],
           "sameAs": [
             "https://github.com/qiangzhang2009"
           ]
@@ -305,6 +346,8 @@
           "@id": "https://zero.zxqconsulting.com/#website",
           "url": "https://zero.zxqconsulting.com",
           "name": "知几 - AI命理咨询",
+          "alternateName": "ZhiJi - AI Fortune-Telling",
+          "inLanguage": ["zh-CN", "en", "ja", "ko", "es", "it", "fr", "de", "pt", "ar", "id", "ms"],
           "publisher": {
             "@id": "https://zero.zxqconsulting.com/#organization"
           },

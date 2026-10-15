@@ -3,6 +3,7 @@ import Home from '../views/Home.vue'
 import Chat from '../views/Chat.vue'
 import Admin from '../views/Admin.vue'
 import Pricing from '../views/Pricing.vue'
+import Privacy from '../views/Privacy.vue'
 
 const routes = [
   {
@@ -19,6 +20,11 @@ const routes = [
     path: '/pricing',
     name: 'Pricing',
     component: Pricing
+  },
+  {
+    path: '/privacy',
+    name: 'Privacy',
+    component: Privacy
   },
   {
     path: '/admin',
