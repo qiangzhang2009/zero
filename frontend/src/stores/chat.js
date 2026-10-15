@@ -105,83 +105,74 @@ async function trackToBackend(module, userMessage, aiMessage, action = 'response
       })
     })
   } catch (error) {
-    console.warn('Failed to track to backend:', error)
+    // 静默失败，追踪不影响用户操作
   }
 }
 
 // 追踪模块选择
 function trackModuleSelect(moduleId, moduleName) {
-  try {
-    const visitorId = getUserId()
-    fetch(TRACKING_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        event_type: 'module_select',
-        tenant_slug: TENANT_SLUG,
-        visitor_id: visitorId,
-        event_data: {
-          module_id: moduleId,
-          module_name: moduleName,
-          timestamp: new Date().toISOString()
-        }
-      })
+  fetch(TRACKING_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      event_type: 'module_select',
+      tenant_slug: TENANT_SLUG,
+      visitor_id: getUserId(),
+      website_url: window.location.origin,
+      page_url: window.location.href,
+      event_data: {
+        module_id: moduleId,
+        module_name: moduleName,
+        timestamp: new Date().toISOString()
+      }
     })
-  } catch (error) {
-    console.warn('Failed to track module select:', error)
-  }
+  }).catch(() => {})
 }
 
 // 追踪模块切换
 function trackModuleSwitch(fromModule, toModule) {
-  try {
-    const visitorId = getUserId()
-    fetch(TRACKING_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        event_type: 'module_switch',
-        tenant_slug: TENANT_SLUG,
-        visitor_id: visitorId,
-        event_data: {
-          from_module: fromModule,
-          to_module: toModule,
-          timestamp: new Date().toISOString()
-        }
-      })
+  fetch(TRACKING_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      event_type: 'module_switch',
+      tenant_slug: TENANT_SLUG,
+      visitor_id: getUserId(),
+      website_url: window.location.origin,
+      page_url: window.location.href,
+      event_data: {
+        from_module: fromModule,
+        to_module: toModule,
+        timestamp: new Date().toISOString()
+      }
     })
-  } catch (error) {
-    console.warn('Failed to track module switch:', error)
-  }
+  }).catch(() => {})
 }
 
 // 追踪档案创建/更新
 function trackProfile(profileData, action = 'create') {
-  try {
-    const visitorId = getUserId()
-    fetch(TRACKING_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        event_type: 'profile_' + action,
-        tenant_slug: TENANT_SLUG,
-        visitor_id: visitorId,
-        event_data: {
-          profile_id: profileData.profile_id || 'default',
-          profile_type: profileData.profile_type || 'bazi',
-          name: profileData.name,
-          birthday: profileData.birthday,
-          birth_time: profileData.hour,
-          gender: profileData.gender,
-          profile_data: profileData.bazi || {},
-          completeness: calculateProfileCompleteness(profileData),
-          timestamp: new Date().toISOString()
-        }
-      })
+  fetch(TRACKING_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      event_type: 'profile_' + action,
+      tenant_slug: TENANT_SLUG,
+      visitor_id: getUserId(),
+      website_url: window.location.origin,
+      page_url: window.location.href,
+      event_data: {
+        profile_id: profileData.profile_id || 'default',
+        profile_type: profileData.profile_type || 'bazi',
+        name: profileData.name,
+        birthday: profileData.birthday,
+        birth_time: profileData.hour,
+        gender: profileData.gender,
+        profile_data: profileData.bazi || {},
+        completeness: calculateProfileCompleteness(profileData),
+        timestamp: new Date().toISOString()
+      }
     })
-  } catch (error) {
-    console.warn('Failed to track profile:', error)
-  }
+  }).catch(() => {})
 }
 
 // 计算档案完整度

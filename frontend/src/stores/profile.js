@@ -52,7 +52,7 @@ function trackProfile(profileData, action = 'create') {
       })
     })
   } catch (error) {
-    console.warn('Failed to track profile:', error)
+    // 静默失败，追踪不影响用户操作
   }
 }
 
