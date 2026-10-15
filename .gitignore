@@ -45,3 +45,4 @@ backend/chat_history.json
 backend/user_profiles.json
 backend/memberships.json
 backend/recharges.json
+.env*.local
