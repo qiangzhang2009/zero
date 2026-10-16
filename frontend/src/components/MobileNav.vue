@@ -42,7 +42,7 @@ function closeGuide() {
       <div class="guide-content" @click.stop>
         <div class="guide-arrow">👇</div>
         <div class="guide-text">{{ languageStore.t('chat.selectModule') }}</div>
-        <button class="guide-btn" @click="closeGuide">知道了</button>
+        <button class="guide-btn" @click="closeGuide">{{ languageStore.t('gotIt') }}</button>
       </div>
     </div>
   </Transition>

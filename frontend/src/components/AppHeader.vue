@@ -60,13 +60,13 @@ function copyWechat() {
         <!-- 升级按钮 -->
         <button class="upgrade-btn" @click="router.push('/pricing')">
           <span class="upgrade-icon">👑</span>
-          <span class="upgrade-text">升级</span>
+          <span class="upgrade-text">{{ languageStore.t('upgrade') }}</span>
         </button>
 
         <!-- 用量显示 -->
         <div v-if="!usageStore.isAdmin" class="usage-badge" :class="{ 'usage-low': usageStore.getRemaining() <= 5 }">
           <span class="usage-icon">💬</span>
-          <span class="usage-text">{{ usageStore.hasPaidCredits() ? usageStore.getRemaining() + ' 积分' : usageStore.getRemaining() + '/' + usageStore.dailyLimit + ' 次' }}</span>
+          <span class="usage-text">{{ usageStore.hasPaidCredits() ? usageStore.getRemaining() + languageStore.t('credits') : usageStore.getRemaining() + '/' + usageStore.dailyLimit + ' ' + languageStore.t('chats') }}</span>
         </div>
 
         <!-- 语言选择器 -->
@@ -89,25 +89,25 @@ function copyWechat() {
       <div class="wechat-modal">
         <button class="wechat-close" @click="closeWechat">×</button>
         <div class="wechat-icon">💬</div>
-        <h3 class="wechat-title">添加客服微信</h3>
-        <p class="wechat-desc">扫码联系客服，转账后为您充值</p>
+        <h3 class="wechat-title">{{ languageStore.t('wechatAddTitle') }}</h3>
+        <p class="wechat-desc">{{ languageStore.t('wechatAddDesc') }}</p>
         <div v-if="wechatId" class="wechat-qr">
           <div class="qr-placeholder">
             <div class="qr-icon">📱</div>
-            <p class="qr-label">微信号</p>
+            <p class="qr-label">{{ languageStore.t('wechatId') }}</p>
             <p class="qr-value">{{ wechatId }}</p>
           </div>
         </div>
         <div v-else class="wechat-qr">
           <div class="qr-placeholder">
             <div class="qr-icon">⚙️</div>
-            <p class="qr-label">客服微信</p>
-            <p class="qr-value" style="color: rgba(255,255,255,0.5);">未配置</p>
+            <p class="qr-label">{{ languageStore.t('wechatId') }}</p>
+            <p class="qr-value" style="color: rgba(255,255,255,0.5);">{{ languageStore.t('notConfigured') }}</p>
           </div>
         </div>
-        <p class="wechat-note">转账时备注您的账号即可开通</p>
+        <p class="wechat-note">{{ languageStore.t('wechatNote') }}</p>
         <button v-if="wechatId" class="wechat-copy" @click="copyWechat">
-          复制微信号
+          {{ languageStore.t('copyWechatId') }}
         </button>
       </div>
     </div>

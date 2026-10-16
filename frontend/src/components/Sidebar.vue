@@ -54,7 +54,7 @@ const emit = defineEmits(['close'])
       <input 
         v-model="searchQuery" 
         type="text" 
-        placeholder="搜索..." 
+        :placeholder="languageStore.t('searchPlaceholder')" 
         class="search-input"
       />
     </div>

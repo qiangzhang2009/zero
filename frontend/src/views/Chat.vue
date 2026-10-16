@@ -745,15 +745,15 @@ function openImageUpload() {
     <div v-if="showLimitModal" class="limit-modal-overlay" @click.self="showLimitModal = false">
       <div class="limit-modal">
         <div class="limit-modal-icon">📊</div>
-        <h3 class="limit-modal-title">今日对话次数已用完</h3>
+        <h3 class="limit-modal-title">{{ languageStore.t('limitTitle') }}</h3>
         <p class="limit-modal-desc">
-          免费用户每日 10 次对话已用完。
+          {{ languageStore.t('limitDesc') }}
           <br />
-          <span style="color: #fbbf24; font-size: 13px;">扫码联系客服付费充值，不限日期使用</span>
+          <span style="color: #fbbf24; font-size: 13px;">{{ languageStore.t('limitScan') }}</span>
         </p>
         <div class="limit-modal-actions">
-          <router-link to="/pricing" class="limit-upgrade-btn">查看升级方案</router-link>
-          <button class="limit-close-btn" @click="showLimitModal = false">稍后再说</button>
+          <router-link to="/pricing" class="limit-upgrade-btn">{{ languageStore.t('viewUpgrade') }}</router-link>
+          <button class="limit-close-btn" @click="showLimitModal = false">{{ languageStore.t('maybeLaterBtn') }}</button>
         </div>
       </div>
     </div>

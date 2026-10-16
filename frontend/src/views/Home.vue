@@ -61,13 +61,16 @@ function goPrivacy() {
 // 直接使用 languageStore.currentLanguage 来获取当前语言
 const currentLang = computed(() => languageStore.currentLanguage)
 
-// 翻译辅助函数 - 使用统一的 translations.js
+// 翻译辅助函数 - 先查 homeTranslations，再查全局 translations
 import { homeTranslations } from '../i18n/translations'
 
 const t = (key) => {
   const lang = currentLang.value?.value || currentLang.value || 'zh-CN'
-  const translations = homeTranslations[lang] || homeTranslations['zh-CN']
-  return translations[key] || translations['zh-CN']?.[key] || key
+  const home = homeTranslations[lang] || homeTranslations['zh-CN']
+  // homeTranslations 里有这个 key
+  if (home && home[key] !== undefined) return home[key]
+  // 否则从全局 translations（通过 languageStore）查找
+  return languageStore.t(key)
 }
 
 // 使用计算属性
@@ -111,15 +114,15 @@ function getModuleId(index) {
       <div class="mbti-popup">
         <button class="mbti-popup-close" @click="closeMbtiPopup">×</button>
         <div class="mbti-popup-icon">🎯</div>
-        <h2 class="mbti-popup-title">发现真实的自己</h2>
-        <p class="mbti-popup-desc">MBTI职业性格测试，帮助您深入了解性格特点，发现潜在优势</p>
+        <h2 class="mbti-popup-title">{{ languageStore.t('mbtiDiscover') }}</h2>
+        <p class="mbti-popup-desc">{{ languageStore.t('mbtiPopupDesc') }}</p>
         <div class="mbti-popup-versions">
           <button class="mbti-version-btn" @click="startMbtiTest">
-            <span class="version-name">立即测试</span>
+            <span class="version-name">{{ languageStore.t('takeTestNow') }}</span>
             <span class="version-arrow">→</span>
           </button>
         </div>
-        <button class="mbti-popup-skip" @click="closeMbtiPopup">暂不测试</button>
+        <button class="mbti-popup-skip" @click="closeMbtiPopup">{{ languageStore.t('maybeLater') }}</button>
       </div>
     </div>
     
@@ -214,7 +217,7 @@ function getModuleId(index) {
       <div class="footer-links">
         <Disclaimer variant="inline" />
         <span class="footer-divider">•</span>
-        <button class="footer-link-btn" @click="goPrivacy">{{ currentLang === 'zh-CN' ? '隐私政策' : currentLang === 'ja' ? 'プライバシー' : currentLang === 'ko' ? '개인정보' : 'Privacy Policy' }}</button>
+        <button class="footer-link-btn" @click="goPrivacy">{{ languageStore.t('privacyPolicy') }}</button>
       </div>
     </footer>
 
@@ -231,15 +234,15 @@ function getModuleId(index) {
       <div class="mbti-popup">
         <button class="mbti-popup-close" @click="closeMbtiPopup">×</button>
         <div class="mbti-popup-icon">🎯</div>
-        <h2 class="mbti-popup-title">{{ currentLang === 'zh-CN' ? '发现真实的自己' : currentLang === 'ja' ? '本当の自分を発見する' : currentLang === 'ko' ? '진정한 나를 발견하다' : 'Discover Your True Self' }}</h2>
-        <p class="mbti-popup-desc">{{ currentLang === 'zh-CN' ? 'MBTI职业性格测试，帮助您深入了解性格特点，发现潜在优势' : currentLang === 'ja' ? 'MBTI職業性格テストで、あなたの性格特性と潜在的な強みを発見しましょう' : currentLang === 'ko' ? 'MBTI 직업 성격 테스트로 성격 특성과 잠재력을 발견하세요' : 'MBTI personality test to help you understand your traits and discover hidden strengths' }}</p>
+        <h2 class="mbti-popup-title">{{ languageStore.t('mbtiDiscover') }}</h2>
+        <p class="mbti-popup-desc">{{ languageStore.t('mbtiPopupDesc') }}</p>
         <div class="mbti-popup-versions">
           <button class="mbti-version-btn" @click="startMbtiTest">
-            <span class="version-name">{{ currentLang === 'zh-CN' ? '立即测试' : currentLang === 'ja' ? '今すぐテスト' : currentLang === 'ko' ? '지금 테스트' : 'Take Test Now' }}</span>
+            <span class="version-name">{{ languageStore.t('takeTestNow') }}</span>
             <span class="version-arrow">→</span>
           </button>
         </div>
-        <button class="mbti-popup-skip" @click="closeMbtiPopup">{{ currentLang === 'zh-CN' ? '暂不测试' : currentLang === 'ja' ? '後で' : currentLang === 'ko' ? '나중에' : 'Maybe Later' }}</button>
+        <button class="mbti-popup-skip" @click="closeMbtiPopup">{{ languageStore.t('maybeLater') }}</button>
       </div>
     </div>
   </div>

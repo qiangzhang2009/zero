@@ -84,7 +84,17 @@ const translations = {
       features: { title: '调和空间，激发潜能', desc: '通过风水智慧，让您的居所或工作环境成为和谐与成功的源泉。', btn: '开始' }, bazi: { title: '八字解密，探寻天命', desc: '揭开人生的密码图谱。', btn: '开始' }, palm: { title: '掌纹中的命运轨迹', desc: '手相蕴藏着生命故事的蓝图。', btn: '开始' }, dream: { title: '让梦境化作生命启示', desc: '每个梦境都承载着讯息。', btn: '开始' }, community: '社区故事', askPlaceholder: '现在是换工作的好时机吗？', askBtn: '询问' },
     language: { title: '选择语言', current: '当前语言', switch: '切换语言' },
     today: '今天', yesterday: '昨天', back: '返回', home: '首页', loading: '加载中...', error: '抱歉，发生了错误，请稍后再试。', success: '成功',
-    modules: { bazi: '八字', baziDesc: '生辰八字分析', fengshui: '风水', fengshuiDesc: '风水布局咨询', tarot: '塔罗', tarotDesc: '塔罗牌占卜', palm: '手相', palmDesc: '手相揭秘', dream: '梦境', dreamDesc: '周公解梦', zodiac: '星座', zodiacDesc: '星座运势', mbti: 'MBTI', mbtiDesc: '人格测试', draw: '抽签', drawDesc: '求签问卜', huangdi: '黄帝内经', huangdiDesc: '养生智慧', lifenumber: '生命灵数', lifenumberDesc: '数字能量', ziwei: '紫微斗数', ziweiDesc: '斗数命盘', zhouyi: '周易', zhouyiDesc: '易经占卜', naming: '起名', namingDesc: '姓名评测', marriage: '婚配', marriageDesc: '婚姻配对', company: '公司起名', companyDesc: '商业命名', luckyday: '吉日', luckydayDesc: '黄道吉日', digital: '数字命理', digitalDesc: '数字分析', daodejing: '道德经', daodejingDesc: '经典智慧', question: '问卦', questionDesc: '易经问卜' }
+    modules: { bazi: '八字', baziDesc: '生辰八字分析', fengshui: '风水', fengshuiDesc: '风水布局咨询', tarot: '塔罗', tarotDesc: '塔罗牌占卜', palm: '手相', palmDesc: '手相揭秘', dream: '梦境', dreamDesc: '周公解梦', zodiac: '星座', zodiacDesc: '星座运势', mbti: 'MBTI', mbtiDesc: '人格测试', draw: '抽签', drawDesc: '求签问卜', huangdi: '黄帝内经', huangdiDesc: '养生智慧', lifenumber: '生命灵数', lifenumberDesc: '数字能量', ziwei: '紫微斗数', ziweiDesc: '斗数命盘', zhouyi: '周易', zhouyiDesc: '易经占卜', naming: '起名', namingDesc: '姓名评测', marriage: '婚配', marriageDesc: '婚姻配对', company: '公司起名', companyDesc: '商业命名', luckyday: '吉日', luckydayDesc: '黄道吉日', digital: '数字命理', digitalDesc: '数字分析', daodejing: '道德经', daodejingDesc: '经典智慧', question: '问卦', questionDesc: '易经问卜' },
+    // 新增通用翻译
+    upgrade: '升级', chats: '次', privacyPolicy: '隐私政策',
+    mbtiDiscover: '发现真实的自己', mbtiPopupDesc: 'MBTI职业性格测试，帮助您深入了解性格特点，发现潜在优势',
+    takeTestNow: '立即测试', maybeLater: '暂不测试',
+    wechatAddTitle: '添加客服微信', wechatAddDesc: '扫码联系客服，转账后为您充值',
+    wechatId: '微信号', notConfigured: '未配置', wechatNote: '转账时备注您的账号即可开通',
+    copyWechatId: '复制微信号',
+    searchPlaceholder: '搜索...', gotIt: '知道了',
+    limitTitle: '今日对话次数已用完', limitDesc: '免费用户每日 10 次对话已用完。',
+    limitScan: '扫码联系客服付费充值，不限日期使用', viewUpgrade: '查看升级方案', maybeLaterBtn: '稍后再说',
   },
   'en': {
     appName: 'ZhiJi', appDesc: 'Whispers of ancient wisdom, guiding your future',
@@ -121,7 +131,19 @@ const translations = {
       features: { title: 'Harmonize Space, Unleash Potential', desc: 'Through Feng Shui wisdom, make your home a source of harmony and success.', btn: 'Start' }, bazi: { title: 'Bazi Decoding, Explore Destiny', desc: 'Unlock the code of life.', btn: 'Start' }, palm: { title: 'Destiny in Palm Lines', desc: 'Palmistry holds the blueprint of your life story.', btn: 'Start' }, dream: { title: 'Turn Dreams into Life Insights', desc: 'Every dream carries a message.', btn: 'Start' }, community: 'Community Stories', askPlaceholder: 'Is now a good time to change jobs?', askBtn: 'Ask' },
     language: { title: 'Select Language', current: 'Current Language', switch: 'Switch Language' },
     today: 'Today', yesterday: 'Yesterday', back: 'Back', home: 'Home', loading: 'Loading...', error: 'Sorry, an error occurred. Please try again later.', success: 'Success',
-    modules: { bazi: 'Bazi', baziDesc: 'Birth Chart Analysis', fengshui: 'Feng Shui', fengshuiDesc: 'Feng Shui Consultation', tarot: 'Tarot', tarotDesc: 'Tarot Divination', palm: 'Palmistry', palmDesc: 'Palm Reading', dream: 'Dream', dreamDesc: 'Dream Interpretation', zodiac: 'Zodiac', zodiacDesc: 'Horoscope', mbti: 'MBTI', mbtiDesc: 'Personality Test', draw: 'Divination', drawDesc: 'Fate Drawing', huangdi: 'Huangdi', huangdiDesc: 'Wellness Wisdom', lifenumber: 'Life Number', lifenumberDesc: 'Numerology', ziwei: 'Ziwei', ziweiDesc: 'Astrology', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Naming', namingDesc: 'Name Analysis', marriage: 'Marriage', marriageDesc: 'Matchmaking', company: 'Company Name', companyDesc: 'Business Naming', luckyday: 'Lucky Day', luckydayDesc: 'Auspicous Dates', digital: 'Numerology', digitalDesc: 'Number Analysis', daodejing: 'Tao Te Ching', daodejingDesc: 'Classic Wisdom', question: 'Divination', questionDesc: 'I Ching Reading' }
+    upgrade: 'Upgrade', chats: ' chats', privacyPolicy: 'Privacy Policy',
+    mbtiDiscover: 'Discover Your True Self', mbtiPopupDesc: 'MBTI personality test to help you understand your traits and discover hidden strengths',
+    takeTestNow: 'Take Test Now', maybeLater: 'Maybe Later',
+    wechatAddTitle: 'Add WeChat Support', wechatAddDesc: 'Scan QR or add WeChat to contact support, transfer to top up',
+    wechatId: 'WeChat ID', notConfigured: 'Not configured', wechatNote: 'Include your account ID in the transfer note',
+    copyWechatId: 'Copy WeChat ID',
+    searchPlaceholder: 'Search...', gotIt: 'Got it',
+    modules: { bazi: 'Bazi', baziDesc: 'Birth Chart Analysis', fengshui: 'Feng Shui', fengshuiDesc: 'Feng Shui Consultation', tarot: 'Tarot', tarotDesc: 'Tarot Divination', palm: 'Palmistry', palmDesc: 'Palm Reading', dream: 'Dream', dreamDesc: 'Dream Interpretation', zodiac: 'Zodiac', zodiacDesc: 'Horoscope', mbti: 'MBTI', mbtiDesc: 'Personality Test', draw: 'Divination', drawDesc: 'Fate Drawing', huangdi: 'Huangdi', huangdiDesc: 'Wellness Wisdom', lifenumber: 'Life Number', lifenumberDesc: 'Numerology', ziwei: 'Ziwei', ziweiDesc: 'Astrology', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Naming', namingDesc: 'Name Analysis', marriage: 'Marriage', marriageDesc: 'Matchmaking', company: 'Company Name', companyDesc: 'Business Naming', luckyday: 'Lucky Day', luckydayDesc: 'Auspicous Dates', digital: 'Numerology', digitalDesc: 'Number Analysis', daodejing: 'Tao Te Ching', daodejingDesc: 'Classic Wisdom', question: 'Divination', questionDesc: 'I Ching Reading' },
+    limitTitle: 'Daily chat limit reached',
+    limitDesc: 'Free users have used all 10 daily conversations.',
+    limitScan: 'Scan QR to add support, top up for unlimited use',
+    viewUpgrade: 'View Plans',
+    maybeLaterBtn: 'Maybe Later',
   },
   'ja': {
     appName: '知幾', appDesc: '古からの知恵があなたの未来を導く',
@@ -146,7 +168,19 @@ const translations = {
       features: { title: '空間を調和させ、潜在能力を引き出す', desc: '風水の知恵を通じて、あなたの家を調和と成功の源にします。', btn: '始める' }, bazi: { title: '八字を解く、運命を探る', desc: '人生のマスターコードを明らかにする。', btn: '始める' }, palm: { title: '掌紋の運命', desc: '手相は人生的故事の青写真を持っています。', btn: '始める' }, dream: { title: '夢を人生の洞察に変える', desc: 'すべての夢はメッセージを持っています。', btn: '始める' }, community: 'コミュニティストーリー', askPlaceholder: '今、仕事を変えるべきですか？', askBtn: '聞く' },
     language: { title: '言語を選択', current: '現在の言語', switch: '言語を切り替え' },
     today: '今日', yesterday: '昨日', back: '戻る', home: 'ホーム', loading: '読み込み中...', error: 'エラーが発生しました。', success: '成功',
-    modules: { bazi: '八字', baziDesc: '出生八字分析', fengshui: '风水', fengshuiDesc: '风水コンサルティング', tarot: 'タロット', tarotDesc: 'タロット占術', palm: '手相', palmDesc: '手相診断', dream: '夢', dreamDesc: '夢解釈', zodiac: '星座', zodiacDesc: '星座運勢', mbti: 'MBTI', mbtiDesc: '性格テスト', draw: 'おみくじ', drawDesc: '占いです', huangdi: '黄帝内経', huangdiDesc: '養生智慧', lifenumber: '生命数', lifenumberDesc: '数秘術', ziwei: '紫微斗数', ziweiDesc: '命盤分析', zhouyi: '周易', zhouyiDesc: '易経占術', naming: '命名', namingDesc: '姓名分析', marriage: '婚配', marriageDesc: '相性診断', company: '会社名', companyDesc: 'ビジネス命名', luckyday: '吉日', luckydayDesc: '開運日', digital: '数字命理', digitalDesc: '数字分析', daodejing: '道德経', daodejingDesc: '古典智慧', question: '占卦', questionDesc: '易経占断' }
+    upgrade: 'アップグレード', chats: ' 回', privacyPolicy: 'プライバシー',
+    mbtiDiscover: '本当の自分を発見する', mbtiPopupDesc: 'MBTI職業性格テストで、あなたの性格特性と潜在的な強みを発見しましょう',
+    takeTestNow: '今すぐテスト', maybeLater: '後で',
+    wechatAddTitle: 'カスタマー WeChat を追加', wechatAddDesc: 'QRスキャンまたは WeChat でサポートに連絡、送金でチャージ',
+    wechatId: 'WeChat ID', notConfigured: '未設定', wechatNote: '送金時にアカウントIDをご記入ください',
+    copyWechatId: 'WeChat IDをコピー',
+    searchPlaceholder: '検索...', gotIt: '了解',
+    modules: { bazi: '八字', baziDesc: '出生八字分析', fengshui: '风水', fengshuiDesc: '风水コンサルティング', tarot: 'タロット', tarotDesc: 'タロット占術', palm: '手相', palmDesc: '手相診断', dream: '夢', dreamDesc: '夢解釈', zodiac: '星座', zodiacDesc: '星座運勢', mbti: 'MBTI', mbtiDesc: '性格テスト', draw: 'おみくじ', drawDesc: '占いです', huangdi: '黄帝内経', huangdiDesc: '養生智慧', lifenumber: '生命数', lifenumberDesc: '数秘術', ziwei: '紫微斗数', ziweiDesc: '命盤分析', zhouyi: '周易', zhouyiDesc: '易経占術', naming: '命名', namingDesc: '姓名分析', marriage: '婚配', marriageDesc: '相性診断', company: '会社名', companyDesc: 'ビジネス命名', luckyday: '吉日', luckydayDesc: '開運日', digital: '数字命理', digitalDesc: '数字分析', daodejing: '道德経', daodejingDesc: '古典智慧', question: '占卦', questionDesc: '易経占断' },
+    limitTitle: '本日の会話回数が上限に達しました',
+    limitDesc: '無料ユーザーは本日の10回を使い切りました。',
+    limitScan: 'QRスキャンでサポート追加、チャージで無制限利用',
+    viewUpgrade: 'プランを見る',
+    maybeLaterBtn: '後で',
   },
   'ko': {
     appName: '지기', appDesc: '고대의 지혜가 당신의 미래를 이끕니다',
@@ -170,7 +204,19 @@ const translations = {
       features: { title: '공간을 조화시키고 잠재력을 끌어낸다', desc: '풍수의 지혜를 통해 당신의 집을 조화와 성공의 원천으로 만듭니다.', btn: '시작' }, bazi: { title: '팔자 解, 운명 탐구', desc: '인생의 비밀이 담긴 코드을 밝히다.', btn: '시작' }, palm: { title: '손금의 운명', desc: '수상은 삶 이야기의 청사진을 담고 있습니다.', btn: '시작' }, dream: { title: ' dreams을 삶의 통찰력으로', desc: '모든 꿈은 메시지를 담고 있습니다.', btn: '시작' }, community: '커뮤니티 스토리', askPlaceholder: '지금 직장을 바꾸는 것이 좋은가요?', askBtn: '묻기' },
     language: { title: '언어 선택', current: '현재 언어', switch: '언어 변경' },
     today: '오늘', yesterday: '어제', back: '뒤로', home: '홈', loading: '로딩 중...', error: '오류가 발생했습니다.', success: '성공',
-    modules: { bazi: '팔자', baziDesc: '생辰팔자 분석', fengshui: '풍수', fengshuiDesc: '풍수 컨설팅', tarot: '타로', tarotDesc: '타로 점술', palm: '수상', palmDesc: '수상rivistry', dream: '꿈', dreamDesc: '꿈해석', zodiac: '별자리', zodiacDesc: '운세', mbti: 'MBTI', mbtiDesc: '성격 테스트', draw: '점签', drawDesc: '운세 뽑기', huangdi: '황제내경', huangdiDesc: '건강 지혜', lifenumber: '생명수', lifenumberDesc: '수비술', ziwei: '자미투수', ziweiDesc: '명판 분석', zhouyi: '주역', zhouyiDesc: '주역 점술', naming: '이름짓기', namingDesc: '성명 분석', marriage: '혼配', marriageDesc: '궁합', company: '회사이름', companyDesc: '비즈니스 이름짓기', luckyday: '길일', luckydayDesc: '복스러운 날', digital: '숫자역리', digitalDesc: '숫자 분석', daodejing: '도덕경', daodejingDesc: '고전 지혜', question: '점卦', questionDesc: '주역 점치기' }
+    upgrade: '업그레이드', chats: ' 회', privacyPolicy: '개인정보',
+    mbtiDiscover: '진정한 나를 발견하다', mbtiPopupDesc: 'MBTI 직업 성격 테스트로 성격 특성과 잠재력을 발견하세요',
+    takeTestNow: '지금 테스트', maybeLater: '나중에',
+    wechatAddTitle: '고객 WeChat 추가', wechatAddDesc: 'QR 스캔 또는 WeChat으로 지원팀에 연락, 송금으로 충전',
+    wechatId: 'WeChat ID', notConfigured: '설정 안 됨', wechatNote: '송금 시 계정 ID를 메모에 남겨주세요',
+    copyWechatId: 'WeChat ID 복사',
+    searchPlaceholder: '검색...', gotIt: '알겠습니다',
+    modules: { bazi: '팔자', baziDesc: '생辰팔자 분석', fengshui: '풍수', fengshuiDesc: '풍수 컨설팅', tarot: '타로', tarotDesc: '타로 점술', palm: '수상', palmDesc: '수상rivistry', dream: '꿈', dreamDesc: '꿈해석', zodiac: '별자리', zodiacDesc: '운세', mbti: 'MBTI', mbtiDesc: '성격 테스트', draw: '점签', drawDesc: '운세 뽑기', huangdi: '황제내경', huangdiDesc: '건강 지혜', lifenumber: '생명수', lifenumberDesc: '수비술', ziwei: '자미투수', ziweiDesc: '명판 분석', zhouyi: '주역', zhouyiDesc: '주역 점술', naming: '이름짓기', namingDesc: '성명 분석', marriage: '혼配', marriageDesc: '궁합', company: '회사이름', companyDesc: '비즈니스 이름짓기', luckyday: '길일', luckydayDesc: '복스러운 날', digital: '숫자역리', digitalDesc: '숫자 분석', daodejing: '도덕경', daodejingDesc: '고전 지혜', question: '점卦', questionDesc: '주역 점치기' },
+    limitTitle: '오늘의 대화 횟수가 모두 소진되었습니다',
+    limitDesc: '무료 사용자는 오늘의 10회 대화를 모두 사용했습니다.',
+    limitScan: 'QR 스캔으로 지원팀 추가, 충전으로 무제한 사용',
+    viewUpgrade: '플랜 보기',
+    maybeLaterBtn: '나중에',
   },
   'es': {
     appName: 'ZhiJi', appDesc: 'Susurros de sabiduría antigua guiando tu futuro',
@@ -192,7 +238,28 @@ const translations = {
       features: { title: 'Armoniza el espacio, libera el potencial', desc: 'A través de la sabiduría del Feng Shui, haz de tu hogar una fuente de armonía y éxito.', btn: 'Comenzar' }, bazi: { title: 'Descifra el Bazi, Explora el Destino', desc: 'Desbloquea el código de la vida.', btn: 'Comenzar' }, palm: { title: 'Destino en las líneas de la mano', desc: 'La quiromancia contiene el blueprint de tu historia.', btn: 'Comenzar' }, dream: { title: 'Transforma los sueños en conocimientos vitales', desc: 'Cada sueño porta un mensaje.', btn: 'Comenzar' }, community: 'Historias de la comunidad', askPlaceholder: '¿Es buen momento para cambiar de trabajo?', askBtn: 'Preguntar' },
     language: { title: 'Seleccionar idioma', current: 'Idioma actual', switch: 'Cambiar idioma' },
     today: 'Hoy', yesterday: 'Ayer', back: 'Volver', home: 'Inicio', loading: 'Cargando...', error: 'Lo sentimos, ocurrió un error.', success: 'Éxito',
-    modules: { bazi: 'Bazi', baziDesc: 'Análisis del carta astral', fengshui: 'Feng Shui', fengshuiDesc: 'Consultoría Feng Shui', tarot: 'Tarot', tarotDesc: 'Adivinación Tarot', palm: 'Quiromancia', palmDesc: 'Lectura de mano', dream: 'Sueños', dreamDesc: 'Interpretación de sueños', zodiac: 'Zodiaco', zodiacDesc: 'Horóscopo', mbti: 'MBTI', mbtiDesc: 'Test de personalidad', draw: 'Sorteo', drawDesc: 'Adivinación', huangdi: 'Huangdi', huangdiDesc: 'Sabiduría Wellness', lifenumber: 'Número de vida', lifenumberDesc: 'Numerología', ziwei: 'Ziwei', ziweiDesc: 'Astrología china', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Nombramiento', namingDesc: 'Análisis de nombre', marriage: 'Matrimonio', marriageDesc: 'Compatibilidad', company: 'Nombre empresa', companyDesc: 'Nombres comerciales', luckyday: 'Día afortunado', luckydayDesc: 'Fechas favorables', digital: 'Numerología', digitalDesc: 'Análisis de números', daodejing: 'Tao Te Ching', daodejingDesc: 'Sabiduría clásica', question: 'Adivinación', questionDesc: 'Lectura I Ching' }
+    modules: { bazi: 'Bazi', baziDesc: 'Análisis del carta astral', fengshui: 'Feng Shui', fengshuiDesc: 'Consultoría Feng Shui', tarot: 'Tarot', tarotDesc: 'Adivinación Tarot', palm: 'Quiromancia', palmDesc: 'Lectura de mano', dream: 'Sueños', dreamDesc: 'Interpretación de sueños', zodiac: 'Zodiaco', zodiacDesc: 'Horóscopo', mbti: 'MBTI', mbtiDesc: 'Test de personalidad', draw: 'Sorteo', drawDesc: 'Adivinación', huangdi: 'Huangdi', huangdiDesc: 'Sabiduría Wellness', lifenumber: 'Número de vida', lifenumberDesc: 'Numerología', ziwei: 'Ziwei', ziweiDesc: 'Astrología china', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Nombramiento', namingDesc: 'Análisis de nombre', marriage: 'Matrimonio', marriageDesc: 'Compatibilidad', company: 'Nombre empresa', companyDesc: 'Nombres comerciales', luckyday: 'Día afortunado', luckydayDesc: 'Fechas favorables', digital: 'Numerología', digitalDesc: 'Análisis de números', daodejing: 'Tao Te Ching', daodejingDesc: 'Sabiduría clásica', question: 'Adivinación', questionDesc: 'Lectura I Ching' },
+    upgrade: 'Actualizar',
+    chats: ' veces',
+    privacyPolicy: 'Privacidad',
+    mbtiDiscover: 'Descubre tu verdadero yo',
+    mbtiPopupDesc: 'Test de personalidad MBTI para entender tus rasgos y descubrir fortalezas ocultas',
+    takeTestNow: 'Realizar test',
+    maybeLater: 'Más tarde',
+    wechatAddTitle: 'Añadir soporte WeChat',
+    wechatAddDesc: 'Escanea QR o añade WeChat para contactar, transfiere para recargar',
+    wechatId: 'ID WeChat',
+    notConfigured: 'No configurado',
+    wechatNote: 'Incluye tu ID de cuenta en la transferencia',
+    copyWechatId: 'Copiar ID WeChat',
+    searchPlaceholder: 'Buscar...',
+    gotIt: 'Entendido',
+  
+    limitTitle: 'Límite diario de chat alcanzado',
+    limitDesc: 'Los usuarios gratuitos han usado las 10 conversaciones diarias.',
+    limitScan: 'Escanea QR para añadir soporte, recarga para uso ilimitado',
+    viewUpgrade: 'Ver planes',
+    maybeLaterBtn: 'Más tarde',
   },
   'it': {
     appName: 'ZhiJi', appDesc: 'Sussurri di saggezza antica guidano il tuo futuro',
@@ -203,7 +270,28 @@ const translations = {
     home: { features: { title: 'Armonizza lo spazio', desc: 'Attraverso la saggezza del Feng Shui, rendi la tua vita fonte di armonia e successo.', btn: 'Inizia' }, bazi: { title: 'Decodifica il Bazi', desc: 'Sblocca il codice della vita.', btn: 'Inizia' }, palm: { title: 'Destino nelle linee', desc: 'La chiromanzia contiene il progetto della tua storia.', btn: 'Inizia' }, dream: { title: 'Trasforma i sogni', desc: 'Ogni sogno porta un messaggio.', btn: 'Inizia' }, community: 'Storie della comunità', askPlaceholder: 'È un buon momento per cambiare lavoro?', askBtn: 'Chiedi' },
     language: { title: 'Seleziona lingua', current: 'Lingua attuale', switch: 'Cambia lingua' },
     today: 'Oggi', yesterday: 'Ieri', back: 'Indietro', home: 'Home', loading: 'Caricamento...', error: 'Si è verificato un errore.', success: 'Successo',
-    modules: { bazi: 'Bazi', baziDesc: 'Analisi della carta natales', fengshui: 'Feng Shui', fengshuiDesc: 'Consulenza Feng Shui', tarot: 'Tarocchi', tarotDesc: 'Divinazione Tarot', palm: 'Chiromanzia', palmDesc: 'Lettura della mano', dream: 'Sogni', dreamDesc: 'Interpretazione dei sogni', zodiac: 'Zodiaco', zodiacDesc: 'Oroscopo', mbti: 'MBTI', mbtiDesc: 'Test di personalità', draw: 'Divinazione', drawDesc: 'Sorteggio', huangdi: 'Huangdi', huangdiDesc: 'Sapienza Benessere', lifenumber: 'Numero della vita', lifenumberDesc: 'Numerologia', ziwei: 'Ziwei', ziweiDesc: 'Astrologia cinese', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Nomismo', namingDesc: 'Analisi del nome', marriage: 'Matrimonio', marriageDesc: 'Compatibilità', company: 'Nome azienda', companyDesc: 'Nomi commerciali', luckyday: 'Giorno fortunato', luckydayDesc: 'Date favorevoli', digital: 'Numerologia', digitalDesc: 'Analisi numerica', daodejing: 'Tao Te Ching', daodejingDesc: 'Sapienza classica', question: 'Divinazione', questionDesc: 'Lettura I Ching' }
+    modules: { bazi: 'Bazi', baziDesc: 'Analisi della carta natales', fengshui: 'Feng Shui', fengshuiDesc: 'Consulenza Feng Shui', tarot: 'Tarocchi', tarotDesc: 'Divinazione Tarot', palm: 'Chiromanzia', palmDesc: 'Lettura della mano', dream: 'Sogni', dreamDesc: 'Interpretazione dei sogni', zodiac: 'Zodiaco', zodiacDesc: 'Oroscopo', mbti: 'MBTI', mbtiDesc: 'Test di personalità', draw: 'Divinazione', drawDesc: 'Sorteggio', huangdi: 'Huangdi', huangdiDesc: 'Sapienza Benessere', lifenumber: 'Numero della vita', lifenumberDesc: 'Numerologia', ziwei: 'Ziwei', ziweiDesc: 'Astrologia cinese', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Nomismo', namingDesc: 'Analisi del nome', marriage: 'Matrimonio', marriageDesc: 'Compatibilità', company: 'Nome azienda', companyDesc: 'Nomi commerciali', luckyday: 'Giorno fortunato', luckydayDesc: 'Date favorevoli', digital: 'Numerologia', digitalDesc: 'Analisi numerica', daodejing: 'Tao Te Ching', daodejingDesc: 'Sapienza classica', question: 'Divinazione', questionDesc: 'Lettura I Ching' },
+    upgrade: 'Aggiorna',
+    chats: ' volte',
+    privacyPolicy: 'Privacy',
+    mbtiDiscover: 'Scopri il tuo vero io',
+    mbtiPopupDesc: 'Test della personalità MBTI per comprendere i tuoi tratti e scoprire forze nascoste',
+    takeTestNow: 'Inizia test',
+    maybeLater: 'Più tardi',
+    wechatAddTitle: 'Aggiungi supporto WeChat',
+    wechatAddDesc: 'Scansiona QR o aggiungi WeChat per contattare, trasferisci per ricaricare',
+    wechatId: 'ID WeChat',
+    notConfigured: 'Non configurato',
+    wechatNote: 'Includi il tuo ID account nella nota di trasferimento',
+    copyWechatId: 'Copia ID WeChat',
+    searchPlaceholder: 'Cerca...',
+    gotIt: 'Capito',
+  
+    limitTitle: 'Limite chat giornaliero raggiunto',
+    limitDesc: 'Gli utenti gratuiti hanno usato tutte le 10 conversazioni giornaliere.',
+    limitScan: 'Scansiona QR per aggiungere supporto, ricarica per uso illimitato',
+    viewUpgrade: 'Vedi piani',
+    maybeLaterBtn: 'Più tardi',
   },
   'fr': {
     appName: 'ZhiJi', appDesc: 'Les murmures de la sagesse ancienne guident votre avenir',
@@ -214,7 +302,28 @@ const translations = {
     home: { features: { title: 'Harmonisez l\'espace', desc: 'Par la sagesse du Feng Shui, faites de votre vie une source d\'harmonie et de succès.', btn: 'Commencer' }, bazi: { title: 'Décryptez le Bazi', desc: 'Déverrouillez le code de la vie.', btn: 'Commencer' }, palm: { title: 'Destin dans les lignes', desc: 'La chiromancie contient le blueprint de votre histoire.', btn: 'Commencer' }, dream: { title: 'Transformez les rêves', desc: 'Chaque rêve porte un message.', btn: 'Commencer' }, community: 'Histoires de la communauté', askPlaceholder: 'Est-ce un bon moment pour changer de travail?', askBtn: 'Demander' },
     language: { title: 'Sélectionner langue', current: 'Langue actuelle', switch: 'Changer langue' },
     today: 'Aujourd\'hui', yesterday: 'Hier', back: 'Retour', home: 'Accueil', loading: 'Chargement...', error: 'Désolé, une erreur s\'est produite.', success: 'Succès',
-    modules: { bazi: 'Bazi', baziDesc: 'Analyse du thème astral', fengshui: 'Feng Shui', fengshuiDesc: 'Conseil Feng Shui', tarot: 'Tarot', tarotDesc: 'Divination Tarot', palm: 'Chiromancie', palmDesc: 'Lecture de la main', dream: 'Rêves', dreamDesc: 'Interprétation des rêves', zodiac: 'Zodiaque', zodiacDesc: 'Horoscope', mbti: 'MBTI', mbtiDesc: 'Test de personnalité', draw: 'Tirage', drawDesc: 'Divination', huangdi: 'Huangdi', huangdiDesc: 'Sagesses du bien-être', lifenumber: 'Numéro de vie', lifenumberDesc: 'Numérologie', ziwei: 'Ziwei', ziweiDesc: 'Astrologie chinoise', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Nommmage', namingDesc: 'Analyse du nom', marriage: 'Mariage', marriageDesc: 'Compatibilité', company: 'Nom d\'entreprise', companyDesc: 'Nommage commercial', luckyday: 'Jour chanceux', luckydayDesc: 'Dates favorables', digital: 'Numérologie', digitalDesc: 'Analyse numérique', daodejing: 'Tao Te Ching', daodejingDesc: 'Sagesse classique', question: 'Divination', questionDesc: 'Lecture I Ching' }
+    modules: { bazi: 'Bazi', baziDesc: 'Analyse du thème astral', fengshui: 'Feng Shui', fengshuiDesc: 'Conseil Feng Shui', tarot: 'Tarot', tarotDesc: 'Divination Tarot', palm: 'Chiromancie', palmDesc: 'Lecture de la main', dream: 'Rêves', dreamDesc: 'Interprétation des rêves', zodiac: 'Zodiaque', zodiacDesc: 'Horoscope', mbti: 'MBTI', mbtiDesc: 'Test de personnalité', draw: 'Tirage', drawDesc: 'Divination', huangdi: 'Huangdi', huangdiDesc: 'Sagesses du bien-être', lifenumber: 'Numéro de vie', lifenumberDesc: 'Numérologie', ziwei: 'Ziwei', ziweiDesc: 'Astrologie chinoise', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Nommmage', namingDesc: 'Analyse du nom', marriage: 'Mariage', marriageDesc: 'Compatibilité', company: 'Nom d\'entreprise', companyDesc: 'Nommage commercial', luckyday: 'Jour chanceux', luckydayDesc: 'Dates favorables', digital: 'Numérologie', digitalDesc: 'Analyse numérique', daodejing: 'Tao Te Ching', daodejingDesc: 'Sagesse classique', question: 'Divination', questionDesc: 'Lecture I Ching' },
+    upgrade: 'Mettre à niveau',
+    chats: ' fois',
+    privacyPolicy: 'Confidentialité',
+    mbtiDiscover: 'Découvrez votre vrai moi',
+    mbtiPopupDesc: 'Test de personnalité MBTI pour comprendre vos traits et découvrir des forces cachées',
+    takeTestNow: 'Faire le test',
+    maybeLater: 'Plus tard',
+    wechatAddTitle: 'Ajouter support WeChat',
+    wechatAddDesc: 'Scannez QR ou ajoutez WeChat pour contacter, transférez pour recharger',
+    wechatId: 'ID WeChat',
+    notConfigured: 'Non configuré',
+    wechatNote: 'Incluez votre ID de compte dans la note de transfert',
+    copyWechatId: 'Copier ID WeChat',
+    searchPlaceholder: 'Rechercher...',
+    gotIt: 'Compris',
+  
+    limitTitle: 'Limite de chat quotidien atteint',
+    limitDesc: 'Les utilisateurs gratuits ont utilisé les 10 conversations quotidiennes.',
+    limitScan: 'Scannez QR pour ajouter le support, rechargez pour usage illimité',
+    viewUpgrade: 'Voir les plans',
+    maybeLaterBtn: 'Plus tard',
   },
   'de': {
     appName: 'ZhiJi', appDesc: 'Flüstern der alten Weisheit lenkt Ihre Zukunft',
@@ -225,7 +334,28 @@ const translations = {
     home: { features: { title: 'Harmonisieren Sie den Raum', desc: 'Durch die Weisheit des Feng Shui machen Sie Ihr Leben zu einer Quelle von Harmonie und Erfolg.', btn: 'Starten' }, bazi: { title: 'Entschlüsseln Sie das Bazi', desc: 'Entsperren Sie den Code des Lebens.', btn: 'Starten' }, palm: { title: 'Schicksal in den Linien', desc: 'Die Handlesen enthält den Grundriss Ihrer Geschichte.', btn: 'Starten' }, dream: { title: 'Verwandeln Sie Träume', desc: 'Jeder Traum trägt eine Botschaft.', btn: 'Starten' }, community: 'Community-Geschichten', askPlaceholder: 'Ist jetzt ein guter Zeitpunkt, den Job zu wechseln?', askBtn: 'Fragen' },
     language: { title: 'Sprache auswählen', current: 'Aktuelle Sprache', switch: 'Sprache wechseln' },
     today: 'Heute', yesterday: 'Gestern', back: 'Zurück', home: 'Startseite', loading: 'Laden...', error: 'Entschuldigung, ein Fehler ist aufgetreten.', success: 'Erfolg',
-    modules: { bazi: 'Bazi', baziDesc: 'Geburts-Horoskop Analyse', fengshui: 'Feng Shui', fengshuiDesc: 'Feng Shui Beratung', tarot: 'Tarot', tarotDesc: 'Tarot Wahrsagerei', palm: 'Handlesen', palmDesc: 'Handleserei', dream: 'Träume', dreamDesc: 'Traumdeutung', zodiac: 'Tierkreis', zodiacDesc: 'Horoskop', mbti: 'MBTI', mbtiDesc: 'Persönlichkeitstest', draw: 'Wahrsagerei', drawDesc: 'Losziehung', huangdi: 'Huangdi', huangdiDesc: 'Wellness-Weisheit', lifenumber: 'Lebenszahl', lifenumberDesc: 'Numerologie', ziwei: 'Ziwei', ziweiDesc: 'Chinesische Astrologie', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Benennung', namingDesc: 'Namenanalyse', marriage: 'Ehe', marriageDesc: 'Kompatibilität', company: 'Firmenname', companyDesc: 'Geschäftsbenennung', luckyday: 'Glückstag', luckydayDesc: 'Günstige Termine', digital: 'Numerologie', digitalDesc: 'Zahlenanalyse', daodejing: 'Tao Te Ching', daodejingDesc: 'Klassische Weisheit', question: 'Wahrsagerei', questionDesc: 'I Ching Lesung' }
+    modules: { bazi: 'Bazi', baziDesc: 'Geburts-Horoskop Analyse', fengshui: 'Feng Shui', fengshuiDesc: 'Feng Shui Beratung', tarot: 'Tarot', tarotDesc: 'Tarot Wahrsagerei', palm: 'Handlesen', palmDesc: 'Handleserei', dream: 'Träume', dreamDesc: 'Traumdeutung', zodiac: 'Tierkreis', zodiacDesc: 'Horoskop', mbti: 'MBTI', mbtiDesc: 'Persönlichkeitstest', draw: 'Wahrsagerei', drawDesc: 'Losziehung', huangdi: 'Huangdi', huangdiDesc: 'Wellness-Weisheit', lifenumber: 'Lebenszahl', lifenumberDesc: 'Numerologie', ziwei: 'Ziwei', ziweiDesc: 'Chinesische Astrologie', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Benennung', namingDesc: 'Namenanalyse', marriage: 'Ehe', marriageDesc: 'Kompatibilität', company: 'Firmenname', companyDesc: 'Geschäftsbenennung', luckyday: 'Glückstag', luckydayDesc: 'Günstige Termine', digital: 'Numerologie', digitalDesc: 'Zahlenanalyse', daodejing: 'Tao Te Ching', daodejingDesc: 'Klassische Weisheit', question: 'Wahrsagerei', questionDesc: 'I Ching Lesung' },
+    upgrade: 'Upgrade',
+    chats: ' mal',
+    privacyPolicy: 'Datenschutz',
+    mbtiDiscover: 'Entdecke dein wahres Ich',
+    mbtiPopupDesc: 'MBTI-Persönlichkeitstest, um deine Eigenschaften zu verstehen und verborgene Stärken zu entdecken',
+    takeTestNow: 'Test starten',
+    maybeLater: 'Später',
+    wechatAddTitle: 'WeChat-Support hinzufügen',
+    wechatAddDesc: 'QR scannen oder WeChat hinzufügen, überweisen zum Aufladen',
+    wechatId: 'WeChat-ID',
+    notConfigured: 'Nicht konfiguriert',
+    wechatNote: 'Geben Sie Ihre Konto-ID in der Überweisungsnotiz an',
+    copyWechatId: 'WeChat-ID kopieren',
+    searchPlaceholder: 'Suchen...',
+    gotIt: 'Verstanden',
+  
+    limitTitle: 'Tägliches Chat-Limit erreicht',
+    limitDesc: 'Kostenlose Benutzer haben alle 10 täglichen Konversationen verbraucht.',
+    limitScan: 'QR scannen, um Support hinzuzufügen, aufladen für unbegrenzte Nutzung',
+    viewUpgrade: 'Pläne ansehen',
+    maybeLaterBtn: 'Später',
   },
   'pt': {
     appName: 'ZhiJi', appDesc: 'Sussurros de sabedoria antiga guiam seu futuro',
@@ -236,7 +366,28 @@ const translations = {
     home: { features: { title: 'Harmonize o espaço', desc: 'Através da sabedoria do Feng Shui, faça de sua vida uma fonte de harmonia e sucesso.', btn: 'Começar' }, bazi: { title: 'Decodifique o Bazi', desc: 'Desbloqueie o código da vida.', btn: 'Começar' }, palm: { title: 'Destino nas linhas', desc: 'A quiromancia contém o blueprint da sua história.', btn: 'Começar' }, dream: { title: 'Transforme sonhos', desc: 'Cada sonho carrega uma mensagem.', btn: 'Começar' }, community: 'Histórias da comunidade', askPlaceholder: 'É um bom momento para mudar de emprego?', askBtn: 'Perguntar' },
     language: { title: 'Selecionar idioma', current: 'Idioma atual', switch: 'Mudar idioma' },
     today: 'Hoje', yesterday: 'Ontem', back: 'Voltar', home: 'Início', loading: 'Carregando...', error: 'Desculpe, ocorreu um erro.', success: 'Sucesso',
-    modules: { bazi: 'Bazi', baziDesc: 'Análise do mapa astral', fengshui: 'Feng Shui', fengshuiDesc: 'Consultoria Feng Shui', tarot: 'Tarô', tarotDesc: 'Adivinhação Tarot', palm: 'Quiromancia', palmDesc: 'Leitura da mão', dream: 'Sonhos', dreamDesc: 'Interpretação de sonhos', zodiac: 'Zodíaco', zodiacDesc: 'Horóscopo', mbti: 'MBTI', mbtiDesc: 'Teste de personalidade', draw: 'Sorteio', drawDesc: 'Adivinhação', huangdi: 'Huangdi', huangdiDesc: 'Sabedoria Wellness', lifenumber: 'Número da vida', lifenumberDesc: 'Numerologia', ziwei: 'Ziwei', ziweiDesc: 'Astrologia chinesa', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Nomeação', namingDesc: 'Análise do nome', marriage: 'Casamento', marriageDesc: 'Compatibilidade', company: 'Nome da empresa', companyDesc: 'Nomeação comercial', luckyday: 'Dia de sorte', luckydayDesc: 'Datas favoráveis', digital: 'Numerologia', digitalDesc: 'Análise numérica', daodejing: 'Tao Te Ching', daodejingDesc: 'Sabedoria clássica', question: 'Adivinhação', questionDesc: 'Leitura I Ching' }
+    modules: { bazi: 'Bazi', baziDesc: 'Análise do mapa astral', fengshui: 'Feng Shui', fengshuiDesc: 'Consultoria Feng Shui', tarot: 'Tarô', tarotDesc: 'Adivinhação Tarot', palm: 'Quiromancia', palmDesc: 'Leitura da mão', dream: 'Sonhos', dreamDesc: 'Interpretação de sonhos', zodiac: 'Zodíaco', zodiacDesc: 'Horóscopo', mbti: 'MBTI', mbtiDesc: 'Teste de personalidade', draw: 'Sorteio', drawDesc: 'Adivinhação', huangdi: 'Huangdi', huangdiDesc: 'Sabedoria Wellness', lifenumber: 'Número da vida', lifenumberDesc: 'Numerologia', ziwei: 'Ziwei', ziweiDesc: 'Astrologia chinesa', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Nomeação', namingDesc: 'Análise do nome', marriage: 'Casamento', marriageDesc: 'Compatibilidade', company: 'Nome da empresa', companyDesc: 'Nomeação comercial', luckyday: 'Dia de sorte', luckydayDesc: 'Datas favoráveis', digital: 'Numerologia', digitalDesc: 'Análise numérica', daodejing: 'Tao Te Ching', daodejingDesc: 'Sabedoria clássica', question: 'Adivinhação', questionDesc: 'Leitura I Ching' },
+    upgrade: 'Atualizar',
+    chats: ' vezes',
+    privacyPolicy: 'Privacidade',
+    mbtiDiscover: 'Descubra seu verdadeiro eu',
+    mbtiPopupDesc: 'Teste de personalidade MBTI para entender seus traços e descobrir forças ocultas',
+    takeTestNow: 'Fazer teste',
+    maybeLater: 'Mais tarde',
+    wechatAddTitle: 'Adicionar suporte WeChat',
+    wechatAddDesc: 'Escaneie QR ou adicione WeChat para contatar, transfira para recarregar',
+    wechatId: 'ID WeChat',
+    notConfigured: 'Não configurado',
+    wechatNote: 'Inclua seu ID de conta na nota de transferência',
+    copyWechatId: 'Copiar ID WeChat',
+    searchPlaceholder: 'Pesquisar...',
+    gotIt: 'Entendi',
+  
+    limitTitle: 'Limite diário de chat atingido',
+    limitDesc: 'Usuários gratuitos usaram todas as 10 conversas diárias.',
+    limitScan: 'Escaneie QR para adicionar suporte, recarregue para uso ilimitado',
+    viewUpgrade: 'Ver planos',
+    maybeLaterBtn: 'Mais tarde',
   },
   'ar': {
     appName: 'زيجي', appDesc: 'همسات الحكمة القديمة ترشدك إلى مستقبلك',
@@ -247,7 +398,28 @@ const translations = {
     home: { features: { title: 'حلل المساحة', desc: 'من خلال حكمة فنغ شوي، اجعل حياتك مصدرا للانسجام والنجاح.', btn: 'ابدأ' }, bazi: { title: 'فك شفرة البازي', desc: 'افتح رمز الحياة.', btn: 'ابدأ' }, palm: { title: 'الم судьбы в линиях', desc: 'قراءة الكف تحتوي على مخطط قصة حياتنا.', btn: 'ابدأ' }, dream: { title: 'حوّل الاحلام', desc: 'كل حلم يحمل رسالة.', btn: 'ابدأ' }, community: 'قصص المجتمع', askPlaceholder: 'هل الوقت مناسب لتغيير الوظيفة؟', askBtn: 'اسأل' },
     language: { title: 'اختر اللغة', current: 'اللغة الحالية', switch: 'تغيير اللغة' },
     today: 'اليوم', yesterday: 'امس', back: 'رجوع', home: 'الرئيسية', loading: 'جاري التحميل...', error: 'عذرا، حدث خطأ.', success: 'نجاح',
-    modules: { bazi: 'البازي', baziDesc: 'تحليل مخطط الولادة', fengshui: 'فنغ شوي', fengshuiDesc: 'استشارة فنغ شوي', tarot: 'التارو', tarotDesc: 'تنبؤ التارو', palm: 'قراءة الكف', palmDesc: 'قراءة الكف', dream: 'الأحلام', dreamDesc: 'تفسير الأحلام', zodiac: 'البرج', zodiacDesc: 'الابراج', mbti: 'MBTI', mbtiDesc: 'اختبار الشخصية', draw: 'السحب', drawDesc: 'العرافة', huangdi: 'هوانغدي', huangdiDesc: 'حكمةالعافية', lifenumber: 'رقم الحياة', lifenumberDesc: 'العددومية', ziwei: 'زيووي', ziweiDesc: 'الابراج الصينية', zhouyi: 'زويي', zhouyiDesc: 'كتاب التغيرات', naming: 'تسمية', namingDesc: 'تحليل الاسم', marriage: 'زواج', marriageDesc: 'التوافق', company: 'اسم الشركة', companyDesc: 'تسمية الاعمال', luckyday: 'يوم الحظ', luckydayDesc: 'تواريخ مواتية', digital: 'العددومية', digitalDesc: 'تحليل الارقام', daodejing: 'الكتاب الكلاسيكية', daodejingDesc: 'الحكمة الكلاسيكية', question: 'عرافة', questionDesc: 'قراءة كتاب التغيرات' }
+    modules: { bazi: 'البازي', baziDesc: 'تحليل مخطط الولادة', fengshui: 'فنغ شوي', fengshuiDesc: 'استشارة فنغ شوي', tarot: 'التارو', tarotDesc: 'تنبؤ التارو', palm: 'قراءة الكف', palmDesc: 'قراءة الكف', dream: 'الأحلام', dreamDesc: 'تفسير الأحلام', zodiac: 'البرج', zodiacDesc: 'الابراج', mbti: 'MBTI', mbtiDesc: 'اختبار الشخصية', draw: 'السحب', drawDesc: 'العرافة', huangdi: 'هوانغدي', huangdiDesc: 'حكمةالعافية', lifenumber: 'رقم الحياة', lifenumberDesc: 'العددومية', ziwei: 'زيووي', ziweiDesc: 'الابراج الصينية', zhouyi: 'زويي', zhouyiDesc: 'كتاب التغيرات', naming: 'تسمية', namingDesc: 'تحليل الاسم', marriage: 'زواج', marriageDesc: 'التوافق', company: 'اسم الشركة', companyDesc: 'تسمية الاعمال', luckyday: 'يوم الحظ', luckydayDesc: 'تواريخ مواتية', digital: 'العددومية', digitalDesc: 'تحليل الارقام', daodejing: 'الكتاب الكلاسيكية', daodejingDesc: 'الحكمة الكلاسيكية', question: 'عرافة', questionDesc: 'قراءة كتاب التغيرات' },
+    upgrade: 'ترقية',
+    chats: ' مرات',
+    privacyPolicy: 'الخصوصية',
+    mbtiDiscover: 'اكتشف ذاتك الحقيقية',
+    mbtiPopupDesc: 'اختبار شخصية MBTI لفهم سماتك واكتشاف نقاط القوة المخفية',
+    takeTestNow: 'ابدأ الاختبار',
+    maybeLater: 'لاحقاً',
+    wechatAddTitle: 'إضافة دعم WeChat',
+    wechatAddDesc: 'امسح QR أو أضف WeChat للتواصل، قم بالتحويل للشحن',
+    wechatId: 'معرف WeChat',
+    notConfigured: 'غير مكون',
+    wechatNote: 'قم بتضمين معرف حسابك في ملاحظة التحويل',
+    copyWechatId: 'نسخ معرف WeChat',
+    searchPlaceholder: 'بحث...',
+    gotIt: 'فهمت',
+  
+    limitTitle: 'تم بلوغ حد المحادثة اليومي',
+    limitDesc: 'المستخدمون المجانيون استخدموا جميع المحادثات اليومية العشر.',
+    limitScan: 'امسح QR لإضافة الدعم، اشحن للاستخدام غير المحدود',
+    viewUpgrade: 'عرض الخطط',
+    maybeLaterBtn: 'لاحقاً',
   },
   'id': {
     appName: 'ZhiJi', appDesc: 'Bisikan kebijaksanaan kuno memandu masa depan Anda',
@@ -258,7 +430,28 @@ const translations = {
     home: { features: { title: 'Harmonisikan Ruang', desc: 'Melalui kebijaksanaan Feng Shui, buat hidup Anda sumber keharmonisan dan kesuksesan.', btn: 'Mulai' }, bazi: { title: 'Pecahkan Bazi', desc: 'Buka kode kehidupan.', btn: 'Mulai' }, palm: { title: 'Nasib di Garis Tangan', desc: 'Ilmu telapak mengandung blueprint cerita hidup Anda.', btn: 'Mulai' }, dream: { title: 'Ubah Mimpi', desc: 'Setiap mimpi membawa pesan.', btn: 'Mulai' }, community: 'Cerita Komunitas', askPlaceholder: 'Apakah sekarang saat yang tepat untuk换工作?', askBtn: 'Tanya' },
     language: { title: 'Pilih Bahasa', current: 'Bahasa Saat Ini', switch: 'Ganti Bahasa' },
     today: 'Hari Ini', yesterday: 'Kemarin', back: 'Kembali', home: 'Beranda', loading: 'Memuat...', error: 'Maaf, terjadi kesalahan.', success: 'Berhasil',
-    modules: { bazi: 'Bazi', baziDesc: 'Analisis Bagan Kelahiran', fengshui: 'Feng Shui', fengshuiDesc: 'Konsultasi Feng Shui', tarot: 'Tarot', tarotDesc: 'Peramalan Tarot', palm: 'Ilmu Telapak', palmDesc: 'Pembacaan Telapak', dream: 'Mimpi', dreamDesc: 'Interpretasi Mimpi', zodiac: 'Zodiak', zodiacDesc: 'Horoskop', mbti: 'MBTI', mbtiDesc: 'Tes Kepribadian', draw: 'Undian', drawDesc: 'Peramalan', huangdi: 'Huangdi', huangdiDesc: 'Kebijaksanaan Wellness', lifenumber: 'Angka Hidup', lifenumberDesc: 'Numerologi', ziwei: 'Ziwei', ziweiDesc: 'Astrologi Tionghoa', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Pemberian Nama', namingDesc: 'Analisis Nama', marriage: 'Pernikahan', marriageDesc: 'Kompatibilitas', company: 'Nama Perusahaan', companyDesc: 'Pemberian Nama Bisnis', luckyday: 'Hari Keberuntungan', luckydayDesc: 'Tanggal Menguntungkan', digital: 'Numerologi', digitalDesc: 'Analisis Angka', daodejing: 'Tao Te Ching', daodejingDesc: 'Kebijaksanaan Klasik', question: 'Peramalan', questionDesc: 'Pembacaan I Ching' }
+    modules: { bazi: 'Bazi', baziDesc: 'Analisis Bagan Kelahiran', fengshui: 'Feng Shui', fengshuiDesc: 'Konsultasi Feng Shui', tarot: 'Tarot', tarotDesc: 'Peramalan Tarot', palm: 'Ilmu Telapak', palmDesc: 'Pembacaan Telapak', dream: 'Mimpi', dreamDesc: 'Interpretasi Mimpi', zodiac: 'Zodiak', zodiacDesc: 'Horoskop', mbti: 'MBTI', mbtiDesc: 'Tes Kepribadian', draw: 'Undian', drawDesc: 'Peramalan', huangdi: 'Huangdi', huangdiDesc: 'Kebijaksanaan Wellness', lifenumber: 'Angka Hidup', lifenumberDesc: 'Numerologi', ziwei: 'Ziwei', ziweiDesc: 'Astrologi Tionghoa', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Pemberian Nama', namingDesc: 'Analisis Nama', marriage: 'Pernikahan', marriageDesc: 'Kompatibilitas', company: 'Nama Perusahaan', companyDesc: 'Pemberian Nama Bisnis', luckyday: 'Hari Keberuntungan', luckydayDesc: 'Tanggal Menguntungkan', digital: 'Numerologi', digitalDesc: 'Analisis Angka', daodejing: 'Tao Te Ching', daodejingDesc: 'Kebijaksanaan Klasik', question: 'Peramalan', questionDesc: 'Pembacaan I Ching' },
+    upgrade: 'Tingkatkan',
+    chats: ' kali',
+    privacyPolicy: 'Privasi',
+    mbtiDiscover: 'Temukan diri sejati Anda',
+    mbtiPopupDesc: 'Tes kepribadian MBTI untuk memahami sifat Anda dan menemukan kekuatan tersembunyi',
+    takeTestNow: 'Mulai tes',
+    maybeLater: 'Nanti',
+    wechatAddTitle: 'Tambah dukungan WeChat',
+    wechatAddDesc: 'Pindai QR atau tambahkan WeChat untuk menghubungi, transfer untuk mengisi ulang',
+    wechatId: 'ID WeChat',
+    notConfigured: 'Tidak dikonfigurasi',
+    wechatNote: 'Sertakan ID akun Anda di catatan transfer',
+    copyWechatId: 'Salin ID WeChat',
+    searchPlaceholder: 'Cari...',
+    gotIt: 'Mengerti',
+  
+    limitTitle: 'Batas chat harian tercapai',
+    limitDesc: 'Pengguna gratis telah menggunakan 10 percakapan harian.',
+    limitScan: 'Pindai QR untuk menambahkan dukungan, isi ulang untuk penggunaan tak terbatas',
+    viewUpgrade: 'Lihat paket',
+    maybeLaterBtn: 'Nanti',
   },
   'ms': {
     appName: 'ZhiJi', appDesc: 'Bisikan kebijaksanaan kuno membimbing masa depan anda',
@@ -269,7 +462,28 @@ const translations = {
     home: { features: { title: 'Harmoni Ruang', desc: 'Melalui kebijaksanaan Feng Shui, buat hidup anda sumber harmoni dan kejayaan.', btn: 'Mula' }, bazi: { title: 'Edit Kod Bazi', desc: 'Buka kod kehidupan.', btn: 'Mula' }, palm: { title: 'Nasib dalam Garisan Tangan', desc: 'Ilmu tapak mengandungi pelan biru cerita hidup anda.', btn: 'Mula' }, dream: { title: 'Tukar Mimpi', desc: 'Setiap mimpi membawa mesej.', btn: 'Mula' }, community: 'Cerita Komuniti', askPlaceholder: 'Adakah masa yang sesuai untuk menukar kerja?', askBtn: 'Tanya' },
     language: { title: 'Pilih Bahasa', current: 'Bahasa Semasa', switch: 'Tukar Bahasa' },
     today: 'Hari Ini', yesterday: 'Semalam', back: 'Kembali', home: 'Laman Utama', loading: 'Memuat...', error: 'Maaf, berlaku ralat.', success: 'Berjaya',
-    modules: { bazi: 'Bazi', baziDesc: 'Analisis Carta Kelahiran', fengshui: 'Feng Shui', fengshuiDesc: 'Konsultasi Feng Shui', tarot: 'Tarot', tarotDesc: 'Ramalan Tarot', palm: 'Ilmu Tapak', palmDesc: 'Pembacaan Tapak', dream: 'Mimpi', dreamDesc: 'Tafsiran Mimpi', zodiac: 'Zodiak', zodiacDesc: 'Horoskop', mbti: 'MBTI', mbtiDesc: 'Ujian Personaliti', draw: 'Undian', drawDesc: 'Ramalan', huangdi: 'Huangdi', huangdiDesc: 'Kebijaksanaan Wellness', lifenumber: 'Nombor Hayat', lifenumberDesc: 'Numerologi', ziwei: 'Ziwei', ziweiDesc: 'Astrologi Cina', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Penamaan', namingDesc: 'Analisis Nama', marriage: 'Perkahwinan', marriageDesc: 'Keserasian', company: 'Nama Syarikat', companyDesc: 'Penamaan Perniagaan', luckyday: 'Hari Bertuah', luckydayDesc: 'Tarikh Menguntungkan', digital: 'Numerologi', digitalDesc: 'Analisis Nombor', daodejing: 'Tao Te Ching', daodejingDesc: 'Kebijaksanaan Klasik', question: 'Ramalan', questionDesc: 'Pembacaan I Ching' }
+    modules: { bazi: 'Bazi', baziDesc: 'Analisis Carta Kelahiran', fengshui: 'Feng Shui', fengshuiDesc: 'Konsultasi Feng Shui', tarot: 'Tarot', tarotDesc: 'Ramalan Tarot', palm: 'Ilmu Tapak', palmDesc: 'Pembacaan Tapak', dream: 'Mimpi', dreamDesc: 'Tafsiran Mimpi', zodiac: 'Zodiak', zodiacDesc: 'Horoskop', mbti: 'MBTI', mbtiDesc: 'Ujian Personaliti', draw: 'Undian', drawDesc: 'Ramalan', huangdi: 'Huangdi', huangdiDesc: 'Kebijaksanaan Wellness', lifenumber: 'Nombor Hayat', lifenumberDesc: 'Numerologi', ziwei: 'Ziwei', ziweiDesc: 'Astrologi Cina', zhouyi: 'Zhouyi', zhouyiDesc: 'I Ching', naming: 'Penamaan', namingDesc: 'Analisis Nama', marriage: 'Perkahwinan', marriageDesc: 'Keserasian', company: 'Nama Syarikat', companyDesc: 'Penamaan Perniagaan', luckyday: 'Hari Bertuah', luckydayDesc: 'Tarikh Menguntungkan', digital: 'Numerologi', digitalDesc: 'Analisis Nombor', daodejing: 'Tao Te Ching', daodejingDesc: 'Kebijaksanaan Klasik', question: 'Ramalan', questionDesc: 'Pembacaan I Ching' },
+    upgrade: 'Naik taraf',
+    chats: ' kali',
+    privacyPolicy: 'Privasi',
+    mbtiDiscover: 'Temui diri anda yang sebenar',
+    mbtiPopupDesc: 'Ujian personaliti MBTI untuk memahami sifat anda dan menemui kekuatan tersembunyi',
+    takeTestNow: 'Mulakan ujian',
+    maybeLater: 'Nanti',
+    wechatAddTitle: 'Tambah sokongan WeChat',
+    wechatAddDesc: 'Imbas QR atau tambah WeChat untuk menghubungi, pindahkan untuk tambah nilai',
+    wechatId: 'ID WeChat',
+    notConfigured: 'Tidak dikonfigurasikan',
+    wechatNote: 'Sertakan ID akaun anda dalam nota pemindahan',
+    copyWechatId: 'Salin ID WeChat',
+    searchPlaceholder: 'Cari...',
+    gotIt: 'Faham',
+  
+    limitTitle: 'Had chat harian dicapai',
+    limitDesc: 'Pengguna percuma telah menggunakan 10 perbualan harian.',
+    limitScan: 'Imbas QR untuk tambah sokongan, tambah nilai untuk penggunaan tanpa had',
+    viewUpgrade: 'Lihat pelan',
+    maybeLaterBtn: 'Nanti',
   }
 }
 
@@ -277,32 +491,26 @@ const translations = {
 export function t(key, lang = 'zh-CN') {
   const keys = key.split('.')
   
-  // 首先尝试在请求的语言中获取完整路径
-  let value = translations[lang]
-  let foundInLang = true
+  // 尝试顺序：请求语言 → 简体中文 → 英文 → key 名
+  const fallbackLangs = [lang, 'zh-CN', 'en']
   
-  for (const k of keys) {
-    if (value && value[k] !== undefined) {
-      value = value[k]
-    } else {
-      foundInLang = false
-      break
-    }
-  }
-  
-  // 如果在请求的语言中找不到完整的键路径，则使用英语作为后备
-  if (!foundInLang) {
-    value = translations['en']
+  for (const langCode of fallbackLangs) {
+    let value = translations[langCode]
+    let found = true
+    
     for (const k of keys) {
       if (value && value[k] !== undefined) {
         value = value[k]
       } else {
-        return key // 如果英语也没有，返回键名
+        found = false
+        break
       }
     }
+    
+    if (found) return value
   }
   
-  return value || key
+  return key
 }
 
 // 语言 Store
